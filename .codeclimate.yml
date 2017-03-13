@@ -12,12 +12,13 @@ engines:
         enabled: false
       Similar code:
         enabled: false
-      Complexity:
-        enabled: false        
   fixme:
     enabled: true
   radon:
     enabled: true
+      checks:
+        Complexity:
+          enabled: false
 ratings:
   paths:
   - "**.inc"
