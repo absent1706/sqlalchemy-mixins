@@ -21,7 +21,7 @@ Why it's cool:
     [Django ORM](https://docs.djangoproject.com/en/1.10/topics/db/queries/), 
     [Peewee](http://docs.peewee-orm.com/)
     and [Eloquent ORM](https://laravel.com/docs/5.4/eloquent#retrieving-single-models),
- * 100% test coverage
+ * 95%+ test coverage
  * already powers a big project
 
 ## Table of Contents
