@@ -103,17 +103,17 @@ class BaseTest(unittest.TestCase):
     def _seed(self):
         u1 = User(name='Bill u1')
         sess.add(u1)
-        sess.commit()
+        sess.flush()
 
         u2 = User(name='Alex u2')
         sess.add(u2)
-        sess.commit()
+        sess.flush()
 
         u3 = User(name='Bishop u3')
         sess.add(u3)
-        sess.commit()
+        sess.flush()
 
-        sess.commit()
+        sess.flush()
 
         p11 = Post(
             id=11,
@@ -122,7 +122,7 @@ class BaseTest(unittest.TestCase):
             user=u1
         )
         sess.add(p11)
-        sess.commit()
+        sess.flush()
 
         p12 = Post(
             id=12,
@@ -130,7 +130,7 @@ class BaseTest(unittest.TestCase):
             user=u1
         )
         sess.add(p12)
-        sess.commit()
+        sess.flush()
 
         p21 = Post(
             id=21,
@@ -138,7 +138,7 @@ class BaseTest(unittest.TestCase):
             user=u2
         )
         sess.add(p21)
-        sess.commit()
+        sess.flush()
 
         p22 = Post(
             id=22,
@@ -146,7 +146,7 @@ class BaseTest(unittest.TestCase):
             user=u2
         )
         sess.add(p22)
-        sess.commit()
+        sess.flush()
 
         cm11 = Comment(
             id=11,
@@ -157,7 +157,7 @@ class BaseTest(unittest.TestCase):
             created_at=datetime.datetime(2014, 1, 1)
         )
         sess.add(cm11)
-        sess.commit()
+        sess.flush()
 
         cm12 = Comment(
             id=12,
@@ -168,7 +168,7 @@ class BaseTest(unittest.TestCase):
             created_at=datetime.datetime(2015, 10, 20)
         )
         sess.add(cm12)
-        sess.commit()
+        sess.flush()
 
         cm21 = Comment(
             id=21,
@@ -179,7 +179,7 @@ class BaseTest(unittest.TestCase):
             created_at=datetime.datetime(2015, 11, 21)
         )
         sess.add(cm21)
-        sess.commit()
+        sess.flush()
 
         cm22 = Comment(
             id=22,
@@ -190,7 +190,7 @@ class BaseTest(unittest.TestCase):
             created_at=datetime.datetime(2016, 11, 20)
         )
         sess.add(cm22)
-        sess.commit()
+        sess.flush()
 
         cm_empty = Comment(
             id=29,
@@ -200,7 +200,7 @@ class BaseTest(unittest.TestCase):
             # no rating
         )
         sess.add(cm_empty)
-        sess.commit()
+        sess.flush()
 
         return u1, u2, u3, p11, p12, p21, p22, cm11, cm12, cm21, cm22, cm_empty
 
