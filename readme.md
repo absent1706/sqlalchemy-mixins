@@ -44,10 +44,8 @@ Why it's cool:
 1. [Comparison with existing solutions](#comparison-with-existing-solutions)
 
 ## Installation
-Just pip:
-```
-pip install sqlalchemy_mixins
-```
+
+**Wait for a few days, I will make it available from pip**
 
 Run tests
 ```
