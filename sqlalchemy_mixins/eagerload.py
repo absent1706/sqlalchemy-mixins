@@ -1,4 +1,7 @@
-from typing import List
+try:
+    from typing import List
+except ImportError:
+    pass
 
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import subqueryload
