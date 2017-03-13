@@ -1,5 +1,4 @@
 -r requirements.txt
-pytest
-pytest-cov
+nose
 coverage
 codeclimate-test-reporter
