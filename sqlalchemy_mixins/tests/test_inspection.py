@@ -73,5 +73,5 @@ class TestSessionMixin(unittest.TestCase):
     def tearDown(self):
         Base.metadata.create_all(engine)
 
-if __name__ == '__main__':
+if __name__ == '__main__': # pragma: no cover
     unittest.main()

@@ -204,5 +204,5 @@ class TestActiveRecord(unittest.TestCase):
             _ = User.find_or_fail(123456789)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__': # pragma: no cover
     unittest.main()

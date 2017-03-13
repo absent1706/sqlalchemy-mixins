@@ -761,5 +761,5 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
         # no additional query needed: we used 'post' relation in smart_query()
         self.assertEqual(self.query_count, 2)
 
-if __name__ == '__main__':
+if __name__ == '__main__': # pragma: no cover
     unittest.main()

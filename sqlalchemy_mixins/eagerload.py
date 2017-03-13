@@ -1,6 +1,6 @@
 try:
     from typing import List
-except ImportError:
+except ImportError: # pragma: no cover
     pass
 
 from sqlalchemy.orm import joinedload
