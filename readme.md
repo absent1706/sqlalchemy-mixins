@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/absent1706/sqlalchemy-mixins.svg?branch=master)](https://travis-ci.org/absent1706/sqlalchemy-mixins)
+
 # SQLAlchemy mixins
 A pack of framework-agnostic, easy-to-integrate and well tested mixins for SQLAlchemy ORM.
 
