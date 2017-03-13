@@ -68,7 +68,8 @@ print Post.with_(['user']).first()
 print Post.sort('-rating', 'user___name').all()
 ```
 
-See full code [here](examples/all_features.py)
+<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
+See [full example](examples/all_features.py)
 
 
 # Features
@@ -128,6 +129,7 @@ and fail if such id doesn't exist
 User.find_or_fail(123987) # will raise sqlalchemy_mixins.ModelNotFoundError
 ```
 
+<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
 See [full example](examples/activerecord.py) and [tests](sqlalchemy_mixins/tests/test_activerecord.py)
 
 ### Querying
@@ -145,6 +147,7 @@ User.first() # instead of session.query(User).first()
 User.all() # instead of session.query(User).all()
 ```
 
+<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
 See [full example](examples/activerecord.py) and [tests](sqlalchemy_mixins/tests/test_activerecord.py)
 
 ## Eager load
@@ -209,6 +212,7 @@ a few relations, we have easier syntax for you:
 Comment.with_(['user', 'post']).first()
 ```
 
+<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
 See [full example](examples/eagerload.py) and [tests](sqlalchemy_mixins/tests/test_eagerload.py)
 
 ## Filter and sort by relations
@@ -254,7 +258,8 @@ SQLAlchemy's [hybrid attributes](http://docs.sqlalchemy.org/en/latest/orm/extens
 and [hybrid_methods](http://docs.sqlalchemy.org/en/latest/orm/extensions/hybrid.html?highlight=hybrid_method#sqlalchemy.ext.hybrid.hybrid_method).
 Using them in our filtering/sorting is straightforward (see examples and tests).   
 
-*See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)*
+<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
+See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ### Automatic eager load relations
 Well, as `sqlalchemy_mixins.SmartQueryMixin` does auto-joins for filtering/sorting, 
@@ -275,7 +280,8 @@ comments[0].post.user
 
 Cool, isn't it? =)
 
-*See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)*
+<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
+See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ### All-in-one: smart_query
 #### Filter, sort and eager load in one smartest method.
@@ -300,6 +306,7 @@ Comment.smart_query(
     }).all()
 ```
 
+<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
 See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ## Beauty \_\_repr\_\_
@@ -336,7 +343,9 @@ Now we have
  <Post #12 user:<User #2 'Bob'> body:'post 12'>]
 
 ```
-See [full code](examples/repr.py) and [tests](sqlalchemy_mixins/tests/test_repr.py)
+
+<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
+See [full example](examples/repr.py) and [tests](sqlalchemy_mixins/tests/test_repr.py)
 
 # Internal architecture notes
 Some mixins re-use the same functionality. It lives in `sqlalchemy_mixins.SessionMixin` (session access) and `sqlalchemy_mixins.InspectionMixin` (inspecting columns, relations etc.) and other mixins inherit them.
