@@ -47,7 +47,7 @@ Just pip:
 pip install sqlalchemy_mixins
 ```
 
-Run tests to see that they cover 100% lines of code =)
+Run tests
 ```
 python -m unittest discover sqlalchemy_mixins/
 ```
