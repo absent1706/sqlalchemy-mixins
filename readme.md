@@ -69,7 +69,7 @@ print Post.sort('-rating', 'user___name').all()
 ```
 
 <img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
-See [full example](examples/all_features.py)
+See [full example](sqlalchemy_mixins/examples/all_features.py)
 
 
 # Features
@@ -130,7 +130,7 @@ User.find_or_fail(123987) # will raise sqlalchemy_mixins.ModelNotFoundError
 ```
 
 <img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
-See [full example](examples/activerecord.py) and [tests](sqlalchemy_mixins/tests/test_activerecord.py)
+See [full example](sqlalchemy_mixins/examples/activerecord.py) and [tests](sqlalchemy_mixins/tests/test_activerecord.py)
 
 ### Querying
 As in [Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.1/quickstart/#a-minimal-application), 
@@ -148,7 +148,7 @@ User.all() # instead of session.query(User).all()
 ```
 
 <img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
-See [full example](examples/activerecord.py) and [tests](sqlalchemy_mixins/tests/test_activerecord.py)
+See [full example](sqlalchemy_mixins/examples/activerecord.py) and [tests](sqlalchemy_mixins/tests/test_activerecord.py)
 
 ## Eager load
 provided by `sqlalchemy_mixins.EagerLoadMixin`
@@ -213,7 +213,7 @@ Comment.with_(['user', 'post']).first()
 ```
 
 <img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
-See [full example](examples/eagerload.py) and [tests](sqlalchemy_mixins/tests/test_eagerload.py)
+See [full example](sqlalchemy_mixins/examples/eagerload.py) and [tests](sqlalchemy_mixins/tests/test_eagerload.py)
 
 ## Filter and sort by relations
 provided by `sqlalchemy_mixins.SmartQueryMixin`
@@ -259,7 +259,7 @@ and [hybrid_methods](http://docs.sqlalchemy.org/en/latest/orm/extensions/hybrid.
 Using them in our filtering/sorting is straightforward (see examples and tests).   
 
 <img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
-See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
+See [full example](sqlalchemy_mixins/examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ### Automatic eager load relations
 Well, as `sqlalchemy_mixins.SmartQueryMixin` does auto-joins for filtering/sorting, 
@@ -281,7 +281,7 @@ comments[0].post.user
 Cool, isn't it? =)
 
 <img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
-See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
+See [full example](sqlalchemy_mixins/examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ### All-in-one: smart_query
 #### Filter, sort and eager load in one smartest method.
@@ -307,7 +307,7 @@ Comment.smart_query(
 ```
 
 <img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
-See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
+See [full example](sqlalchemy_mixins/examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ## Beauty \_\_repr\_\_
 provided by `sqlalchemy_mixins.ReprMixin`
@@ -345,7 +345,7 @@ Now we have
 ```
 
 <img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
-See [full example](examples/repr.py) and [tests](sqlalchemy_mixins/tests/test_repr.py)
+See [full example](sqlalchemy_mixins/examples/repr.py) and [tests](sqlalchemy_mixins/tests/test_repr.py)
 
 # Internal architecture notes
 Some mixins re-use the same functionality. It lives in `sqlalchemy_mixins.SessionMixin` (session access) and `sqlalchemy_mixins.InspectionMixin` (inspecting columns, relations etc.) and other mixins inherit them.
@@ -371,6 +371,7 @@ while to use `sqlalchemy_mixins.ActiveRecordMixin` you should just make you mode
 Cool, but tightly coupled with Flask.
 
 **[sqlalchemy-activerecord](https://github.com/deespater/sqlalchemy-activerecord)**
+
 Framework-agnostic, but lacks of functionality (only `save` method is provided) and Readme.  
 
 ## Django-like queries
