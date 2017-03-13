@@ -617,7 +617,7 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
     """
 
     def _seed(self):
-        result = super(TestSmartQueryAutoEagerLoad, self)._seed()
+        result = BaseTest._seed(self)
 
         self.query_count = 0
 

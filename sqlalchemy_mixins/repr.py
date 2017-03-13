@@ -1,3 +1,4 @@
+from six import string_types
 from sqlalchemy import inspect
 
 
@@ -24,7 +25,7 @@ class ReprMixin:
                 raise KeyError("{} has incorrect attribute '{}' in "
                                "__repr__attrs__".format(self.__class__, key))
             value = getattr(self, key)
-            wrap_in_quote = isinstance(value, basestring)
+            wrap_in_quote = isinstance(value, string_types)
 
             value = str(value)
             if len(value) > max_length:

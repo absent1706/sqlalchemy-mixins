@@ -44,4 +44,4 @@ class InspectionMixin(Base):
 
     @classproperty
     def hybrid_methods(cls):
-        return cls.hybrid_methods_full.keys()
+        return list(cls.hybrid_methods_full.keys())

@@ -234,8 +234,8 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
             schema = {}
 
         root_entity = cls
-        attrs = filters.keys() + map(lambda s: s.lstrip(DESC_PREFIX),
-                                     sort_attrs)
+        attrs = list(filters.keys()) + \
+                list(map(lambda s: s.lstrip(DESC_PREFIX), sort_attrs))
         aliases = OrderedDict({})
         _parse_path_and_make_aliases(root_entity, '', attrs, aliases)
 
