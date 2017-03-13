@@ -1,3 +1,4 @@
 -r requirements.txt
-unittest2; python_version < '2.7'
+nose
+coverage
 codeclimate-test-reporter
