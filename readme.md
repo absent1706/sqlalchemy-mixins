@@ -78,7 +78,7 @@ Main features are [Active Record](#active-record), [Eager Load](#eager-load), [D
 and [Beauty \_\_repr\_\_](#beauty-__repr__).
 
 ## Active Record
-provided by `sqlalchemy_mixins.ActiveRecordMixin` 
+provided by [`sqlalchemy_mixins.ActiveRecordMixin`](sqlalchemy_mixins/activerecord.py) 
 
 SQLAlchemy's [Data Mapper](https://en.wikipedia.org/wiki/Data_mapper_pattern)
 pattern is cool, but 
@@ -99,7 +99,7 @@ is a bit tricky there.
 
 For example, creating an object needs 3 lines of code:
 ```python
-bob = User(name='Bob')
+bob = User(name='Bobby', age=1)
 session.add(bob)
 session.flush()
 ```
@@ -151,7 +151,7 @@ User.all() # instead of session.query(User).all()
 See [full example](sqlalchemy_mixins/examples/activerecord.py) and [tests](sqlalchemy_mixins/tests/test_activerecord.py)
 
 ## Eager load
-provided by `sqlalchemy_mixins.EagerLoadMixin`
+provided by [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eagerload.py)
 
 ### Nested eager load
 If you use SQLAlchemy's [eager loading](http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#eager-loading),
@@ -216,7 +216,7 @@ Comment.with_(['user', 'post']).first()
 See [full example](sqlalchemy_mixins/examples/eagerload.py) and [tests](sqlalchemy_mixins/tests/test_eagerload.py)
 
 ## Filter and sort by relations
-provided by `sqlalchemy_mixins.SmartQueryMixin`
+provided by [`sqlalchemy_mixins.SmartQueryMixin`](smartquery.py)
 
 ### Django-like queries
 We implement Django-like 
@@ -262,7 +262,7 @@ Using them in our filtering/sorting is straightforward (see examples and tests).
 See [full example](sqlalchemy_mixins/examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ### Automatic eager load relations
-Well, as `sqlalchemy_mixins.SmartQueryMixin` does auto-joins for filtering/sorting, 
+Well, as [`sqlalchemy_mixins.SmartQueryMixin`](sqlalchemy_mixins/smartquery.py) does auto-joins for filtering/sorting, 
 there's a sense to tell sqlalchemy that we already joined that relation.
 
 So that relations are automatically set to be joinedload if they were used for filtering/sorting.
@@ -285,7 +285,7 @@ See [full example](sqlalchemy_mixins/examples/smartquery.py) and [tests](sqlalch
 
 ### All-in-one: smart_query
 #### Filter, sort and eager load in one smartest method.
-provided by `sqlalchemy_mixins.SmartQueryMixin`
+provided by [`sqlalchemy_mixins.SmartQueryMixin`](sqlalchemy_mixins/smartquery.py)
 
 In real world, we want to filter, sort and also eager load some relations at once.
 Well, if we use the same, say, `User.posts` relation in filtering and sorting, 
@@ -310,7 +310,7 @@ Comment.smart_query(
 See [full example](sqlalchemy_mixins/examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ## Beauty \_\_repr\_\_
-provided by `sqlalchemy_mixins.ReprMixin`
+provided by [`sqlalchemy_mixins.ReprMixin`](sqalchemy_mixins/repr.py)
 
 As developers, we need to debug things with convenient. 
 When we play in REPL, we can see this
@@ -348,7 +348,7 @@ Now we have
 See [full example](sqlalchemy_mixins/examples/repr.py) and [tests](sqlalchemy_mixins/tests/test_repr.py)
 
 # Internal architecture notes
-Some mixins re-use the same functionality. It lives in `sqlalchemy_mixins.SessionMixin` (session access) and `sqlalchemy_mixins.InspectionMixin` (inspecting columns, relations etc.) and other mixins inherit them.
+Some mixins re-use the same functionality. It lives in [`sqlalchemy_mixins.SessionMixin`](sqlalchemy_mixins/session.py) (session access) and [`sqlalchemy_mixins.InspectionMixin`](sqlalchemy_mixins/inspection.py) (inspecting columns, relations etc.) and other mixins inherit them.
 
 You can use these mixins standalone if you want.
 
@@ -359,12 +359,12 @@ Here's a UML diagram of mixin hierarchy:
 There're a lot of extensions for SQLAlchemy, but most of them are not so universal.
  
 ## Active record  
-We found 2 implementations of this pattern.
+We found several implementations of this pattern.
 
 **[ActiveAlchemy](https://github.com/mardix/active-alchemy/)** 
  
 Cool, but it forces you to use [their own way](https://github.com/mardix/active-alchemy/#create-the-model) to instantiate SQLAlchemy 
-while to use `sqlalchemy_mixins.ActiveRecordMixin` you should just make you model to inherit it.
+while to use [`sqlalchemy_mixins.ActiveRecordMixin`](sqlalchemy_mixins/activerecord.py) you should just make you model to inherit it.
  
 **[Flask-ActiveRecord](https://github.com/kofrasa/flask-activerecord)** 
 
