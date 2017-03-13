@@ -1,4 +1,6 @@
 language: python
+env:
+  - CODECLIMATE_REPO_TOKEN=f6808f9c04115688af0d713bc818815baa08e9f290308d20c663eebe0f2a583c
 python:
   - "2.7"
   - "3.3"
