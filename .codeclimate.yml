@@ -16,9 +16,9 @@ engines:
     enabled: true
   radon:
     enabled: true
-      checks:
-        Complexity:
-          enabled: false
+    checks:
+      Complexity:
+        enabled: false
 ratings:
   paths:
   - "**.inc"
