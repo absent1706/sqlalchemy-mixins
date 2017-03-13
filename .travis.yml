@@ -10,4 +10,5 @@ install: "pip install -r requirements-dev.txt"
 # command to run tests
 script: nosetests --with-coverage --cover-erase --cover-package=sqlalchemy_mixins
 after_sucess:
-  - export CODECLIMATE_REPO_TOKEN=f6808f9c04115688af0d713bc818815baa08e9f290308d20c663eebe0f2a583c && codeclimate-test-reporter --file .coverage
+  - CODECLIMATE_REPO_TOKEN=f6808f9c04115688af0d713bc818815baa08e9f290308d20c663eebe0f2a583c
+  - codeclimate-test-reporter
