@@ -1,3 +1,4 @@
 -r requirements.txt
+nose
 coverage
 codeclimate-test-reporter

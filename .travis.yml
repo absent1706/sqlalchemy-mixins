@@ -10,6 +10,6 @@ python:
 # command to install dependencies
 install: "pip install -r requirements-dev.txt"
 # command to run tests
-script: coverage run test.py
+script: nosetests --with-coverage --cover-erase --cover-package=sqlalchemy_mixins
 after_success:
   - codeclimate-test-reporter
