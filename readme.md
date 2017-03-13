@@ -68,7 +68,7 @@ print Post.with_(['user']).first()
 print Post.sort('-rating', 'user___name').all()
 ```
 
-See full, ready-to-run code at !!!!!!!!!!!!!
+See full code [here](examples/all_features.py)
 
 
 # Features
