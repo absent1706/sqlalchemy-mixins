@@ -1,10 +1,11 @@
 [![Build Status](https://travis-ci.org/absent1706/sqlalchemy-mixins.svg?branch=master)](https://travis-ci.org/absent1706/sqlalchemy-mixins)
 [![Test Coverage](https://codeclimate.com/github/absent1706/sqlalchemy-mixins/badges/coverage.svg)](https://codeclimate.com/github/absent1706/sqlalchemy-mixins/coverage)
+[![Code Climate](https://codeclimate.com/github/absent1706/sqlalchemy-mixins/badges/gpa.svg)](https://codeclimate.com/github/absent1706/sqlalchemy-mixins)
 
 # SQLAlchemy mixins
 A pack of framework-agnostic, easy-to-integrate and well tested mixins for SQLAlchemy ORM.
 
-Heavily inspired by [Django ORM](https://docs.djangoproject.com/en/1.10/topics/db/queries/) 
+Heavily inspired by [Django ORM](https://docs.djangoproject.com/en/1.10/topics/db/queries/)
 and [Eloquent ORM](https://laravel.com/docs/5.4/eloquent)
 
 Why it's cool:
@@ -12,13 +13,13 @@ Why it's cool:
  * easy integration:
    ```python
     from sqlalchemy_mixins import ActiveRecordMixin
- 
+
     class User(Base, ActiveRecordMixin):
          pass
     ```
  * clean code, splitted by modules
- * follows best practices of 
-    [Django ORM](https://docs.djangoproject.com/en/1.10/topics/db/queries/), 
+ * follows best practices of
+    [Django ORM](https://docs.djangoproject.com/en/1.10/topics/db/queries/),
     [Peewee](http://docs.peewee-orm.com/)
     and [Eloquent ORM](https://laravel.com/docs/5.4/eloquent#retrieving-single-models),
  * 95%+ test coverage
@@ -64,7 +65,7 @@ post2 = Post.create(body='long-long-long-long-long body', rating=2,
 
 # filter using operators ('in', 'like') and relations ('user')
 # will output this beauty: <Post #1 body:'Post1' user:'Bill'>
-print(Post.where(rating__in=[2, 3, 4], user___name__like='%Bi%').all()) 
+print(Post.where(rating__in=[2, 3, 4], user___name__like='%Bi%').all())
 # eager load user with post
 print(Post.with_(['user']).first())
 # sort by rating DESC, user name ASC
@@ -77,23 +78,23 @@ See [full example](sqlalchemy_mixins/examples/all_features.py)
 
 # Features
 
-Main features are [Active Record](#active-record), [Eager Load](#eager-load), [Django-like queries](#django-like-queries) 
+Main features are [Active Record](#active-record), [Eager Load](#eager-load), [Django-like queries](#django-like-queries)
 and [Beauty \_\_repr\_\_](#beauty-__repr__).
 
 ## Active Record
-provided by [`sqlalchemy_mixins.ActiveRecordMixin`](sqlalchemy_mixins/activerecord.py) 
+provided by [`sqlalchemy_mixins.ActiveRecordMixin`](sqlalchemy_mixins/activerecord.py)
 
 SQLAlchemy's [Data Mapper](https://en.wikipedia.org/wiki/Data_mapper_pattern)
-pattern is cool, but 
-[Active Record](https://en.wikipedia.org/wiki/Active_record_pattern) 
+pattern is cool, but
+[Active Record](https://en.wikipedia.org/wiki/Active_record_pattern)
 pattern is easiest and more [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
 
 Well, we implemented it on top of Data Mapper!
 All we need is to just inject [session](http://docs.sqlalchemy.org/en/latest/orm/session.html) into ORM class while bootstrapping our app:
-  
+
 ```python
 BaseModel.set_session(session)
-# now we have access to BaseOrmModel.session property 
+# now we have access to BaseOrmModel.session property
 ```
 
 ### CRUD
@@ -136,10 +137,10 @@ User.find_or_fail(123987) # will raise sqlalchemy_mixins.ModelNotFoundError
 See [full example](sqlalchemy_mixins/examples/activerecord.py) and [tests](sqlalchemy_mixins/tests/test_activerecord.py)
 
 ### Querying
-As in [Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.1/quickstart/#a-minimal-application), 
+As in [Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.1/quickstart/#a-minimal-application),
 [Peewee](http://docs.peewee-orm.com/en/latest/peewee/api.html#Model.select)
 and [Django ORM](https://docs.djangoproject.com/en/1.10/topics/db/queries/#retrieving-objects),
-you can quickly query some class 
+you can quickly query some class
 ```python
 User.query # instead of session.query(User)
 ```
@@ -158,15 +159,15 @@ provided by [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eagerload.py)
 
 ### Nested eager load
 If you use SQLAlchemy's [eager loading](http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#eager-loading),
-you may find it not very convenient, especially when we want, say, 
+you may find it not very convenient, especially when we want, say,
 load user, all his posts and comments to every his post in the same query.
 
 Well, now you can easily set what ORM relations you want to eager load
 ```python
 User.with_({
-    User.posts: {  
+    User.posts: {
         Post.comments: {
-            Comment.user: None  
+            Comment.user: None
         }
     }
 }.all()
@@ -175,9 +176,9 @@ User.with_({
 or we can write strings instead of class properties:
 ```python
 User.with_({
-    'posts': {  
+    'posts': {
         'comments': {
-            'user': None  
+            'user': None
         }
     }
 }.all()
@@ -185,7 +186,7 @@ User.with_({
 
 ### Subquery load
 Sometimes we want to load relations in separate query, i.e. do [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html).
-For example, we load posts on page like [this](http://www.qopy.me/3V4Tsu_GTpCMJySzvVH1QQ), 
+For example, we load posts on page like [this](http://www.qopy.me/3V4Tsu_GTpCMJySzvVH1QQ),
 and for each post we want to have user and all comments (to display their count).
 
 To speed up query, we load posts in separate query, but, in this separate query, join user
@@ -199,7 +200,7 @@ Post.with_({
 ```
 
 Here, posts will be loaded on first query, and comments with users - in second one.
-See [SQLAlchemy docs](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html) 
+See [SQLAlchemy docs](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html)
 for explaining relationship loading techniques.
 
 > Default loading method is [joinedload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html?highlight=joinedload#sqlalchemy.orm.joinedload)
@@ -208,7 +209,7 @@ for explaining relationship loading techniques.
 > Explicitly use `SUBQUERYLOAD` if you want it.
 
 ### Quick joined load
-For simple cases, when you want to just [joinedload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html?highlight=joinedload#sqlalchemy.orm.joinedload) 
+For simple cases, when you want to just [joinedload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html?highlight=joinedload#sqlalchemy.orm.joinedload)
 a few relations, we have easier syntax for you:
 
 ```python
@@ -222,18 +223,18 @@ See [full example](sqlalchemy_mixins/examples/eagerload.py) and [tests](sqlalche
 provided by [`sqlalchemy_mixins.SmartQueryMixin`](smartquery.py)
 
 ### Django-like queries
-We implement Django-like 
+We implement Django-like
 [field lookups](https://docs.djangoproject.com/en/1.10/topics/db/queries/#field-lookups)
-and 
+and
 [automatic relation joins](https://docs.djangoproject.com/en/1.10/topics/db/queries/#lookups-that-span-relationships).
 
 It means you can **filter and sort dynamically by attributes defined in strings!**
 
-So, having defined `Post` model with `Post.user` relationship to `User` model, 
+So, having defined `Post` model with `Post.user` relationship to `User` model,
 you can write
 ```python
 Post.where(rating__gt=2, user___name__like='%Bi%').all() # post rating > 2 and post user name like ...
-Post.sort('-rating', 'user___name').all() # sort by rating DESC, user name ASC 
+Post.sort('-rating', 'user___name').all() # sort by rating DESC, user name ASC
 ```
 (`___` splits relation and attribute, `__` splits attribute and operator)
 
@@ -249,23 +250,23 @@ Post.sort('-rating', 'user___name').all() # sort by rating DESC, user name ASC
 >     user = sa.orm.relationship('User', backref='posts')
 > ```
 > and skip defining `Post.user` relationship. You must define it anyway:
-> 
+>
 > ```python
 > class Post(BaseModel):
 >     # ...
 >     user = sa.orm.relationship('User') # define it anyway
 > ```
 
-For DRY-ifying your code and incapsulating business logic, you can use 
+For DRY-ifying your code and incapsulating business logic, you can use
 SQLAlchemy's [hybrid attributes](http://docs.sqlalchemy.org/en/latest/orm/extensions/hybrid.html)
 and [hybrid_methods](http://docs.sqlalchemy.org/en/latest/orm/extensions/hybrid.html?highlight=hybrid_method#sqlalchemy.ext.hybrid.hybrid_method).
-Using them in our filtering/sorting is straightforward (see examples and tests).   
+Using them in our filtering/sorting is straightforward (see examples and tests).
 
 <img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
 See [full example](sqlalchemy_mixins/examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ### Automatic eager load relations
-Well, as [`sqlalchemy_mixins.SmartQueryMixin`](sqlalchemy_mixins/smartquery.py) does auto-joins for filtering/sorting, 
+Well, as [`sqlalchemy_mixins.SmartQueryMixin`](sqlalchemy_mixins/smartquery.py) does auto-joins for filtering/sorting,
 there's a sense to tell sqlalchemy that we already joined that relation.
 
 So that relations are automatically set to be joinedload if they were used for filtering/sorting.
@@ -291,9 +292,9 @@ See [full example](sqlalchemy_mixins/examples/smartquery.py) and [tests](sqlalch
 provided by [`sqlalchemy_mixins.SmartQueryMixin`](sqlalchemy_mixins/smartquery.py)
 
 In real world, we want to filter, sort and also eager load some relations at once.
-Well, if we use the same, say, `User.posts` relation in filtering and sorting, 
+Well, if we use the same, say, `User.posts` relation in filtering and sorting,
 it **should not be joined twice**.
- 
+
 That's why we combined filter, sort and eager load in one smartest method:
 ```python
 Comment.smart_query(
@@ -315,7 +316,7 @@ See [full example](sqlalchemy_mixins/examples/smartquery.py) and [tests](sqlalch
 ## Beauty \_\_repr\_\_
 provided by [`sqlalchemy_mixins.ReprMixin`](sqalchemy_mixins/repr.py)
 
-As developers, we need to debug things with convenient. 
+As developers, we need to debug things with convenient.
 When we play in REPL, we can see this
 
 ```
@@ -336,13 +337,13 @@ Even more, in `Post` model, we can define what else (except id) we want to see:
 class Post(BaseModel):
     __repr_attrs__ = ['user', 'body'] # body is just column, user is relationship
     # ...
-    
+
 ```
 
 Now we have
 ```
 >>> session.query(Post).all()
-[<Post #11 user:<User #1 'Bill'> body:'post 11'>, 
+[<Post #11 user:<User #1 'Bill'> body:'post 11'>,
  <Post #12 user:<User #2 'Bob'> body:'post 12'>]
 
 ```
@@ -360,22 +361,22 @@ Here's a UML diagram of mixin hierarchy:
 
 # Comparison with existing solutions
 There're a lot of extensions for SQLAlchemy, but most of them are not so universal.
- 
-## Active record  
+
+## Active record
 We found several implementations of this pattern.
 
-**[ActiveAlchemy](https://github.com/mardix/active-alchemy/)** 
- 
-Cool, but it forces you to use [their own way](https://github.com/mardix/active-alchemy/#create-the-model) to instantiate SQLAlchemy 
+**[ActiveAlchemy](https://github.com/mardix/active-alchemy/)**
+
+Cool, but it forces you to use [their own way](https://github.com/mardix/active-alchemy/#create-the-model) to instantiate SQLAlchemy
 while to use [`sqlalchemy_mixins.ActiveRecordMixin`](sqlalchemy_mixins/activerecord.py) you should just make you model to inherit it.
- 
-**[Flask-ActiveRecord](https://github.com/kofrasa/flask-activerecord)** 
+
+**[Flask-ActiveRecord](https://github.com/kofrasa/flask-activerecord)**
 
 Cool, but tightly coupled with Flask.
 
 **[sqlalchemy-activerecord](https://github.com/deespater/sqlalchemy-activerecord)**
 
-Framework-agnostic, but lacks of functionality (only `save` method is provided) and Readme.  
+Framework-agnostic, but lacks of functionality (only `save` method is provided) and Readme.
 
 ## Django-like queries
 There exists [sqlalchemy-django-query](https://github.com/mitsuhiko/sqlalchemy-django-query)
@@ -385,7 +386,7 @@ But:
  * it doesn't [automatic eager load relations](#automatic-eager-load-relations)
  * it doesn't work with [hybrid attributes](http://docs.sqlalchemy.org/en/latest/orm/extensions/hybrid.html)
    and [hybrid_methods](http://docs.sqlalchemy.org/en/latest/orm/extensions/hybrid.html?highlight=hybrid_method#sqlalchemy.ext.hybrid.hybrid_method)
-   
+
 ### Beauty \_\_repr\_\_
 [sqlalchemy-repr](https://github.com/manicmaniac/sqlalchemy-repr) already does this,
-but there you can't choose which columns to output. It simply prints all columns, which can lead to too big output.   
+but there you can't choose which columns to output. It simply prints all columns, which can lead to too big output.
