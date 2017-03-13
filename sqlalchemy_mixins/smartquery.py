@@ -43,7 +43,7 @@ def _parse_path_and_make_aliases(entity, entity_path, attrs, aliases):
             else:
                 relations[relation_name] = [nested_attr]
 
-    for relation_name, nested_attrs in relations.iteritems():
+    for relation_name, nested_attrs in relations.items():
         path = entity_path + RELATION_SPLITTER + relation_name \
                if entity_path else relation_name
         if relation_name not in entity.relations:
@@ -151,7 +151,7 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
 
         expressions = []
         valid_attributes = cls.filterable_attributes
-        for attr, value in filters.iteritems():
+        for attr, value in filters.items():
             # if attribute is filtered by method, call this method
             if attr in cls.hybrid_methods:
                 method = getattr(cls, attr)

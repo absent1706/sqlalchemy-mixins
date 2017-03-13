@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -48,10 +50,10 @@ session.add(post2)
 session.flush()
 
 # <User #1 'Bob'>
-print bob
+print(bob)
 
 # <Post #1 body: 'Post 1' user: <User #1 ...>
-print post1
+print(post1)
 
 # <Post #2 body: 'Post 2 long...' user: <User #1 ...>
-print post2
+print(post2)

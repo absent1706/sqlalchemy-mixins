@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 
 import sqlalchemy as sa
@@ -10,7 +11,7 @@ from sqlalchemy_mixins.eagerload import SUBQUERYLOAD, eager_expr
 
 
 def log(msg):
-    print '\n{}\n'.format(msg)
+    print('\n{}\n'.format(msg))
 
 #################### setup ######################
 Base = declarative_base()

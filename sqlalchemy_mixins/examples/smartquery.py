@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 
 import datetime
@@ -12,7 +13,7 @@ from sqlalchemy_mixins import SmartQueryMixin, ReprMixin
 
 
 def log(msg):
-    print '\n{}\n'.format(msg)
+    print('\n{}\n'.format(msg))
 
 
 #################### setup ######################

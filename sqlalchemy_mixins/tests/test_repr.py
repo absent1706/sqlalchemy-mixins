@@ -1,3 +1,4 @@
+from __future__ import print_function
 import unittest
 
 import sqlalchemy as sa
@@ -94,25 +95,25 @@ class TestEagerLoad(unittest.TestCase):
 
         # tests. see output in console
 
-        print repr(u1)
+        print(repr(u1))
         self.assertIn('Bill', repr(u1))
         self.assertIn('#1', repr(u1))
 
-        print repr(u2)
+        print(repr(u2))
         self.assertIn('Alex', repr(u2))
         self.assertIn('#2', repr(u2))
 
-        print repr(p11)
+        print(repr(p11))
         self.assertIn('very', repr(p11))
         self.assertIn('...', repr(p11))
 
-        print repr(cm11)
+        print(repr(cm11))
         self.assertIn('c11', repr(cm11))
         self.assertIn('Bill', repr(cm11))
 
         Comment.__repr_attrs__ = ['INCORRECT ATTR']
         with self.assertRaises(KeyError):
-            print repr(cm11)
+            print(repr(cm11))
 
 
 if __name__ == '__main__':

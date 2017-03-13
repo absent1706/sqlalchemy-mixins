@@ -2,6 +2,7 @@
 Demonstrates how to use AllFeaturesMixin.
 It just combines other mixins, so look to their examples for details
 """
+from __future__ import print_function
 import sqlalchemy as sa
 from sqlalchemy_mixins import AllFeaturesMixin
 
@@ -47,8 +48,8 @@ post2 = Post.create(body='long-long-long-long-long body', rating=2,
                     user=User.create(name='Bill'))
 
 # filter using operators like 'in' and 'contains' and relations like 'user'
-print Post.where(rating__in=[2, 3, 4], user___name__like='%Bi%').all()
+print(Post.where(rating__in=[2, 3, 4], user___name__like='%Bi%').all())
 # eager load user with post
-print Post.with_(['user']).first()
+print(Post.with_(['user']).first())
 # sort by rating DESC, user name ASC
-print Post.sort('-rating', 'user___name').all()
+print(Post.sort('-rating', 'user___name').all())

@@ -61,11 +61,11 @@ post2 = Post.create(body='long-long-long-long-long body', rating=2,
 
 # filter using operators ('in', 'like') and relations ('user')
 # will output this beauty: <Post #1 body:'Post1' user:'Bill'>
-print Post.where(rating__in=[2, 3, 4], user___name__like='%Bi%').all() 
+print(Post.where(rating__in=[2, 3, 4], user___name__like='%Bi%').all()) 
 # eager load user with post
-print Post.with_(['user']).first()
+print(Post.with_(['user']).first())
 # sort by rating DESC, user name ASC
-print Post.sort('-rating', 'user___name').all()
+print(Post.sort('-rating', 'user___name').all())
 ```
 
 <img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 
 import sqlalchemy as sa
@@ -10,7 +11,7 @@ from sqlalchemy_mixins import ActiveRecordMixin, ReprMixin, ModelNotFoundError
 
 
 def log(msg):
-    print '\n{}\n'.format(msg)
+    print('\n{}\n'.format(msg))
 
 #################### setup ######################
 Base = declarative_base()
@@ -66,7 +67,7 @@ BaseModel.set_session(session)
 # ['id', 'body', 'user_id', 'archived', # normal columns
 #  'user', 'comments',  # relations
 #  'public']  # hybrid attributes
-print Post.settable_attributes
+print(Post.settable_attributes)
 
 #### 1. ActiveRecordMixin.fill() and ActiveRecordMixin.save() ####
 user1 = User()
@@ -140,6 +141,6 @@ log('user with id=3: ' + str(User.find(3)))
 # but one() method throws common error without describing which ID was not
 #  found, which is inconvenient: http://www.qopy.me/c5Csw1vWTCuOMKuP07J7iA
 try:
-    print User.find_or_fail(123987)
+    print(User.find_or_fail(123987))
 except ModelNotFoundError as e:
     log('!! find_or_fail: model not found !! \n' + str(e))
