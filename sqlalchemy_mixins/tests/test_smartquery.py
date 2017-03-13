@@ -337,7 +337,7 @@ class TestFilterExpr(BaseTest):
         test(dict(rating__between=(2, 3)), {cm12, cm22})  # set
 
         # likes
-        test(dict(body__like=u'cm12 to p12'), {cm12})
+        test(dict(body__like='cm12 to p12'), {cm12})
         test(dict(body__like='%cm12%'), {cm12})
         test(dict(body__ilike='%CM12%'), {cm12})
         test(dict(body__startswith='cm1'), {cm11, cm12})
