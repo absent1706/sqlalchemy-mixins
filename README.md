@@ -75,7 +75,7 @@ print(Post.with_(['user']).first())
 print(Post.sort('-rating', 'user___name').all())
 ```
 
-<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
+![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/all_features.py)
 
 
@@ -136,7 +136,7 @@ and fail if such id doesn't exist
 User.find_or_fail(123987) # will raise sqlalchemy_mixins.ModelNotFoundError
 ```
 
-<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
+![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/activerecord.py) and [tests](sqlalchemy_mixins/tests/test_activerecord.py)
 
 ### Querying
@@ -154,7 +154,7 @@ User.first() # instead of session.query(User).first()
 User.all() # instead of session.query(User).all()
 ```
 
-<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
+![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/activerecord.py) and [tests](sqlalchemy_mixins/tests/test_activerecord.py)
 
 ## Eager load
@@ -219,7 +219,7 @@ a few relations, we have easier syntax for you:
 Comment.with_(['user', 'post']).first()
 ```
 
-<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
+![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/eagerload.py) and [tests](sqlalchemy_mixins/tests/test_eagerload.py)
 
 ## Filter and sort by relations
@@ -265,7 +265,7 @@ SQLAlchemy's [hybrid attributes](http://docs.sqlalchemy.org/en/latest/orm/extens
 and [hybrid_methods](http://docs.sqlalchemy.org/en/latest/orm/extensions/hybrid.html?highlight=hybrid_method#sqlalchemy.ext.hybrid.hybrid_method).
 Using them in our filtering/sorting is straightforward (see examples and tests).
 
-<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
+![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ### Automatic eager load relations
@@ -287,7 +287,7 @@ comments[0].post.user
 
 Cool, isn't it? =)
 
-<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
+![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ### All-in-one: smart_query
@@ -313,7 +313,7 @@ Comment.smart_query(
     }).all()
 ```
 
-<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
+![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ## Beauty \_\_repr\_\_
@@ -351,7 +351,7 @@ Now we have
 
 ```
 
-<img alt="source" src="https://cdn4.iconfinder.com/data/icons/web-pages-seo/512/18-256.png" height=20/>
+![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/repr.py) and [tests](sqlalchemy_mixins/tests/test_repr.py)
 
 # Internal architecture notes
