@@ -1,0 +1,44 @@
+from setuptools import setup
+
+# python setup.py sdist upload -r pypi
+# see http://peterdowns.com/posts/first-time-with-pypi.html
+
+setup(name='sqlalchemy_mixins',
+      version='0.1.3',
+      description='Active Record, Django-like queries, nested eager load '
+                  'and beauty __repr__ for SQLAlchemy',
+      url='https://github.com/absent1706/sqlalchemy-mixins',
+      download_url = 'https://github.com/absent1706/sqlalchemy-mixins/archive/master.tar.gz',
+      author='Alexander Litvinenko',
+      author_email='litvinenko1706@gmail.com',
+      license='MIT',
+      packages=['sqlalchemy_mixins'],
+      zip_safe=False,
+      include_package_data=True,
+      install_requires=[
+          "SQLAlchemy >= 1.0",
+          "six",
+          "typing; python_version >= '2.7'"
+      ],
+      keywords=['sqlalchemy', 'active record', 'activerecord', 'orm',
+                'django-like', 'django', 'eager load', 'eagerload',  'repr',
+                '__repr__', 'mysql', 'postgresql', 'pymysql', 'sqlite'],
+      platforms='any',
+      classifiers=[
+          'Development Status :: 4 - Beta',
+          'Environment :: Web Environment',
+          'Intended Audience :: Developers',
+          'License :: OSI Approved :: MIT License',
+          'Programming Language :: Python :: 2',
+          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3.3',
+          'Programming Language :: Python :: 3.4',
+          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: Implementation :: CPython',
+          'Topic :: Database',
+      ],
+      test_suite='nose.collector',
+      tests_require=['nose', 'nose-cover'],
+  )
