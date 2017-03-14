@@ -4,9 +4,11 @@ It just combines other mixins, so look to their examples for details
 """
 from __future__ import print_function
 import sqlalchemy as sa
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_mixins import AllFeaturesMixin
 
-Base = sa.ext.declarative.declarative_base()
+Base = declarative_base()
 
 
 class BaseModel(Base, AllFeaturesMixin):
@@ -37,7 +39,7 @@ class Post(BaseModel):
 
 
 engine = sa.create_engine('sqlite:///:memory:')
-session = sa.orm.scoped_session(sa.orm.sessionmaker(bind=engine))
+session = scoped_session(sessionmaker(bind=engine))
 
 Base.metadata.create_all(engine)
 BaseModel.set_session(session)
