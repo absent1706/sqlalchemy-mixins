@@ -4,7 +4,7 @@ from setuptools import setup
 # see http://peterdowns.com/posts/first-time-with-pypi.html
 
 setup(name='sqlalchemy_mixins',
-      version='0.1.3',
+      version='0.1.4',
       description='Active Record, Django-like queries, nested eager load '
                   'and beauty __repr__ for SQLAlchemy',
       url='https://github.com/absent1706/sqlalchemy-mixins',
