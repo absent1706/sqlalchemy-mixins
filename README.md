@@ -46,7 +46,10 @@ Why it's cool:
 
 ## Installation
 
-**Wait for a few days, I will make it available from pip**
+Use pip
+```
+pip install sqlalchemy_mixins
+```
 
 Run tests
 ```
