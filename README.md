@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/absent1706/sqlalchemy-mixins.svg?branch=master)](https://travis-ci.org/absent1706/sqlalchemy-mixins)
 [![Test Coverage](https://codeclimate.com/github/absent1706/sqlalchemy-mixins/badges/coverage.svg)](https://codeclimate.com/github/absent1706/sqlalchemy-mixins/coverage)
 [![Code Health](https://landscape.io/github/absent1706/sqlalchemy-mixins/master/landscape.svg?style=flat)](https://landscape.io/github/absent1706/sqlalchemy-mixins/master)
-[![Code Climate](https://codeclimate.com/github/absent1706/sqlalchemy-mixins/badges/gpa.svg)](https://codeclimate.com/github/absent1706/sqlalchemy-mixins)
+[![PyPI version](https://badge.fury.io/py/sqlalchemy_mixins.svg)](https://badge.fury.io/py/sqlalchemy_mixins)
 
 # SQLAlchemy mixins
 A pack of framework-agnostic, easy-to-integrate and well tested mixins for SQLAlchemy ORM.
