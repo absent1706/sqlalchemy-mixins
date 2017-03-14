@@ -52,6 +52,7 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
     @classmethod
     def destroy(cls, *ids):
         """Delete the records with the given ids
+        :type ids: list
         :param ids: primary key ids of records
         """
         for pk in ids:

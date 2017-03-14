@@ -1,3 +1,8 @@
+try:
+    from typing import List
+except ImportError: # pragma: no cover
+    pass
+
 from collections import OrderedDict
 
 from sqlalchemy import asc, desc, inspect
@@ -223,7 +228,7 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
          only one. That's why all stuff is combined in single method
         
         :param filters: dict 
-        :param sort_attrs: dict
+        :param sort_attrs: List[basestring]
         :param schema: dict
         """
         if not filters:

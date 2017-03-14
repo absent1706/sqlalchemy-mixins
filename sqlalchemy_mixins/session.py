@@ -1,3 +1,4 @@
+from sqlalchemy.orm import Session, scoped_session, Query
 from .utils import classproperty
 
 
@@ -9,12 +10,17 @@ class SessionMixin:
     _session = None
 
     @classmethod
-    def set_session(cls, _session):
-        cls._session = _session
+    def set_session(cls, session):
+        """
+        :type session: scoped_session | Session
+        """
+        cls._session = session
 
     @classproperty
     def session(cls):
-        # raise error if no db found
+        """
+        :rtype: scoped_session | Session
+        """
         if cls._session is not None:
             return cls._session
         else:
@@ -23,4 +29,7 @@ class SessionMixin:
 
     @classproperty
     def query(cls):
+        """
+        :rtype: Query
+        """
         return cls.session.query(cls)
