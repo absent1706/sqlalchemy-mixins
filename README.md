@@ -223,7 +223,7 @@ Comment.with_(['user', 'post']).first()
 See [full example](examples/eagerload.py) and [tests](sqlalchemy_mixins/tests/test_eagerload.py)
 
 ## Filter and sort by relations
-provided by [`sqlalchemy_mixins.SmartQueryMixin`](smartquery.py)
+provided by [`sqlalchemy_mixins.SmartQueryMixin`](sqlalchemy_mixins/smartquery.py)
 
 ### Django-like queries
 We implement Django-like
