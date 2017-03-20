@@ -1,7 +1,18 @@
 from setuptools import setup
 
-# python setup.py sdist upload -r pypi
-# see http://peterdowns.com/posts/first-time-with-pypi.html
+"""
+1. set "HOME=E:/code/sqlalchemy-mixins"
+2. python setup.py sdist upload -r testpypi
+   or
+   python setup.py sdist upload -r pypi
+
+see http://peterdowns.com/posts/first-time-with-pypi.html
+"""
+
+def requirements():
+    import os
+    filename = os.path.join(os.path.dirname(__file__), 'requirements.txt')
+    return [line.rstrip('\n') for line in open(filename).readlines()]
 
 setup(name='sqlalchemy_mixins',
       version='0.1.7',
