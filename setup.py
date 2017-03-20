@@ -4,7 +4,7 @@ from setuptools import setup
 # see http://peterdowns.com/posts/first-time-with-pypi.html
 
 setup(name='sqlalchemy_mixins',
-      version='0.1.6',
+      version='0.1.7',
       description='Active Record, Django-like queries, nested eager load '
                   'and beauty __repr__ for SQLAlchemy',
       url='https://github.com/absent1706/sqlalchemy-mixins',
@@ -18,7 +18,7 @@ setup(name='sqlalchemy_mixins',
       install_requires=[
           "SQLAlchemy >= 1.0",
           "six",
-          "typing; python_version >= '2.7'"
+          "typing"
       ],
       keywords=['sqlalchemy', 'active record', 'activerecord', 'orm',
                 'django-like', 'django', 'eager load', 'eagerload',  'repr',
