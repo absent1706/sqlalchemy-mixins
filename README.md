@@ -337,6 +337,11 @@ Well, using our mixin, we can have more readable output with post IDs:
 Even more, in `Post` model, we can define what else (except id) we want to see:
 
 ```python
+class User(BaseModel):
+    __repr_attrs__ = ['name']
+    # ...
+
+
 class Post(BaseModel):
     __repr_attrs__ = ['user', 'body'] # body is just column, user is relationship
     # ...
