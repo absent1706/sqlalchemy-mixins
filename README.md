@@ -404,7 +404,12 @@ but there you can't choose which columns to output. It simply prints all columns
 
 More clear methods in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eagerload.py):
 
-* *added* `with_subquery` method: it's like `with_joined`, but for [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload)     
-* `with_joined` method *arguments change*: now you should simply write `Comment.with_joined('user','post')` instead of `Comment.with_joined(['user','post'])`   
-* `with_` method *arguments change*: it now accepts *only dict schemas*. If you want to quickly joinedload relations, use `with_joined`   
-* `with_dict` method *removed*. Instead, use `with_` method   
+ * *added* `with_subquery` method: it's like `with_joined`, but for [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload).
+   So you can now write:
+   ```python
+   Comment.with_joined('user', 'post').first()
+   User.with_subquery('posts', 'comments').all()
+   ```  
+ * `with_joined` method *arguments change*: now you should simply write `Comment.with_joined('user','post')` instead of `Comment.with_joined(['user','post'])`   
+ * `with_` method *arguments change*: it now accepts *only dict schemas*. If you want to quickly joinedload relations, use `with_joined`   
+ * `with_dict` method *removed*. Instead, use `with_` method   
