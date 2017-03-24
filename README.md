@@ -43,6 +43,7 @@ Why it's cool:
     1. [Beauty \_\_repr\_\_](#beauty-__repr__)
 1. [Internal architecture notes](#internal-architecture-notes)
 1. [Comparison with existing solutions](#comparison-with-existing-solutions)
+1. [Changelog](#changelog)
 
 ## Installation
 
@@ -70,7 +71,7 @@ post2 = Post.create(body='long-long-long-long-long body', rating=2,
 # will output this beauty: <Post #1 body:'Post1' user:'Bill'>
 print(Post.where(rating__in=[2, 3, 4], user___name__like='%Bi%').all())
 # eager load user with post
-print(Post.with_(['user']).first())
+print(Post.with_joined('user').first())
 # sort by rating DESC, user name ASC
 print(Post.sort('-rating', 'user___name').all())
 ```
@@ -188,7 +189,7 @@ User.with_({
 ```
 
 ### Subquery load
-Sometimes we want to load relations in separate query, i.e. do [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html).
+Sometimes we want to load relations in separate query, i.e. do [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload).
 For example, we load posts on page like [this](http://www.qopy.me/3V4Tsu_GTpCMJySzvVH1QQ),
 and for each post we want to have user and all comments (to display their count).
 
@@ -206,17 +207,20 @@ Here, posts will be loaded on first query, and comments with users - in second o
 See [SQLAlchemy docs](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html)
 for explaining relationship loading techniques.
 
-> Default loading method is [joinedload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html?highlight=joinedload#sqlalchemy.orm.joinedload)
+> Default loading method is [joinedload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.joinedload)
 > (`None` in schema)
 >
 > Explicitly use `SUBQUERYLOAD` if you want it.
 
 ### Quick joined load
-For simple cases, when you want to just [joinedload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html?highlight=joinedload#sqlalchemy.orm.joinedload)
+For simple cases, when you want to just 
+[joinedload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.joinedload)
+or [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload) 
 a few relations, we have easier syntax for you:
 
 ```python
-Comment.with_(['user', 'post']).first()
+Comment.with_joined('user', 'post').first()
+User.with_subquery('posts', 'comments').all()
 ```
 
 ![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
@@ -393,3 +397,13 @@ But:
 ### Beauty \_\_repr\_\_
 [sqlalchemy-repr](https://github.com/manicmaniac/sqlalchemy-repr) already does this,
 but there you can't choose which columns to output. It simply prints all columns, which can lead to too big output.
+
+# Changelog
+
+## v0.2
+
+More clear methods in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eagerload.py):
+    * **added** `with_subquery` method: it's like `with_joined`, but for [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload)     
+    * `with_joined` method **arguments change**: now you should simply write `Comment.with_joined('user','post')` instead of `Comment.with_joined(['user','post'])`   
+    * `with_` method **arguments change**: it now accepts *only dict schemas*. If you want to quickly joinedload relations, use `with_joined`   
+    * `with_dict` method **removed**. Instead, use `with_` method   

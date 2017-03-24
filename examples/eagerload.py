@@ -30,6 +30,7 @@ class User(BaseModel):
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String)
     posts = sa.orm.relationship('Post')
+    comments = sa.orm.relationship('Comment')
 
 
 class Post(BaseModel):
@@ -123,14 +124,15 @@ session.commit()
 
 #################### Demo ######################
 
-#### 0. simple flat joinedload ####
-# in simplest cases, you may want to just join some relations.
+#### 0. simple flat joinedload/subqueryload ####
+# in simplest cases, you may want to just eager load a few relations.
 # for such cases, EagerLoadMixin has simple syntax
 
-# 'user' and 'post' are relationship names from Comment class
-schema = ['user', 'post']
-# same schema using class properties
-# schema = [Comment.user, Comment.post]
+#### 0.1 joinedload ####
+reset_session()
+comment = Comment.with_joined('user', 'post').first()
+# same using class properties:
+# comment = Comment.with_joined(Comment.user, Comment.post).first()
 
 # SQL will be like
 # note that we select user as parent entity and as post.comments.user
@@ -142,13 +144,34 @@ LEFT OUTER JOIN user AS user_1 ON user_1.id = comment.user_id
 LEFT OUTER JOIN post AS post_1 ON post_1.id = comment.post_id
 LIMIT 1 OFFSET 1
 """
-
-reset_session()
-comment = Comment.with_(schema).first()
-
 # now, to get relationships, NO additional query is needed
 post = comment.post
 user = comment.user
+
+#### 0.2 subqueryload ####
+reset_session()
+users = User.with_subquery('posts', 'comments').all()
+# same using class properties:
+# users = User.with_subquery(User.posts, User.comments).all()
+
+# there will be 3 queries:
+## first. on users:
+"""
+SELECT user.* FROM user
+"""
+# second. on posts:
+"""
+SELECT post.* FROM (SELECT user.id AS user_id FROM user) AS anon_1
+JOIN post ON anon_1.user_id = post.user_id
+"""
+# third. on comments
+"""
+SELECT comment.* FROM (SELECT user.id AS user_id FROM user) AS anon_1
+JOIN comment ON anon_1.user_id = comment.user_id
+"""
+# now, to get relationships, NO additional query is needed
+posts = users[0].posts
+comments = users[0].comments
 
 #### 1. nested joinedload ####
 # for nested eagerload, you should use dict instead of lists|
@@ -171,6 +194,9 @@ schema = {
 #         }
 #     }
 # }
+session = reset_session()
+###### 1.1 query-level: more flexible
+user = session.query(User).options(*eager_expr(schema)).get(1)
 
 # SQL will be like
 # note that we select user as parent entity and as post.comments.user
@@ -183,9 +209,6 @@ LEFT OUTER JOIN comment AS comment_1 ON post_1.id = comment_1.post_id
 LEFT OUTER JOIN user AS user_1 ON user_1.id = comment_1.user_id
 WHERE user.id = 1
 """
-session = reset_session()
-###### 1.1 query-level: more flexible
-user = session.query(User).options(*eager_expr(schema)).get(1)
 
 reset_session()
 ###### 1.2 ORM-level: more convenient

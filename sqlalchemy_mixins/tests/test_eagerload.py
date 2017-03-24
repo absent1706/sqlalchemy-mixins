@@ -223,11 +223,11 @@ class TestEagerExpr(TestEagerLoad):
             sess.query(User).options(*eager_expr(schema)).get(1)
 
 
-class TestOrmWithList(TestEagerLoad):
+class TestOrmWithJoined(TestEagerLoad):
     def _test(self, list_schema):
         self.assertEqual(self.query_count, 0)
         # relationship is loaded immediately
-        post = Post.with_(list_schema).get(11)
+        post = Post.with_joined(*list_schema).get(11)
         self.assertEqual(self.query_count, 1)
 
         # now, to get relationship, NO additional query is needed
@@ -243,6 +243,30 @@ class TestOrmWithList(TestEagerLoad):
         list_schema = [Post.comments, Post.user]
         self._test(list_schema)
 
+
+class TestOrmWithSubquery(TestEagerLoad):
+    def _test(self, list_schema):
+        self.assertEqual(self.query_count, 0)
+        # relationship is loaded immediately
+        post = Post.with_subquery(*list_schema).get(11)
+        # 3 queries were executed:
+        #   1 - on posts
+        #   2 - on comments (eagerload subquery)
+        #   3 - on user (eagerload subquery)
+        self.assertEqual(self.query_count, 3)
+
+        # now, to get relationship, NO additional query is needed
+        _ = post.comments[0]
+        _ = post.user
+        self.assertEqual(self.query_count, 3)
+
+    def test_strings(self):
+        list_schema = ['comments', 'user']
+        self._test(list_schema)
+
+    def test_class_properties(self):
+        list_schema = [Post.comments, Post.user]
+        self._test(list_schema)
 
 class TestOrmWithDict(TestEagerLoad):
     def _test_joinedload(self, schema):

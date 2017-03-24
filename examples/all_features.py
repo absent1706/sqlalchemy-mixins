@@ -38,7 +38,7 @@ class Post(BaseModel):
     user = sa.orm.relationship('User')
 
 
-engine = sa.create_engine('sqlite:///:memory:')
+engine = sa.create_engine('sqlite:///:memory:', echo=True)
 session = scoped_session(sessionmaker(bind=engine))
 
 Base.metadata.create_all(engine)
@@ -50,8 +50,9 @@ post2 = Post.create(body='long-long-long-long-long body', rating=2,
                     user=User.create(name='Bill'))
 
 # filter using operators like 'in' and 'contains' and relations like 'user'
+# will output this beauty: <Post #1 body:'Post1' user:'Bill'>
 print(Post.where(rating__in=[2, 3, 4], user___name__like='%Bi%').all())
 # eager load user with post
-print(Post.with_(['user']).first())
+print(Post.with_joined('user').first())
 # sort by rating DESC, user name ASC
 print(Post.sort('-rating', 'user___name').all())

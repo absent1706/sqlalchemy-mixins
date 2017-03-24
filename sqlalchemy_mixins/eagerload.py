@@ -64,17 +64,7 @@ class EagerLoadMixin(SessionMixin):
     def with_(cls, schema):
         """
         Query class and eager load schema at once.
-        Schema is list (with_joined() will be called)
-         or dict(with_dict() will be called)
-        :type schema: dict | List[basestring] | List[InstrumentedAttribute]
-        """
-        return cls.with_dict(schema) if isinstance(schema, dict) \
-            else cls.with_joined(schema)
-
-    @classmethod
-    def with_dict(cls, schema):
-        """
-        Query class and eager load schema at once.
+        :type schema: dict
 
         Example 1:
             schema = {
@@ -88,7 +78,7 @@ class EagerLoadMixin(SessionMixin):
                     })
                 }
             }
-            User.with_dict(schema).first()
+            User.with_(schema).first()
 
         Example 2 (with strings, not recommended):
             schema = {
@@ -102,22 +92,40 @@ class EagerLoadMixin(SessionMixin):
                     })
                 }
             }
-            User.with_dict(schema).first()
+            User.with_(schema).first()
         """
         return cls.query.options(*eager_expr(schema or {}))
 
     @classmethod
-    def with_joined(cls, paths):
+    def with_joined(cls, *paths):
         """
         Eagerload for simple cases where we need to just
          joined load some relations without nesting
-            :type paths: List[str] | List[InstrumentedAttribute]
+
+        :type paths: *List[str] | *List[InstrumentedAttribute]
 
         Example 1:
-            Product.with_dict(Product.grade_from, Product.grade_to).first()
+            Product.with_joined(Product.grade_from, Product.grade_to).first()
 
         Example 2 (with strings, not recommended):
-            Product.with_dict('grade_from', 'grade_to').first()
+            Product.with_joined('grade_from', 'grade_to').first()
         """
         flat_schema = {path: JOINEDLOAD for path in paths}
+        return cls.query.options(*_eager_expr_from_flat_schema(flat_schema))
+
+    @classmethod
+    def with_subquery(cls, *paths):
+        """
+        Eagerload for simple cases where we need to just
+         joined load some relations without nesting
+
+        :type paths: *List[str] | *List[InstrumentedAttribute]
+
+        Example 1:
+            Product.with_subquery(Product.grade_from, Product.grade_to).first()
+
+        Example 2 (with strings, not recommended):
+            Product.with_subquery('grade_from', 'grade_to').first()
+        """
+        flat_schema = {path: SUBQUERYLOAD for path in paths}
         return cls.query.options(*_eager_expr_from_flat_schema(flat_schema))
