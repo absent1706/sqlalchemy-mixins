@@ -410,6 +410,16 @@ More clear methods in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eag
    ```python
    User.with_subquery('posts', 'comments').all()
    ```  
- * `with_joined` method *arguments change*: now you should simply write `Comment.with_joined('user','post')` instead of `Comment.with_joined(['user','post'])`   
+ * `with_joined` method *arguments change*: now you should simply write
+  
+    ```python
+    Comment.with_joined('user','post')
+    ```
+    
+    instead of
+    
+    ```python
+    Comment.with_joined(['user','post'])
+    ```
  * `with_` method *arguments change*: it now accepts *only dict schemas*. If you want to quickly joinedload relations, use `with_joined`   
  * `with_dict` method *removed*. Instead, use `with_` method   
