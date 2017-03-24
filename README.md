@@ -408,7 +408,6 @@ More clear methods in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eag
    So you can now write:
    
    ```python
-   Comment.with_joined('user', 'post').first()
    User.with_subquery('posts', 'comments').all()
    ```  
  * `with_joined` method *arguments change*: now you should simply write `Comment.with_joined('user','post')` instead of `Comment.with_joined(['user','post'])`   
