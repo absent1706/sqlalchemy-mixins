@@ -406,6 +406,7 @@ More clear methods in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eag
 
  * *added* `with_subquery` method: it's like `with_joined`, but for [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload).
    So you can now write:
+   
    ```python
    Comment.with_joined('user', 'post').first()
    User.with_subquery('posts', 'comments').all()
