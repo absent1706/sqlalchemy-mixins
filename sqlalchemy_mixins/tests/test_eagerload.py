@@ -316,11 +316,11 @@ class TestOrmWithDict(TestEagerLoad):
         self.assertEqual(self.query_count, 2)
 
     def test_subqueryload_strings(self):
-        schema = {'comments': (SUBQUERYLOAD, None)}
+        schema = {'comments': SUBQUERYLOAD}
         self._test_subqueryload(schema)
 
     def test_subqueryload_class_properties(self):
-        schema = {Post.comments: (SUBQUERYLOAD, None)}
+        schema = {Post.comments: SUBQUERYLOAD}
         self._test_subqueryload(schema)
 
     def _test_combined_load(self, schema):

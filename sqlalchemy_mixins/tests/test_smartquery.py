@@ -717,7 +717,7 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
             filters=dict(post___public=True, post___user___name__like='Bi%'),
             schema={
                 'post': {
-                    'comments': (SUBQUERYLOAD, None)
+                    'comments': SUBQUERYLOAD
                 }
             }
         ).all()
@@ -752,7 +752,7 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
         res = Comment.smart_query(
             filters=dict(post___public=True, post___user___name__like='Bi%'),
             schema={
-                'post': (SUBQUERYLOAD, None)
+                'post': SUBQUERYLOAD
             }
         ).all()
         self.assertEqual(self.query_count, 2)

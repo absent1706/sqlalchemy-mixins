@@ -81,7 +81,7 @@ class EagerLoadMixin(SessionMixin):
         Example 1:
             schema = {
                 User.educator_school: {
-                    School.educators: (SUBQUERYLOAD, None),
+                    School.educators: SUBQUERYLOAD,
                     School.district: None
                 },
                 User.educator_district: {
@@ -95,7 +95,7 @@ class EagerLoadMixin(SessionMixin):
         Example 2 (with strings, not recommended):
             schema = {
                 'educator_school': {
-                    'educators': (SUBQUERYLOAD, None),
+                    'educators': SUBQUERYLOAD,
                     'district': None
                 },
                 'educator_district': {
