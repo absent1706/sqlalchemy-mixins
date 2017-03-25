@@ -194,12 +194,13 @@ User.with_({
 ### Subquery load
 Sometimes we want to load relations in separate query, i.e. do [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload).
 For example, we load posts on page like [this](http://www.qopy.me/3V4Tsu_GTpCMJySzvVH1QQ),
-and for each post we want to have user and all comments (to display their count).
+and for each post we want to have user and all comments (and comment authors).
 
 To speed up query, we load comments in separate query, but, in this separate query, join user
 ```python
 from sqlalchemy_mixins import JOINED, SUBQUERYLOAD
 Post.with_({
+    'user': JOINED, # joinedload user
     'comments': (SUBQUERYLOAD, {  # load comments in separate query
         'user': JOINED  # but, in this separate query, join user
     })
