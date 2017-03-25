@@ -40,7 +40,7 @@ def _flatten_schema(schema):
             elif isinstance(value, dict):
                 join_method, inner_schema = JOINED, value
             else:
-                join_method, inner_schema = value or JOINED, None
+                join_method, inner_schema = value, None
 
             full_path = parent_path + '.' + path if parent_path else path
             result[full_path] = join_method
@@ -82,11 +82,11 @@ class EagerLoadMixin(SessionMixin):
             schema = {
                 User.educator_school: {
                     School.educators: SUBQUERY,
-                    School.district: None
+                    School.district: JOINED
                 },
                 User.educator_district: {
                     District.schools: (SUBQUERY, {
-                        School.educators: None
+                        School.educators: JOINED
                     })
                 }
             }
@@ -96,11 +96,11 @@ class EagerLoadMixin(SessionMixin):
             schema = {
                 'educator_school': {
                     'educators': SUBQUERY,
-                    'district': None
+                    'district': JOINED
                 },
                 'educator_district': {
                     'schools': (SUBQUERY, {
-                        'educators': None
+                        'educators': JOINED
                     })
                 }
             }

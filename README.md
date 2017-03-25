@@ -174,7 +174,7 @@ Well, now you can easily set what ORM relations you want to eager load
 User.with_({
     User.posts: {
         Post.comments: {
-            Comment.user: None
+            Comment.user: JOINED
         }
     }
 }.all()
@@ -185,7 +185,7 @@ or we can write strings instead of class properties:
 User.with_({
     'posts': {
         'comments': {
-            'user': None
+            'user': JOINED
         }
     }
 }.all()
@@ -198,10 +198,10 @@ and for each post we want to have user and all comments (to display their count)
 
 To speed up query, we load posts in separate query, but, in this separate query, join user
 ```python
-from sqlalchemy_mixins import SUBQUERYLOAD
+from sqlalchemy_mixins import JOINED, SUBQUERYLOAD
 Post.with_({
     'comments': (SUBQUERYLOAD, {  # load posts in separate query
-        'user': None  # but, in this separate query, join user
+        'user': JOINED  # but, in this separate query, join user
     })
 }}
 ```
@@ -209,11 +209,6 @@ Post.with_({
 Here, posts will be loaded on first query, and comments with users - in second one.
 See [SQLAlchemy docs](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html)
 for explaining relationship loading techniques.
-
-> Default loading method is [joinedload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.joinedload)
-> (`None` in schema)
->
-> Explicitly use `SUBQUERY` if you want it.
 
 ### Quick eager load
 For simple cases, when you want to just 
@@ -319,7 +314,7 @@ Comment.smart_query(
     sort_attrs=['user___name', '-created_at'],
     schema={
         'post': {
-            'user': None
+            'user': JOINED
         }
     }).all()
 ```
@@ -417,20 +412,30 @@ More clear methods in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eag
    ```python
    User.with_subquery('posts', 'comments').all()
    ```  
- * `with_joined` method *arguments change*: now you should simply write
-  
-    ```python
-    Comment.with_joined('user','post')
-    ```
-    
-    instead of
-    
+ * `with_joined` method *arguments change*: instead of
+
     ```python
     Comment.with_joined(['user','post'])
     ```
- * `with_` method *arguments change*: it now accepts *only dict schemas*. If you want to quickly joinedload relations, use `with_joined`   
+
+    now simply write
+
+    ```python
+    Comment.with_joined('user','post')
+    ```
+
+ * `with_` method *arguments change*: it now accepts *only dict schemas*. If you want to quickly joinedload relations, use `with_joined`
  * `with_dict` method *removed*. Instead, use `with_` method   
 
 Other changes in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eagerload.py):
 
- * constants *rename*: use nicer `JOINED` and `SUBQUERY` instead of `JOINEDLOAD` and `SUBQUERYLOAD`
+ * constants *rename*: use cleaner `JOINED` and `SUBQUERY` instead of `JOINEDLOAD` and `SUBQUERYLOAD`
+ * do not allow `None` in schema anymore, so instead of
+     ```python
+     Comment.with_({'user': None})
+     ```
+
+     write
+     ```python
+     Comment.with_({'user': JOINED})
+     ```

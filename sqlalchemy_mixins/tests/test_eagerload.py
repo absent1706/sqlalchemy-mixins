@@ -8,7 +8,7 @@ from sqlalchemy.orm import Query
 from sqlalchemy.orm import Session
 
 from sqlalchemy_mixins import EagerLoadMixin
-from sqlalchemy_mixins.eagerload import SUBQUERY, eager_expr
+from sqlalchemy_mixins.eagerload import JOINED, SUBQUERY, eager_expr
 
 Base = declarative_base()
 engine = create_engine('sqlite:///:memory:', echo=False)
@@ -190,7 +190,7 @@ class TestEagerExpr(TestEagerLoad):
     def test_ok_strings(self):
         schema = {
             User.posts: (SUBQUERY, {
-                Post.comments: None
+                Post.comments: JOINED
             })
         }
         self._test_ok(schema)
@@ -198,12 +198,19 @@ class TestEagerExpr(TestEagerLoad):
     def test_ok_class_properties(self):
         schema = {
             'posts': (SUBQUERY, {
-                'comments': None
+                'comments': JOINED
             })
         }
         self._test_ok(schema)
 
-    def test_bad_join_method_strings(self):
+    def test_bad_join_method(self):
+        # None
+        schema = {
+            'posts': None
+        }
+        with self.assertRaises(ValueError):
+            sess.query(User).options(*eager_expr(schema)).get(1)
+
         # strings
         schema = {
             'posts': ('WRONG JOIN METHOD', {
@@ -299,11 +306,11 @@ class TestOrmWithDict(TestEagerLoad):
         self.assertEqual(self.query_count, 1)
 
     def test_joinedload_strings(self):
-        schema = {'comments': None}
+        schema = {'comments': JOINED}
         self._test_joinedload(schema)
 
     def test_joinedload_class_properties(self):
-        schema = {Post.comments: None}
+        schema = {Post.comments: JOINED}
         self._test_joinedload(schema)
 
     def _test_subqueryload(self, schema):
@@ -336,7 +343,7 @@ class TestOrmWithDict(TestEagerLoad):
     def test_combined_load_strings(self):
         schema = {
             User.posts: (SUBQUERY, {
-                Post.comments: None
+                Post.comments: JOINED
             })
         }
         self._test_combined_load(schema)
@@ -344,7 +351,7 @@ class TestOrmWithDict(TestEagerLoad):
     def test_combined_load_class_properties(self):
         schema = {
             'posts': (SUBQUERY, {
-                'comments': None
+                'comments': JOINED
             })
         }
         self._test_combined_load(schema)
@@ -364,7 +371,7 @@ class TestOrmWithDict(TestEagerLoad):
         schema = {
             User.posts: (SUBQUERY, {
                 Post.comments: {
-                    Comment.user: None
+                    Comment.user: JOINED
                 }
             })
         }
@@ -374,7 +381,7 @@ class TestOrmWithDict(TestEagerLoad):
         schema = {
             'posts': (SUBQUERY, {
                 'comments': {
-                    'user': None
+                    'user': JOINED
                 }
             })
         }
