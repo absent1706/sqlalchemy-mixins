@@ -12,6 +12,7 @@ install: "pip install -r requirements-dev.txt"
 # command to run tests
 script:
   - nosetests --with-coverage --cover-inclusive --cover-package=sqlalchemy_mixins
+  - export PATH=.:$PATH
   - python examples/activerecord.py
   - python examples/all_features.py
   - python examples/eagerload.py
