@@ -8,7 +8,7 @@ from sqlalchemy.orm import Query
 from sqlalchemy.orm import Session
 
 from sqlalchemy_mixins import EagerLoadMixin
-from sqlalchemy_mixins.eagerload import SUBQUERYLOAD, eager_expr
+from sqlalchemy_mixins.eagerload import SUBQUERY, eager_expr
 
 Base = declarative_base()
 engine = create_engine('sqlite:///:memory:', echo=False)
@@ -189,7 +189,7 @@ class TestEagerExpr(TestEagerLoad):
 
     def test_ok_strings(self):
         schema = {
-            User.posts: (SUBQUERYLOAD, {
+            User.posts: (SUBQUERY, {
                 Post.comments: None
             })
         }
@@ -197,7 +197,7 @@ class TestEagerExpr(TestEagerLoad):
 
     def test_ok_class_properties(self):
         schema = {
-            'posts': (SUBQUERYLOAD, {
+            'posts': (SUBQUERY, {
                 'comments': None
             })
         }
@@ -316,11 +316,11 @@ class TestOrmWithDict(TestEagerLoad):
         self.assertEqual(self.query_count, 2)
 
     def test_subqueryload_strings(self):
-        schema = {'comments': SUBQUERYLOAD}
+        schema = {'comments': SUBQUERY}
         self._test_subqueryload(schema)
 
     def test_subqueryload_class_properties(self):
-        schema = {Post.comments: SUBQUERYLOAD}
+        schema = {Post.comments: SUBQUERY}
         self._test_subqueryload(schema)
 
     def _test_combined_load(self, schema):
@@ -335,7 +335,7 @@ class TestOrmWithDict(TestEagerLoad):
 
     def test_combined_load_strings(self):
         schema = {
-            User.posts: (SUBQUERYLOAD, {
+            User.posts: (SUBQUERY, {
                 Post.comments: None
             })
         }
@@ -343,7 +343,7 @@ class TestOrmWithDict(TestEagerLoad):
 
     def test_combined_load_class_properties(self):
         schema = {
-            'posts': (SUBQUERYLOAD, {
+            'posts': (SUBQUERY, {
                 'comments': None
             })
         }
@@ -362,7 +362,7 @@ class TestOrmWithDict(TestEagerLoad):
 
     def test_combined_load_2_strings(self):
         schema = {
-            User.posts: (SUBQUERYLOAD, {
+            User.posts: (SUBQUERY, {
                 Post.comments: {
                     Comment.user: None
                 }
@@ -372,7 +372,7 @@ class TestOrmWithDict(TestEagerLoad):
 
     def test_combined_load_2_class_properties(self):
         schema = {
-            'posts': (SUBQUERYLOAD, {
+            'posts': (SUBQUERY, {
                 'comments': {
                     'user': None
                 }

@@ -9,8 +9,8 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from .session import SessionMixin
 
-JOINEDLOAD = 'joined'
-SUBQUERYLOAD = 'subquery'
+JOINED = 'joined'
+SUBQUERY = 'subquery'
 
 
 def eager_expr(schema):
@@ -38,9 +38,9 @@ def _flatten_schema(schema):
             if isinstance(value, tuple):
                 join_method, inner_schema = value[0], value[1]
             elif isinstance(value, dict):
-                join_method, inner_schema = JOINEDLOAD, value
+                join_method, inner_schema = JOINED, value
             else:
-                join_method, inner_schema = value or JOINEDLOAD, None
+                join_method, inner_schema = value or JOINED, None
 
             full_path = parent_path + '.' + path if parent_path else path
             result[full_path] = join_method
@@ -59,9 +59,9 @@ def _eager_expr_from_flat_schema(flat_schema):
     """
     result = []
     for path, join_method in flat_schema.items():
-        if join_method == JOINEDLOAD:
+        if join_method == JOINED:
             result.append(joinedload(path))
-        elif join_method == SUBQUERYLOAD:
+        elif join_method == SUBQUERY:
             result.append(subqueryload(path))
         else:
             raise ValueError('Bad join method `{}` in `{}`'
@@ -81,11 +81,11 @@ class EagerLoadMixin(SessionMixin):
         Example 1:
             schema = {
                 User.educator_school: {
-                    School.educators: SUBQUERYLOAD,
+                    School.educators: SUBQUERY,
                     School.district: None
                 },
                 User.educator_district: {
-                    District.schools: (SUBQUERYLOAD, {
+                    District.schools: (SUBQUERY, {
                         School.educators: None
                     })
                 }
@@ -95,11 +95,11 @@ class EagerLoadMixin(SessionMixin):
         Example 2 (with strings, not recommended):
             schema = {
                 'educator_school': {
-                    'educators': SUBQUERYLOAD,
+                    'educators': SUBQUERY,
                     'district': None
                 },
                 'educator_district': {
-                    'schools': (SUBQUERYLOAD, {
+                    'schools': (SUBQUERY, {
                         'educators': None
                     })
                 }

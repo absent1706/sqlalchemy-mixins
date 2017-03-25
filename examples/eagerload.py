@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Query, scoped_session, sessionmaker
 
 from sqlalchemy_mixins import EagerLoadMixin, ReprMixin
-from sqlalchemy_mixins.eagerload import SUBQUERYLOAD, eager_expr
+from sqlalchemy_mixins.eagerload import SUBQUERY, eager_expr
 
 
 def log(msg):
@@ -185,7 +185,7 @@ schema = {
                 # here,
                 #  'posts': { ... }
                 # is equal to
-                #  'posts': (JOINEDLOAD, { ... })
+                #  'posts': (JOINED, { ... })
         'comments': {  # to each post join its comments
             'user': None  # and join user to each comment
         }
@@ -232,13 +232,13 @@ log('NO ADDITIONAL SQL. END')
 #  i.g. when we load posts, to each post we want to have user and all comments.
 #  when we load many posts, join comments and comments to each user
 schema = {
-    'comments': (SUBQUERYLOAD, {  # load posts in separate query
+    'comments': (SUBQUERY, {  # load posts in separate query
         'user': None  # but, in this separate query, join user
     })
 }
 # the same schema using class properties:
 schema = {
-    Post.comments: (SUBQUERYLOAD, {  # load posts in separate query
+    Post.comments: (SUBQUERY, {  # load posts in separate query
         Comment.user: None  # but, in this separate query, join comments
     })
 }

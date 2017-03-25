@@ -213,7 +213,7 @@ for explaining relationship loading techniques.
 > Default loading method is [joinedload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.joinedload)
 > (`None` in schema)
 >
-> Explicitly use `SUBQUERYLOAD` if you want it.
+> Explicitly use `SUBQUERY` if you want it.
 
 ### Quick eager load
 For simple cases, when you want to just 
@@ -430,3 +430,7 @@ More clear methods in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eag
     ```
  * `with_` method *arguments change*: it now accepts *only dict schemas*. If you want to quickly joinedload relations, use `with_joined`   
  * `with_dict` method *removed*. Instead, use `with_` method   
+
+Other changes in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eagerload.py):
+
+ * constants *rename*: use nicer `JOINED` and `SUBQUERY` instead of `JOINEDLOAD` and `SUBQUERYLOAD`
