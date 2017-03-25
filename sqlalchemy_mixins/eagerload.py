@@ -110,8 +110,8 @@ class EagerLoadMixin(SessionMixin):
         Example 2 (with strings, not recommended):
             Product.with_joined('grade_from', 'grade_to').first()
         """
-        flat_schema = {path: JOINEDLOAD for path in paths}
-        return cls.query.options(*_eager_expr_from_flat_schema(flat_schema))
+        options = [joinedload(path) for path in paths]
+        return cls.query.options(*options)
 
     @classmethod
     def with_subquery(cls, *paths):
@@ -127,5 +127,5 @@ class EagerLoadMixin(SessionMixin):
         Example 2 (with strings, not recommended):
             Product.with_subquery('grade_from', 'grade_to').first()
         """
-        flat_schema = {path: SUBQUERYLOAD for path in paths}
-        return cls.query.options(*_eager_expr_from_flat_schema(flat_schema))
+        options = [subqueryload(path) for path in paths]
+        return cls.query.options(*options)
