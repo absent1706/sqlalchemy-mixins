@@ -78,31 +78,19 @@ class EagerLoadMixin(SessionMixin):
         Query class and eager load schema at once.
         :type schema: dict
 
-        Example 1:
+        Example:
             schema = {
-                User.educator_school: {
-                    School.educators: SUBQUERY,
-                    School.district: JOINED
-                },
-                User.educator_district: {
-                    District.schools: (SUBQUERY, {
-                        School.educators: JOINED
-                    })
-                }
+                'user': JOINED, # joinedload user
+                'comments': (SUBQUERY, {  # load comments in separate query
+                    'user': JOINED  # but, in this separate query, join user
+                })
             }
-            User.with_(schema).first()
-
-        Example 2 (with strings, not recommended):
+            # the same schema using class properties:
             schema = {
-                'educator_school': {
-                    'educators': SUBQUERY,
-                    'district': JOINED
-                },
-                'educator_district': {
-                    'schools': (SUBQUERY, {
-                        'educators': JOINED
-                    })
-                }
+                Post.user: JOINED,
+                Post.comments: (SUBQUERY, {
+                    Comment.user: JOINED
+                })
             }
             User.with_(schema).first()
         """

@@ -232,13 +232,13 @@ log('NO ADDITIONAL SQL. END')
 #  i.g. when we load posts, to each post we want to have user and all comments.
 #  when we load many posts, join comments and comments to each user
 schema = {
-    'comments': (SUBQUERY, {  # load posts in separate query
+    'comments': (SUBQUERY, {  # load comments in separate query
         'user': JOINED  # but, in this separate query, join user
     })
 }
 # the same schema using class properties:
 schema = {
-    Post.comments: (SUBQUERY, {  # load posts in separate query
+    Post.comments: (SUBQUERY, {  # load comments in separate query
         Comment.user: JOINED  # but, in this separate query, join comments
     })
 }
