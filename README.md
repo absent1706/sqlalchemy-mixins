@@ -65,13 +65,16 @@ Here's a quick demo of what out mixins can do.
 bob = User.create(name='Bob')
 post1 = Post.create(body='Post 1', user=bob, rating=3)
 post2 = Post.create(body='long-long-long-long-long body', rating=2,
-                    user=User.create(name='Bill'))
+                    user=User.create(name='Bill'),
+                    comments=[Comment.create(body='cool!', user=bob)])
 
-# filter using operators ('in', 'like') and relations ('user')
+# filter using operators like 'in' and 'contains' and relations like 'user'
 # will output this beauty: <Post #1 body:'Post1' user:'Bill'>
 print(Post.where(rating__in=[2, 3, 4], user___name__like='%Bi%').all())
-# eager load user with post
-print(Post.with_joined('user').first())
+# joinedload post and user
+print(Comment.with_joined('user', 'post', 'post.comments').first())
+# subqueryload posts and their comments
+print(User.with_subquery('posts', 'posts.comments').first())
 # sort by rating DESC, user name ASC
 print(Post.sort('-rating', 'user___name').all())
 ```
@@ -212,16 +215,20 @@ for explaining relationship loading techniques.
 >
 > Explicitly use `SUBQUERYLOAD` if you want it.
 
-### Quick joined load
+### Quick eager load
 For simple cases, when you want to just 
 [joinedload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.joinedload)
 or [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload) 
 a few relations, we have easier syntax for you:
 
 ```python
-Comment.with_joined('user', 'post').first()
-User.with_subquery('posts', 'comments').all()
+Comment.with_joined('user', 'post', 'post.comments').first()
+User.with_subquery('posts', 'posts.comments').all()
 ```
+
+> Note that you can split relations with dot like `post.comments`
+> due to [this SQLAlchemy feature](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload_all)
+
 
 ![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/eagerload.py) and [tests](sqlalchemy_mixins/tests/test_eagerload.py)

@@ -14,12 +14,21 @@ SUBQUERYLOAD = 'subquery'
 
 
 def eager_expr(schema):
+    """
+    :type schema: dict
+    """
     flat_schema = _flatten_schema(schema)
     return _eager_expr_from_flat_schema(flat_schema)
 
 
 def _flatten_schema(schema):
+    """
+    :type schema: dict
+    """
     def _flatten(schema, parent_path, result):
+        """
+        :type schema: dict
+        """
         for path, value in schema.items():
             # for supporting schemas like Product.user: {...},
             # we transform, say, Product.user to 'user' string
@@ -45,6 +54,9 @@ def _flatten_schema(schema):
 
 
 def _eager_expr_from_flat_schema(flat_schema):
+    """
+    :type flat_schema: dict
+    """
     result = []
     for path, join_method in flat_schema.items():
         if join_method == JOINEDLOAD:
@@ -100,15 +112,17 @@ class EagerLoadMixin(SessionMixin):
     def with_joined(cls, *paths):
         """
         Eagerload for simple cases where we need to just
-         joined load some relations without nesting
-
+         joined load some relations
+        In strings syntax, you can split relations with dot 
+         due to this SQLAlchemy feature: https://goo.gl/yM2DLX
+         
         :type paths: *List[str] | *List[InstrumentedAttribute]
 
         Example 1:
-            Product.with_joined(Product.grade_from, Product.grade_to).first()
+            Comment.with_joined('user', 'post', 'post.comments').first()
 
-        Example 2 (with strings, not recommended):
-            Product.with_joined('grade_from', 'grade_to').first()
+        Example 2:
+            Comment.with_joined(Comment.user, Comment.post).first()
         """
         options = [joinedload(path) for path in paths]
         return cls.query.options(*options)
@@ -117,15 +131,17 @@ class EagerLoadMixin(SessionMixin):
     def with_subquery(cls, *paths):
         """
         Eagerload for simple cases where we need to just
-         joined load some relations without nesting
+         joined load some relations
+        In strings syntax, you can split relations with dot 
+         (it's SQLAlchemy feature)
 
         :type paths: *List[str] | *List[InstrumentedAttribute]
 
         Example 1:
-            Product.with_subquery(Product.grade_from, Product.grade_to).first()
+            User.with_subquery('posts', 'posts.comments').all()
 
-        Example 2 (with strings, not recommended):
-            Product.with_subquery('grade_from', 'grade_to').first()
+        Example 2:
+            User.with_subquery(User.posts, User.comments).all()
         """
         options = [subqueryload(path) for path in paths]
         return cls.query.options(*options)
