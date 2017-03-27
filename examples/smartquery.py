@@ -9,7 +9,7 @@ from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Query, scoped_session, sessionmaker
 
-from sqlalchemy_mixins import SmartQueryMixin, ReprMixin
+from sqlalchemy_mixins import SmartQueryMixin, ReprMixin, JOINED
 
 
 def log(msg):
@@ -343,13 +343,13 @@ log(Comment.sort('-post___public', 'post___user___name').all())
 
 schema = {
     'post': {
-        'user': None
+        'user': JOINED
     }
 }
 # schema can use class properties too (see EagerLoadMixin):
 # schema = {
 #     Comment.post: {
-#         Post.user: None
+#         Post.user: JOINED
 #     }
 # }
 res = Comment.smart_query(

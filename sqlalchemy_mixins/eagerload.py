@@ -9,17 +9,26 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from .session import SessionMixin
 
-JOINEDLOAD = 'joined'
-SUBQUERYLOAD = 'subquery'
+JOINED = 'joined'
+SUBQUERY = 'subquery'
 
 
 def eager_expr(schema):
+    """
+    :type schema: dict
+    """
     flat_schema = _flatten_schema(schema)
     return _eager_expr_from_flat_schema(flat_schema)
 
 
 def _flatten_schema(schema):
+    """
+    :type schema: dict
+    """
     def _flatten(schema, parent_path, result):
+        """
+        :type schema: dict
+        """
         for path, value in schema.items():
             # for supporting schemas like Product.user: {...},
             # we transform, say, Product.user to 'user' string
@@ -29,9 +38,9 @@ def _flatten_schema(schema):
             if isinstance(value, tuple):
                 join_method, inner_schema = value[0], value[1]
             elif isinstance(value, dict):
-                join_method, inner_schema = JOINEDLOAD, value
+                join_method, inner_schema = JOINED, value
             else:
-                join_method, inner_schema = value or JOINEDLOAD, None
+                join_method, inner_schema = value, None
 
             full_path = parent_path + '.' + path if parent_path else path
             result[full_path] = join_method
@@ -45,11 +54,14 @@ def _flatten_schema(schema):
 
 
 def _eager_expr_from_flat_schema(flat_schema):
+    """
+    :type flat_schema: dict
+    """
     result = []
     for path, join_method in flat_schema.items():
-        if join_method == JOINEDLOAD:
+        if join_method == JOINED:
             result.append(joinedload(path))
-        elif join_method == SUBQUERYLOAD:
+        elif join_method == SUBQUERY:
             result.append(subqueryload(path))
         else:
             raise ValueError('Bad join method `{}` in `{}`'
@@ -64,60 +76,60 @@ class EagerLoadMixin(SessionMixin):
     def with_(cls, schema):
         """
         Query class and eager load schema at once.
-        Schema is list (with_joined() will be called)
-         or dict(with_dict() will be called)
-        :type schema: dict | List[basestring] | List[InstrumentedAttribute]
-        """
-        return cls.with_dict(schema) if isinstance(schema, dict) \
-            else cls.with_joined(schema)
+        :type schema: dict
 
-    @classmethod
-    def with_dict(cls, schema):
-        """
-        Query class and eager load schema at once.
-
-        Example 1:
+        Example:
             schema = {
-                User.educator_school: {
-                    School.educators: (SUBQUERYLOAD, None),
-                    School.district: None
-                },
-                User.educator_district: {
-                    District.schools: (SUBQUERYLOAD, {
-                        School.educators: None
-                    })
-                }
+                'user': JOINED, # joinedload user
+                'comments': (SUBQUERY, {  # load comments in separate query
+                    'user': JOINED  # but, in this separate query, join user
+                })
             }
-            User.with_dict(schema).first()
-
-        Example 2 (with strings, not recommended):
+            # the same schema using class properties:
             schema = {
-                'educator_school': {
-                    'educators': (SUBQUERYLOAD, None),
-                    'district': None
-                },
-                'educator_district': {
-                    'schools': (SUBQUERYLOAD, {
-                        'educators': None
-                    })
-                }
+                Post.user: JOINED,
+                Post.comments: (SUBQUERY, {
+                    Comment.user: JOINED
+                })
             }
-            User.with_dict(schema).first()
+            User.with_(schema).first()
         """
         return cls.query.options(*eager_expr(schema or {}))
 
     @classmethod
-    def with_joined(cls, paths):
+    def with_joined(cls, *paths):
         """
         Eagerload for simple cases where we need to just
-         joined load some relations without nesting
-            :type paths: List[str] | List[InstrumentedAttribute]
+         joined load some relations
+        In strings syntax, you can split relations with dot 
+         due to this SQLAlchemy feature: https://goo.gl/yM2DLX
+         
+        :type paths: *List[str] | *List[InstrumentedAttribute]
 
         Example 1:
-            Product.with_dict(Product.grade_from, Product.grade_to).first()
+            Comment.with_joined('user', 'post', 'post.comments').first()
 
-        Example 2 (with strings, not recommended):
-            Product.with_dict('grade_from', 'grade_to').first()
+        Example 2:
+            Comment.with_joined(Comment.user, Comment.post).first()
         """
-        flat_schema = {path: JOINEDLOAD for path in paths}
-        return cls.query.options(*_eager_expr_from_flat_schema(flat_schema))
+        options = [joinedload(path) for path in paths]
+        return cls.query.options(*options)
+
+    @classmethod
+    def with_subquery(cls, *paths):
+        """
+        Eagerload for simple cases where we need to just
+         joined load some relations
+        In strings syntax, you can split relations with dot 
+         (it's SQLAlchemy feature)
+
+        :type paths: *List[str] | *List[InstrumentedAttribute]
+
+        Example 1:
+            User.with_subquery('posts', 'posts.comments').all()
+
+        Example 2:
+            User.with_subquery(User.posts, User.comments).all()
+        """
+        options = [subqueryload(path) for path in paths]
+        return cls.query.options(*options)

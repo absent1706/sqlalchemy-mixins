@@ -8,7 +8,7 @@ from sqlalchemy.orm import Query
 from sqlalchemy.orm import Session
 
 from sqlalchemy_mixins import EagerLoadMixin
-from sqlalchemy_mixins.eagerload import SUBQUERYLOAD, eager_expr
+from sqlalchemy_mixins.eagerload import JOINED, SUBQUERY, eager_expr
 
 Base = declarative_base()
 engine = create_engine('sqlite:///:memory:', echo=False)
@@ -189,21 +189,28 @@ class TestEagerExpr(TestEagerLoad):
 
     def test_ok_strings(self):
         schema = {
-            User.posts: (SUBQUERYLOAD, {
-                Post.comments: None
+            User.posts: (SUBQUERY, {
+                Post.comments: JOINED
             })
         }
         self._test_ok(schema)
 
     def test_ok_class_properties(self):
         schema = {
-            'posts': (SUBQUERYLOAD, {
-                'comments': None
+            'posts': (SUBQUERY, {
+                'comments': JOINED
             })
         }
         self._test_ok(schema)
 
-    def test_bad_join_method_strings(self):
+    def test_bad_join_method(self):
+        # None
+        schema = {
+            'posts': None
+        }
+        with self.assertRaises(ValueError):
+            sess.query(User).options(*eager_expr(schema)).get(1)
+
         # strings
         schema = {
             'posts': ('WRONG JOIN METHOD', {
@@ -223,11 +230,26 @@ class TestEagerExpr(TestEagerLoad):
             sess.query(User).options(*eager_expr(schema)).get(1)
 
 
-class TestOrmWithList(TestEagerLoad):
-    def _test(self, list_schema):
+class TestOrmWithJoinedStrings(TestEagerLoad):
+    def test(self):
         self.assertEqual(self.query_count, 0)
-        # relationship is loaded immediately
-        post = Post.with_(list_schema).get(11)
+        # take post with user and comments (including comment author)
+        # NOTE: you can separate relations with dot.
+        # Its due to SQLAlchemy: https://goo.gl/yM2DLX
+        post = Post.with_joined('user', 'comments', 'comments.user').get(11)
+        self.assertEqual(self.query_count, 1)
+
+        # now, to get relationship, NO additional query is needed
+        _ = post.user
+        _ = post.comments[1]
+        _ = post.comments[1].user
+        self.assertEqual(self.query_count, 1)
+
+
+class TestOrmWithJoinedClassProperties(TestEagerLoad):
+    def _test(self):
+        self.assertEqual(self.query_count, 0)
+        post = Post.with_joined(Post.comments, Post.user).get(11)
         self.assertEqual(self.query_count, 1)
 
         # now, to get relationship, NO additional query is needed
@@ -235,14 +257,43 @@ class TestOrmWithList(TestEagerLoad):
         _ = post.user
         self.assertEqual(self.query_count, 1)
 
-    def test_strings(self):
-        list_schema = ['comments', 'user']
-        self._test(list_schema)
 
-    def test_class_properties(self):
-        list_schema = [Post.comments, Post.user]
-        self._test(list_schema)
+class TestOrmWithSubquery(TestEagerLoad):
+    def test(self):
+        self.assertEqual(self.query_count, 0)
+        # take post with user and comments (including comment author)
+        # NOTE: you can separate relations with dot.
+        # Its due to SQLAlchemy: https://goo.gl/yM2DLX
+        post = Post.with_subquery('user', 'comments', 'comments.user').get(11)
 
+        # 3 queries were executed:
+        #   1 - on posts
+        #   2 - on user (eagerload subquery)
+        #   3 - on comments (eagerload subquery)
+        #   4 - on comments authors (eagerload subquery)
+        self.assertEqual(self.query_count, 4)
+
+        # now, to get relationship, NO additional query is needed
+        _ = post.user
+        _ = post.comments[0]
+        _ = post.comments[0].user
+        self.assertEqual(self.query_count, 4)
+
+
+class TestOrmWithSubqueryClassProperties(TestEagerLoad):
+    def test(self):
+        self.assertEqual(self.query_count, 0)
+        post = Post.with_subquery(Post.comments, Post.user).get(11)
+        # 3 queries were executed:
+        #   1 - on posts
+        #   2 - on comments (eagerload subquery)
+        #   3 - on user (eagerload subquery)
+        self.assertEqual(self.query_count, 3)
+
+        # now, to get relationship, NO additional query is needed
+        _ = post.comments[0]
+        _ = post.user
+        self.assertEqual(self.query_count, 3)
 
 class TestOrmWithDict(TestEagerLoad):
     def _test_joinedload(self, schema):
@@ -255,11 +306,11 @@ class TestOrmWithDict(TestEagerLoad):
         self.assertEqual(self.query_count, 1)
 
     def test_joinedload_strings(self):
-        schema = {'comments': None}
+        schema = {'comments': JOINED}
         self._test_joinedload(schema)
 
     def test_joinedload_class_properties(self):
-        schema = {Post.comments: None}
+        schema = {Post.comments: JOINED}
         self._test_joinedload(schema)
 
     def _test_subqueryload(self, schema):
@@ -272,11 +323,11 @@ class TestOrmWithDict(TestEagerLoad):
         self.assertEqual(self.query_count, 2)
 
     def test_subqueryload_strings(self):
-        schema = {'comments': (SUBQUERYLOAD, None)}
+        schema = {'comments': SUBQUERY}
         self._test_subqueryload(schema)
 
     def test_subqueryload_class_properties(self):
-        schema = {Post.comments: (SUBQUERYLOAD, None)}
+        schema = {Post.comments: SUBQUERY}
         self._test_subqueryload(schema)
 
     def _test_combined_load(self, schema):
@@ -291,16 +342,16 @@ class TestOrmWithDict(TestEagerLoad):
 
     def test_combined_load_strings(self):
         schema = {
-            User.posts: (SUBQUERYLOAD, {
-                Post.comments: None
+            User.posts: (SUBQUERY, {
+                Post.comments: JOINED
             })
         }
         self._test_combined_load(schema)
 
     def test_combined_load_class_properties(self):
         schema = {
-            'posts': (SUBQUERYLOAD, {
-                'comments': None
+            'posts': (SUBQUERY, {
+                'comments': JOINED
             })
         }
         self._test_combined_load(schema)
@@ -318,9 +369,9 @@ class TestOrmWithDict(TestEagerLoad):
 
     def test_combined_load_2_strings(self):
         schema = {
-            User.posts: (SUBQUERYLOAD, {
+            User.posts: (SUBQUERY, {
                 Post.comments: {
-                    Comment.user: None
+                    Comment.user: JOINED
                 }
             })
         }
@@ -328,9 +379,9 @@ class TestOrmWithDict(TestEagerLoad):
 
     def test_combined_load_2_class_properties(self):
         schema = {
-            'posts': (SUBQUERYLOAD, {
+            'posts': (SUBQUERY, {
                 'comments': {
-                    'user': None
+                    'user': JOINED
                 }
             })
         }

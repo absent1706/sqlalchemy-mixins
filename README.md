@@ -43,6 +43,7 @@ Why it's cool:
     1. [Beauty \_\_repr\_\_](#beauty-__repr__)
 1. [Internal architecture notes](#internal-architecture-notes)
 1. [Comparison with existing solutions](#comparison-with-existing-solutions)
+1. [Changelog](#changelog)
 
 ## Installation
 
@@ -64,13 +65,16 @@ Here's a quick demo of what out mixins can do.
 bob = User.create(name='Bob')
 post1 = Post.create(body='Post 1', user=bob, rating=3)
 post2 = Post.create(body='long-long-long-long-long body', rating=2,
-                    user=User.create(name='Bill'))
+                    user=User.create(name='Bill'),
+                    comments=[Comment.create(body='cool!', user=bob)])
 
-# filter using operators ('in', 'like') and relations ('user')
+# filter using operators like 'in' and 'contains' and relations like 'user'
 # will output this beauty: <Post #1 body:'Post1' user:'Bill'>
 print(Post.where(rating__in=[2, 3, 4], user___name__like='%Bi%').all())
-# eager load user with post
-print(Post.with_(['user']).first())
+# joinedload post and user
+print(Comment.with_joined('user', 'post', 'post.comments').first())
+# subqueryload posts and their comments
+print(User.with_subquery('posts', 'posts.comments').first())
 # sort by rating DESC, user name ASC
 print(Post.sort('-rating', 'user___name').all())
 ```
@@ -170,7 +174,7 @@ Well, now you can easily set what ORM relations you want to eager load
 User.with_({
     User.posts: {
         Post.comments: {
-            Comment.user: None
+            Comment.user: JOINED
         }
     }
 }.all()
@@ -181,23 +185,24 @@ or we can write strings instead of class properties:
 User.with_({
     'posts': {
         'comments': {
-            'user': None
+            'user': JOINED
         }
     }
 }.all()
 ```
 
 ### Subquery load
-Sometimes we want to load relations in separate query, i.e. do [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html).
+Sometimes we want to load relations in separate query, i.e. do [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload).
 For example, we load posts on page like [this](http://www.qopy.me/3V4Tsu_GTpCMJySzvVH1QQ),
-and for each post we want to have user and all comments (to display their count).
+and for each post we want to have user and all comments (and comment authors).
 
-To speed up query, we load posts in separate query, but, in this separate query, join user
+To speed up query, we load comments in separate query, but, in this separate query, join user
 ```python
-from sqlalchemy_mixins import SUBQUERYLOAD
+from sqlalchemy_mixins import JOINED, SUBQUERYLOAD
 Post.with_({
-    'comments': (SUBQUERYLOAD, {  # load posts in separate query
-        'user': None  # but, in this separate query, join user
+    'user': JOINED, # joinedload user
+    'comments': (SUBQUERYLOAD, {  # load comments in separate query
+        'user': JOINED  # but, in this separate query, join user
     })
 }}
 ```
@@ -206,18 +211,20 @@ Here, posts will be loaded on first query, and comments with users - in second o
 See [SQLAlchemy docs](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html)
 for explaining relationship loading techniques.
 
-> Default loading method is [joinedload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html?highlight=joinedload#sqlalchemy.orm.joinedload)
-> (`None` in schema)
->
-> Explicitly use `SUBQUERYLOAD` if you want it.
-
-### Quick joined load
-For simple cases, when you want to just [joinedload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html?highlight=joinedload#sqlalchemy.orm.joinedload)
+### Quick eager load
+For simple cases, when you want to just 
+[joinedload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.joinedload)
+or [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload) 
 a few relations, we have easier syntax for you:
 
 ```python
-Comment.with_(['user', 'post']).first()
+Comment.with_joined('user', 'post', 'post.comments').first()
+User.with_subquery('posts', 'posts.comments').all()
 ```
+
+> Note that you can split relations with dot like `post.comments`
+> due to [this SQLAlchemy feature](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload_all)
+
 
 ![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/eagerload.py) and [tests](sqlalchemy_mixins/tests/test_eagerload.py)
@@ -308,7 +315,7 @@ Comment.smart_query(
     sort_attrs=['user___name', '-created_at'],
     schema={
         'post': {
-            'user': None
+            'user': JOINED
         }
     }).all()
 ```
@@ -398,3 +405,43 @@ But:
 ### Beauty \_\_repr\_\_
 [sqlalchemy-repr](https://github.com/manicmaniac/sqlalchemy-repr) already does this,
 but there you can't choose which columns to output. It simply prints all columns, which can lead to too big output.
+
+# Changelog
+
+## v0.2
+
+More clear methods in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eagerload.py):
+
+ * *added* `with_subquery` method: it's like `with_joined`, but for [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload).
+   So you can now write:
+   
+   ```python
+   User.with_subquery('posts', 'comments').all()
+   ```  
+ * `with_joined` method *arguments change*: instead of
+
+    ```python
+    Comment.with_joined(['user','post'])
+    ```
+
+    now simply write
+
+    ```python
+    Comment.with_joined('user','post')
+    ```
+
+ * `with_` method *arguments change*: it now accepts *only dict schemas*. If you want to quickly joinedload relations, use `with_joined`
+ * `with_dict` method *removed*. Instead, use `with_` method   
+
+Other changes in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eagerload.py):
+
+ * constants *rename*: use cleaner `JOINED` and `SUBQUERY` instead of `JOINEDLOAD` and `SUBQUERYLOAD`
+ * do not allow `None` in schema anymore, so instead of
+     ```python
+     Comment.with_({'user': None})
+     ```
+
+     write
+     ```python
+     Comment.with_({'user': JOINED})
+     ```

@@ -8,7 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy.orm import Session
 from sqlalchemy_mixins import SmartQueryMixin
-from sqlalchemy_mixins.eagerload import SUBQUERYLOAD
+from sqlalchemy_mixins.eagerload import JOINED, SUBQUERY
 
 Base = declarative_base()
 engine = create_engine('sqlite:///:memory:', echo=False)
@@ -583,7 +583,7 @@ class TestFullSmartQuery(BaseTest):
             sort_attrs=['user___name', '-created_at'],
             schema={
                 'post': {
-                    'user': None
+                    'user': JOINED
                 }
             }).all()
         self.assertEqual(res, [cm12, cm21, cm22])
@@ -600,7 +600,7 @@ class TestFullSmartQuery(BaseTest):
             sort_attrs=['user___name', '-created_at'],
             schema={
                 Comment.post: {
-                    Post.user: None
+                    Post.user: JOINED
                 }
             }).all()
         self.assertEqual(res, [cm12, cm21, cm22])
@@ -682,7 +682,7 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
             filters=dict(post___public=True, post___user___name__like='Bi%'),
             schema={
                 'post': {
-                    'comments': None
+                    'comments': JOINED
                 }
             }
         )
@@ -717,7 +717,7 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
             filters=dict(post___public=True, post___user___name__like='Bi%'),
             schema={
                 'post': {
-                    'comments': (SUBQUERYLOAD, None)
+                    'comments': SUBQUERY
                 }
             }
         ).all()
@@ -752,7 +752,7 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
         res = Comment.smart_query(
             filters=dict(post___public=True, post___user___name__like='Bi%'),
             schema={
-                'post': (SUBQUERYLOAD, None)
+                'post': SUBQUERY
             }
         ).all()
         self.assertEqual(self.query_count, 2)
