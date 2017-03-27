@@ -172,23 +172,23 @@ load user, all his posts and comments to every his post in the same query.
 Well, now you can easily set what ORM relations you want to eager load
 ```python
 User.with_({
-    User.posts: {
-        Post.comments: {
-            Comment.user: JOINED
-        }
-    }
-}.all()
-```
-
-or we can write strings instead of class properties:
-```python
-User.with_({
     'posts': {
         'comments': {
             'user': JOINED
         }
     }
-}.all()
+}).all()
+```
+
+or we can write class properties instead of strings:
+```python
+User.with_({
+    User.posts: {
+        Post.comments: {
+            Comment.user: JOINED
+        }
+    }
+}).all()
 ```
 
 ### Subquery load
@@ -198,13 +198,13 @@ and for each post we want to have user and all comments (and comment authors).
 
 To speed up query, we load comments in separate query, but, in this separate query, join user
 ```python
-from sqlalchemy_mixins import JOINED, SUBQUERYLOAD
+from sqlalchemy_mixins import JOINED, SUBQUERY
 Post.with_({
     'user': JOINED, # joinedload user
-    'comments': (SUBQUERYLOAD, {  # load comments in separate query
+    'comments': (SUBQUERY, {  # load comments in separate query
         'user': JOINED  # but, in this separate query, join user
     })
-}}
+}).all()
 ```
 
 Here, posts will be loaded on first query, and comments with users - in second one.
