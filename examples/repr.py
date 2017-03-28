@@ -29,6 +29,7 @@ class User(BaseModel):
 class Post(BaseModel):
     __tablename__ = 'post'
     __repr_attrs__ = ['body', 'user']
+    __repr_max_length__ = 25
 
     id = sa.Column(sa.Integer, primary_key=True)
     body = sa.Column(sa.String)
@@ -55,5 +56,5 @@ print(bob)
 # <Post #1 body: 'Post 1' user: <User #1 ...>
 print(post1)
 
-# <Post #2 body: 'Post 2 long...' user: <User #1 ...>
+# <Post #2 body: 'Post 2 long-...' user: <User #1 ...>
 print(post2)

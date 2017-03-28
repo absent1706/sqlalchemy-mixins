@@ -27,6 +27,8 @@ Why it's cool:
  * 95%+ test coverage
  * already powers a big project
 
+Russian readers, see related **[article on habrahabr.ru](https://habrahabr.ru/post/324876/)**
+
 ## Table of Contents
 
 1. [Installation](#installation)
@@ -363,6 +365,26 @@ Now we have
 
 ```
 
+Long attributes will be cutted:
+
+```
+long_post = Post(body='Post 2 long-long body', user=bob)
+
+>>> long_post
+<Post #2 body:'Post 2 long-lon...' user:<User #1 'Bob'>>
+```
+
+And you can customize max \_\_repr\_\_ length:
+```
+class Post(BaseModel):
+    # ...
+    __repr_max_length__ = 25
+    # ...
+    
+>>> long_post
+<Post #2 body:'Post 2 long-long body' user:<User #1 'Bob'>>   
+```
+
 ![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/repr.py) and [tests](sqlalchemy_mixins/tests/test_repr.py)
 
@@ -372,7 +394,7 @@ Some mixins re-use the same functionality. It lives in [`sqlalchemy_mixins.Sessi
 You can use these mixins standalone if you want.
 
 Here's a UML diagram of mixin hierarchy:
-![Mixin hierarchy](http://i.piccy.info/i9/5104592ba4b0b998e6ecf951b4c5b67f/1489403573/34714/1127895/diagram.png)
+![Mixin hierarchy](http://i.piccy.info/i9/4030c604ef387101a6ec30b7c357134c/1490694900/42743/1127895/diagram.png)
 
 # Comparison with existing solutions
 There're a lot of extensions for SQLAlchemy, but most of them are not so universal.
