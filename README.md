@@ -27,7 +27,7 @@ Why it's cool:
  * 95%+ test coverage
  * already powers a big project
 
-Russian readers, see related **[article on habrahabr.ru](https://habrahabr.ru/post/324876/)**
+> Russian readers, see related **[article on habrahabr.ru](https://habrahabr.ru/post/324876/)**
 
 ## Table of Contents
 
