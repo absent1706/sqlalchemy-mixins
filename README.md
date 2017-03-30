@@ -91,7 +91,7 @@ Main features are [Active Record](#active-record), [Eager Load](#eager-load), [D
 and [Beauty \_\_repr\_\_](#beauty-__repr__).
 
 ## Active Record
-provided by [`sqlalchemy_mixins.ActiveRecordMixin`](sqlalchemy_mixins/activerecord.py)
+provided by [`ActiveRecordMixin`](sqlalchemy_mixins/activerecord.py)
 
 SQLAlchemy's [Data Mapper](https://en.wikipedia.org/wiki/Data_mapper_pattern)
 pattern is cool, but
@@ -164,7 +164,7 @@ User.all() # instead of session.query(User).all()
 See [full example](examples/activerecord.py) and [tests](sqlalchemy_mixins/tests/test_activerecord.py)
 
 ## Eager load
-provided by [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eagerload.py)
+provided by [`EagerLoadMixin`](sqlalchemy_mixins/eagerload.py)
 
 ### Nested eager load
 If you use SQLAlchemy's [eager loading](http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#eager-loading),
@@ -232,7 +232,7 @@ User.with_subquery('posts', 'posts.comments').all()
 See [full example](examples/eagerload.py) and [tests](sqlalchemy_mixins/tests/test_eagerload.py)
 
 ## Filter and sort by relations
-provided by [`sqlalchemy_mixins.SmartQueryMixin`](sqlalchemy_mixins/smartquery.py)
+provided by [`SmartQueryMixin`](sqlalchemy_mixins/smartquery.py)
 
 ### Django-like queries
 We implement Django-like
@@ -278,7 +278,7 @@ Using them in our filtering/sorting is straightforward (see examples and tests).
 See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ### Automatic eager load relations
-Well, as [`sqlalchemy_mixins.SmartQueryMixin`](sqlalchemy_mixins/smartquery.py) does auto-joins for filtering/sorting,
+Well, as [`SmartQueryMixin`](sqlalchemy_mixins/smartquery.py) does auto-joins for filtering/sorting,
 there's a sense to tell sqlalchemy that we already joined that relation.
 
 So that relations are automatically set to be joinedload if they were used for filtering/sorting.
@@ -301,7 +301,7 @@ See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/t
 
 ### All-in-one: smart_query
 #### Filter, sort and eager load in one smartest method.
-provided by [`sqlalchemy_mixins.SmartQueryMixin`](sqlalchemy_mixins/smartquery.py)
+provided by [`SmartQueryMixin`](sqlalchemy_mixins/smartquery.py)
 
 In real world, we want to filter, sort and also eager load some relations at once.
 Well, if we use the same, say, `User.posts` relation in filtering and sorting,
@@ -326,7 +326,7 @@ Comment.smart_query(
 See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ## Beauty \_\_repr\_\_
-provided by [`sqlalchemy_mixins.ReprMixin`](sqalchemy_mixins/repr.py)
+provided by [`ReprMixin`](sqalchemy_mixins/repr.py)
 
 As developers, we need to debug things with convenient.
 When we play in REPL, we can see this
@@ -389,7 +389,7 @@ class Post(BaseModel):
 See [full example](examples/repr.py) and [tests](sqlalchemy_mixins/tests/test_repr.py)
 
 # Internal architecture notes
-Some mixins re-use the same functionality. It lives in [`sqlalchemy_mixins.SessionMixin`](sqlalchemy_mixins/session.py) (session access) and [`sqlalchemy_mixins.InspectionMixin`](sqlalchemy_mixins/inspection.py) (inspecting columns, relations etc.) and other mixins inherit them.
+Some mixins re-use the same functionality. It lives in [`SessionMixin`](sqlalchemy_mixins/session.py) (session access) and [`InspectionMixin`](sqlalchemy_mixins/inspection.py) (inspecting columns, relations etc.) and other mixins inherit them.
 
 You can use these mixins standalone if you want.
 
@@ -405,7 +405,7 @@ We found several implementations of this pattern.
 **[ActiveAlchemy](https://github.com/mardix/active-alchemy/)**
 
 Cool, but it forces you to use [their own way](https://github.com/mardix/active-alchemy/#create-the-model) to instantiate SQLAlchemy
-while to use [`sqlalchemy_mixins.ActiveRecordMixin`](sqlalchemy_mixins/activerecord.py) you should just make you model to inherit it.
+while to use [`ActiveRecordMixin`](sqlalchemy_mixins/activerecord.py) you should just make you model to inherit it.
 
 **[Flask-ActiveRecord](https://github.com/kofrasa/flask-activerecord)**
 
@@ -432,7 +432,7 @@ but there you can't choose which columns to output. It simply prints all columns
 
 ## v0.2
 
-More clear methods in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eagerload.py):
+More clear methods in [`EagerLoadMixin`](sqlalchemy_mixins/eagerload.py):
 
  * *added* `with_subquery` method: it's like `with_joined`, but for [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload).
    So you can now write:
@@ -455,7 +455,7 @@ More clear methods in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eag
  * `with_` method *arguments change*: it now accepts *only dict schemas*. If you want to quickly joinedload relations, use `with_joined`
  * `with_dict` method *removed*. Instead, use `with_` method   
 
-Other changes in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eagerload.py):
+Other changes in [`EagerLoadMixin`](sqlalchemy_mixins/eagerload.py):
 
  * constants *rename*: use cleaner `JOINED` and `SUBQUERY` instead of `JOINEDLOAD` and `SUBQUERYLOAD`
  * do not allow `None` in schema anymore, so instead of
@@ -470,7 +470,7 @@ Other changes in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eagerloa
 
 ### v0.2.1
 
-Fix in [`sqlalchemy_mixins.ActiveRecordMixin.columns`](sqlalchemy_mixins/activerecord.py) property.
+Fix in [`InspectionMixin.columns`](sqlalchemy_mixins/inspection.py) property.
 
 It didn't return columns inherited from other class. Now it works correct: 
 
