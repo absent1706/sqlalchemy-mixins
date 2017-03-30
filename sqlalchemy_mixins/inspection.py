@@ -14,7 +14,7 @@ class InspectionMixin(Base):
 
     @classproperty
     def columns(cls):
-        return [c.key for c in cls.__table__.columns]
+        return inspect(cls).columns.keys()
 
     @classproperty
     def relations(cls):

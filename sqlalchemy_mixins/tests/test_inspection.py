@@ -46,6 +46,15 @@ class Post(BaseModel):
     user_id = sa.Column(sa.Integer, sa.ForeignKey('user.id'))
 
 
+class Parent(BaseModel):
+    __tablename__ = 'parent'
+    id = sa.Column(sa.Integer, primary_key=True)
+
+
+class Child(Parent):
+    some_prop = sa.Column(sa.String)
+
+
 class TestSessionMixin(unittest.TestCase):
     def setUp(self):
         Base.metadata.create_all(engine)
@@ -53,6 +62,10 @@ class TestSessionMixin(unittest.TestCase):
     def test_columns(self):
         self.assertEqual(set(User.columns), {'id', 'first_name', 'last_name'})
         self.assertEqual(set(Post.columns), {'id', 'body', 'user_id'})
+
+    def test_nested_columns(self):
+        self.assertEqual(set(Parent.columns), {'id'})
+        self.assertEqual(set(Child.columns), {'id', 'some_prop'})
 
     def test_relations(self):
         self.assertEqual(set(User.relations), {'posts', 'posts_viewonly'})
