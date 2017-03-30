@@ -467,3 +467,22 @@ Other changes in [`sqlalchemy_mixins.EagerLoadMixin`](sqlalchemy_mixins/eagerloa
      ```python
      Comment.with_({'user': JOINED})
      ```
+
+### v0.2.1
+
+Fix in [`sqlalchemy_mixins.ActiveRecordMixin.columns`](sqlalchemy_mixins/activerecord.py) property.
+
+It didn't return columns inherited from other class. Now it works correct: 
+
+```python
+class Parent(BaseModel):
+    __tablename__ = 'parent'
+    id = sa.Column(sa.Integer, primary_key=True)
+
+
+class Child(Parent):
+    some_prop = sa.Column(sa.String)
+    
+Child.columns # before it returned ['some_prop']
+              # now it returns ['id', 'some_prop'] 
+```
