@@ -17,6 +17,21 @@ class InspectionMixin(Base):
         return inspect(cls).columns.keys()
 
     @classproperty
+    def primary_keys_full(cls):
+        """Get primary key properties for a SQLAlchemy cls.
+        Taken from marshmallow_sqlalchemy
+        """
+        mapper = cls.__mapper__
+        return [
+            mapper.get_property_by_column(column)
+            for column in mapper.primary_key
+        ]
+
+    @classproperty
+    def primary_keys(cls):
+        return [pk.key for pk in cls.primary_keys_full]
+
+    @classproperty
     def relations(cls):
         """Return a `list` of relationship names or the given model
         """

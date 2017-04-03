@@ -55,6 +55,12 @@ class Child(Parent):
     some_prop = sa.Column(sa.String)
 
 
+class ModelWithTwoPks(BaseModel):
+    __tablename__ = 'two_pks'
+    pk1 = sa.Column(sa.Integer, primary_key=True)
+    pk2 = sa.Column(sa.Integer, primary_key=True)
+
+
 class TestSessionMixin(unittest.TestCase):
     def setUp(self):
         Base.metadata.create_all(engine)
@@ -66,6 +72,10 @@ class TestSessionMixin(unittest.TestCase):
     def test_nested_columns(self):
         self.assertEqual(set(Parent.columns), {'id'})
         self.assertEqual(set(Child.columns), {'id', 'some_prop'})
+
+    def test_primary_keys(self):
+        self.assertEqual(set(User.primary_keys), {'id'})
+        self.assertEqual(set(ModelWithTwoPks.primary_keys), {'pk1', 'pk2'})
 
     def test_relations(self):
         self.assertEqual(set(User.relations), {'posts', 'posts_viewonly'})
