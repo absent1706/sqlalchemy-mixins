@@ -93,6 +93,8 @@ class TestEagerLoad(unittest.TestCase):
         sess.add(cm11)
         sess.commit()
 
+        user_not_in_session = User()
+
         # tests. see output in console
 
         print(repr(u1))
@@ -110,6 +112,9 @@ class TestEagerLoad(unittest.TestCase):
         print(repr(cm11))
         self.assertIn('c11', repr(cm11))
         self.assertIn('Bill', repr(cm11))
+
+        print(user_not_in_session)
+        self.assertIn('None', repr(user_not_in_session))
 
         Comment.__repr_attrs__ = ['INCORRECT ATTR']
         with self.assertRaises(KeyError):

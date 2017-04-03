@@ -11,8 +11,11 @@ class ReprMixin:
     @property
     def _id_str(self):
         ids = inspect(self).identity
-        return '-'.join([str(x) for x in ids]) if len(ids) > 1 \
-               else str(ids[0])
+        if ids:
+            return '-'.join([str(x) for x in ids]) if len(ids) > 1 \
+                   else str(ids[0])
+        else:
+            return 'None'
 
     @property
     def _repr_attrs_str(self):
