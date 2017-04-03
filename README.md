@@ -488,4 +488,4 @@ Child.columns # before it returned ['some_prop']
 ```
 
 ### v0.2.2
-Fixed bug in [`ReprMixin`](sqlalchemy_mixins/repr.py): it [crashed](http://www.qopy.me/8UgySS2DTNOScdef_IuqAw) for objects without ID (newly created ones).
+Fixed bug in [`ReprMixin`](sqlalchemy_mixins/repr.py): it [crashed](http://www.qopy.me/8UgySS2DTNOScdef_IuqAw) for objects without ID (newly created ones, not added yet to the session).
