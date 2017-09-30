@@ -295,7 +295,11 @@ class TestOrmWithSubqueryClassProperties(TestEagerLoad):
         _ = post.user
         self.assertEqual(self.query_count, 3)
 
+
 class TestOrmWithDict(TestEagerLoad):
+    def setUp(self):
+        super(TestOrmWithDict, self).setUp()
+
     def _test_joinedload(self, schema):
         self.assertEqual(self.query_count, 0)
         post = Post.with_(schema).get(11)
