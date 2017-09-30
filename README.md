@@ -12,11 +12,11 @@ and [Eloquent ORM](https://laravel.com/docs/5.4/eloquent)
 
 Why it's cool:
  * framework-agnostic
- * easy integration:
+ * easy integration to your existing project:
    ```python
-    from sqlalchemy_mixins import ActiveRecordMixin
+    from sqlalchemy_mixins import AllFeaturesMixin
 
-    class User(Base, ActiveRecordMixin):
+    class User(Base, AllFeaturesMixin):
          pass
     ```
  * clean code, splitted by modules
