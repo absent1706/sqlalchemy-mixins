@@ -297,9 +297,6 @@ class TestOrmWithSubqueryClassProperties(TestEagerLoad):
 
 
 class TestOrmWithDict(TestEagerLoad):
-    def setUp(self):
-        super(TestOrmWithDict, self).setUp()
-
     def _test_joinedload(self, schema):
         self.assertEqual(self.query_count, 0)
         post = Post.with_(schema).get(11)
@@ -370,26 +367,6 @@ class TestOrmWithDict(TestEagerLoad):
         comment = post.comments[0]
         _ = comment.user
         self.assertEqual(self.query_count, 2)
-
-    def test_combined_load_2_strings(self):
-        schema = {
-            User.posts: (SUBQUERY, {
-                Post.comments: {
-                    Comment.user: JOINED
-                }
-            })
-        }
-        self._test_combined_load(schema)
-
-    def test_combined_load_2_class_properties(self):
-        schema = {
-            'posts': (SUBQUERY, {
-                'comments': {
-                    'user': JOINED
-                }
-            })
-        }
-        self._test_combined_load(schema)
 
 
 if __name__ == '__main__': # pragma: no cover
