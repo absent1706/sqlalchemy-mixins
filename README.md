@@ -146,7 +146,7 @@ User.find_or_fail(123987) # will raise sqlalchemy_mixins.ModelNotFoundError
 See [full example](examples/activerecord.py) and [tests](sqlalchemy_mixins/tests/test_activerecord.py)
 
 ### Querying
-As in [Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.1/quickstart/#a-minimal-application),
+As in [Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.1/queries/#querying-records),
 [Peewee](http://docs.peewee-orm.com/en/latest/peewee/api.html#Model.select)
 and [Django ORM](https://docs.djangoproject.com/en/1.10/topics/db/queries/#retrieving-objects),
 you can quickly query some class
