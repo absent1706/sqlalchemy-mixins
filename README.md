@@ -250,6 +250,11 @@ Post.sort('-rating', 'user___name').all() # sort by rating DESC, user name ASC
 ```
 (`___` splits relation and attribute, `__` splits attribute and operator)
 
+> If you need more flexibility, you can use low-level `filter_expr` method `session.query(Post).filter(*Post.filter_expr(rating__gt=2, body='text'))`, [see example](examples/smartquery.py#L232).
+>
+> It's like [`filter_by` in SQLALchemy](http://docs.sqlalchemy.org/en/latest/orm/query.html#sqlalchemy.orm.query.Query.filter_by), but also allows magic operators like `rating__gt`.
+>
+> Note: `filter_expr` method is very low-level and does NOT do magic Django-like joins. Use [`smart_query`](#all-in-one-smart_query) for that.
 
 > **All relations used in filtering/sorting should be _explicitly set_, not just being a backref**
 >
