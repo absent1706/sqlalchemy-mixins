@@ -1,10 +1,12 @@
 try:
+    # noinspection PyUnresolvedReferences
     from typing import List
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     pass
 
 from collections import OrderedDict
 
+import sqlalchemy
 from sqlalchemy import asc, desc, inspect
 from sqlalchemy.orm import aliased, contains_eager
 from sqlalchemy.orm.util import AliasedClass
@@ -59,6 +61,77 @@ def _parse_path_and_make_aliases(entity, entity_path, attrs, aliases):
         alias = aliased(relationship.property.argument())
         aliases[path] = alias, relationship
         _parse_path_and_make_aliases(alias, path, nested_attrs, aliases)
+
+
+def smart_query(query, filters=None, sort_attrs=None, schema=None):
+    """
+    Does magic Django-ish joins like post___user___name__startswith='Bob'
+     (see https://goo.gl/jAgCyM)
+    Does filtering, sorting and eager loading at the same time.
+    And if, say, filters and sorting need the same joinm it will be done
+     only one. That's why all stuff is combined in single method
+
+    :param query: sqlalchemy.orm.query.Query
+    :param filters: dict
+    :param sort_attrs: List[basestring]
+    :param schema: dict
+    """
+    if not filters:
+        filters = {}
+    if not sort_attrs:
+        sort_attrs = []
+    if not schema:
+        schema = {}
+
+    # noinspection PyProtectedMember
+    root_cls = query._joinpoint_zero().class_  # for example, User or Post
+    attrs = list(filters.keys()) + \
+        list(map(lambda s: s.lstrip(DESC_PREFIX), sort_attrs))
+    aliases = OrderedDict({})
+    _parse_path_and_make_aliases(root_cls, '', attrs, aliases)
+
+    loaded_paths = []
+    for path, al in aliases.items():
+        relationship_path = path.replace(RELATION_SPLITTER, '.')
+        query = query.outerjoin(al[0], al[1]) \
+            .options(contains_eager(relationship_path, alias=al[0]))
+        loaded_paths.append(relationship_path)
+
+    for attr, value in filters.items():
+        if RELATION_SPLITTER in attr:
+            parts = attr.rsplit(RELATION_SPLITTER, 1)
+            entity, attr_name = aliases[parts[0]][0], parts[1]
+        else:
+            entity, attr_name = root_cls, attr
+        try:
+            query = query.filter(*entity.filter_expr(**{attr_name: value}))
+        except KeyError as e:
+            raise KeyError("Incorrect filter path `{}`: {}"
+                           .format(attr, e))
+
+    for attr in sort_attrs:
+        if RELATION_SPLITTER in attr:
+            prefix = ''
+            if attr.startswith(DESC_PREFIX):
+                prefix = DESC_PREFIX
+                attr = attr.lstrip(DESC_PREFIX)
+            parts = attr.rsplit(RELATION_SPLITTER, 1)
+            entity, attr_name = aliases[parts[0]][0], prefix + parts[1]
+        else:
+            entity, attr_name = root_cls, attr
+        try:
+            query = query.order_by(*entity.order_expr(attr_name))
+        except KeyError as e:
+            raise KeyError("Incorrect order path `{}`: {}".format(attr, e))
+
+    if schema:
+        flat_schema = _flatten_schema(schema)
+        not_loaded_part = {path: v for path, v in flat_schema.items()
+                           if path not in loaded_paths}
+        query = query.options(*_eager_expr_from_flat_schema(
+            not_loaded_part))
+
+    return query
 
 
 class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
@@ -231,62 +304,7 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
         :param sort_attrs: List[basestring]
         :param schema: dict
         """
-        if not filters:
-            filters = {}
-        if not sort_attrs:
-            sort_attrs = []
-        if not schema:
-            schema = {}
-
-        root_entity = cls
-        attrs = list(filters.keys()) + \
-                list(map(lambda s: s.lstrip(DESC_PREFIX), sort_attrs))
-        aliases = OrderedDict({})
-        _parse_path_and_make_aliases(root_entity, '', attrs, aliases)
-
-        query = cls.query
-        loaded_paths = []
-        for path, al in aliases.items():
-            relationship_path = path.replace(RELATION_SPLITTER, '.')
-            query = query.outerjoin(al[0], al[1]) \
-                .options(contains_eager(relationship_path, alias=al[0]))
-            loaded_paths.append(relationship_path)
-
-        for attr, value in filters.items():
-            if RELATION_SPLITTER in attr:
-                parts = attr.rsplit(RELATION_SPLITTER, 1)
-                entity, attr_name = aliases[parts[0]][0], parts[1]
-            else:
-                entity, attr_name = root_entity, attr
-            try:
-                query = query.filter(*entity.filter_expr(**{attr_name: value}))
-            except KeyError as e:
-                raise KeyError("Incorrect filter path `{}`: {}"
-                               .format(attr, e))
-
-        for attr in sort_attrs:
-            if RELATION_SPLITTER in attr:
-                prefix = ''
-                if attr.startswith(DESC_PREFIX):
-                    prefix = DESC_PREFIX
-                    attr = attr.lstrip(DESC_PREFIX)
-                parts = attr.rsplit(RELATION_SPLITTER, 1)
-                entity, attr_name = aliases[parts[0]][0], prefix+parts[1]
-            else:
-                entity, attr_name = root_entity, attr
-            try:
-                query = query.order_by(*entity.order_expr(attr_name))
-            except KeyError as e:
-                raise KeyError("Incorrect order path `{}`: {}".format(attr, e))
-
-        if schema:
-            flat_schema = _flatten_schema(schema)
-            not_loaded_part = {path: v for path, v in flat_schema.items()
-                               if path not in loaded_paths}
-            query = query.options(*_eager_expr_from_flat_schema(
-                not_loaded_part))
-
-        return query
+        return smart_query(cls.query, filters, sort_attrs, schema)
 
     @classmethod
     def where(cls, **filters):
