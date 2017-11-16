@@ -327,6 +327,7 @@ Comment.smart_query(
     }).all()
 ```
 
+> ** New in 0.2.3 **
 > In real world, you may need to "smartly" apply filters/sort/eagerload to any arbitrary query.
 > And you can do this with standalone `smart_query` function:
 > ```python
@@ -504,7 +505,7 @@ Child.columns # before it returned ['some_prop']
               # now it returns ['id', 'some_prop'] 
 ```
 
-### v0.2.2
+### v0.2.3
 Fixed bug in [`ReprMixin`](sqlalchemy_mixins/repr.py): it [crashed](http://www.qopy.me/8UgySS2DTNOScdef_IuqAw) for objects without ID (newly created ones, not added yet to the session).
 
 ### v0.2.3
