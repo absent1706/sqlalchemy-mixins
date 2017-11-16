@@ -4,7 +4,7 @@ from .inspection import InspectionMixin
 
 # high-level mixins
 from .activerecord import ActiveRecordMixin, ModelNotFoundError
-from .smartquery import SmartQueryMixin
+from .smartquery import SmartQueryMixin, smart_query
 from .eagerload import EagerLoadMixin, JOINED, SUBQUERY
 from .repr import ReprMixin
 

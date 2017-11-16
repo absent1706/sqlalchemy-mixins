@@ -7,7 +7,7 @@ from sqlalchemy import event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy.orm import Session
-from sqlalchemy_mixins import SmartQueryMixin
+from sqlalchemy_mixins import SmartQueryMixin, smart_query
 from sqlalchemy_mixins.eagerload import JOINED, SUBQUERY
 
 Base = declarative_base()
@@ -575,6 +575,22 @@ class TestFullSmartQuery(BaseTest):
         u1, u2, u3, p11, p12, p21, p22, cm11, cm12, cm21, cm22, cm_empty = \
             self._seed()
 
+        # standalone function
+        query = Comment.query
+        res = smart_query(query,
+            filters={
+                'post___public': True,
+                'user__isnull': False
+            },
+            sort_attrs=['user___name', '-created_at'],
+            schema={
+                'post': {
+                    'user': JOINED
+                }
+            }).all()
+        self.assertEqual(res, [cm12, cm21, cm22])
+
+        # class method
         res = Comment.smart_query(
             filters={
                 'post___public': True,
@@ -592,6 +608,22 @@ class TestFullSmartQuery(BaseTest):
         u1, u2, u3, p11, p12, p21, p22, cm11, cm12, cm21, cm22, cm_empty = \
             self._seed()
 
+        # standalone function
+        query = Comment.query
+        res = smart_query(query,
+            filters={
+                'post___public': True,
+                'user__isnull': False
+            },
+            sort_attrs=['user___name', '-created_at'],
+            schema={
+                Comment.post: {
+                    Post.user: JOINED
+                }
+            }).all()
+        self.assertEqual(res, [cm12, cm21, cm22])
+
+        # class method
         res = Comment.smart_query(
             filters={
                 'post___public': True,

@@ -250,6 +250,11 @@ Post.sort('-rating', 'user___name').all() # sort by rating DESC, user name ASC
 ```
 (`___` splits relation and attribute, `__` splits attribute and operator)
 
+> If you need more flexibility, you can use low-level `filter_expr` method `session.query(Post).filter(*Post.filter_expr(rating__gt=2, body='text'))`, [see example](examples/smartquery.py#L232).
+>
+> It's like [`filter_by` in SQLALchemy](http://docs.sqlalchemy.org/en/latest/orm/query.html#sqlalchemy.orm.query.Query.filter_by), but also allows magic operators like `rating__gt`.
+>
+> Note: `filter_expr` method is very low-level and does NOT do magic Django-like joins. Use [`smart_query`](#all-in-one-smart_query) for that.
 
 > **All relations used in filtering/sorting should be _explicitly set_, not just being a backref**
 >
@@ -321,6 +326,18 @@ Comment.smart_query(
         }
     }).all()
 ```
+
+> In real world, you may need to "smartly" apply filters/sort/eagerload to any arbitrary query.
+> And you can do this with standalone `smart_query` function:
+> ```python
+> smart_query(any_query, filters=...)
+> ```
+> It's especially useful for filtering/sorting/eagerloading [relations with lazy='dynamic'](http://docs.sqlalchemy.org/en/latest/orm/collections.html#dynamic-relationship)
+>  for pages like [this](http://www.qopy.me/LwfSCu_ETM6At6el8wlbYA):
+> ```python
+> smart_query(user.comments_, filters=...)
+> ```
+> See [this example](examples/smartquery.py#L386)
 
 ![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
@@ -489,3 +506,11 @@ Child.columns # before it returned ['some_prop']
 
 ### v0.2.2
 Fixed bug in [`ReprMixin`](sqlalchemy_mixins/repr.py): it [crashed](http://www.qopy.me/8UgySS2DTNOScdef_IuqAw) for objects without ID (newly created ones, not added yet to the session).
+
+### v0.2.3
+[`SmartQueryMixin`](sqlalchemy_mixins/smartquery.py): decoupled `smart_query` function from ORM classes
+so now you can use it with any query like
+> ```python
+> smart_query(any_query, filters=...)
+> ```
+See [description](#all-in-one-smart_query) (at the end of paragraph) and [example](examples/smartquery.py#L386)

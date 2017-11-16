@@ -9,7 +9,7 @@ from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Query, scoped_session, sessionmaker
 
-from sqlalchemy_mixins import SmartQueryMixin, ReprMixin, JOINED
+from sqlalchemy_mixins import SmartQueryMixin, ReprMixin, JOINED, smart_query
 
 
 def log(msg):
@@ -37,6 +37,13 @@ class User(BaseModel):
     # not to be a backref
     posts = sa.orm.relationship('Post')
     comments = sa.orm.relationship('Comment')
+    # below relationship will just return query (without executing)
+    # this query can be customized
+    # see http://docs.sqlalchemy.org/en/latest/orm/collections.html#dynamic-relationship
+    #
+    # we will use this relationship for demonstrating real-life example
+    #  of how smart_query() function works (see 3.2.2)
+    comments_ = sa.orm.relationship('Comment', lazy="dynamic")  # this will return query
 
 
 class Post(BaseModel):
@@ -352,6 +359,8 @@ schema = {
 #         Post.user: JOINED
 #     }
 # }
+
+##### 3.1 high-level smart_query() class method #####
 res = Comment.smart_query(
     filters={
         'post___public': True,
@@ -361,8 +370,41 @@ res = Comment.smart_query(
     schema=schema).all()
 log(res)  # cm12, cm21, cm22
 
+##### 3.2 more flexible smart_query() function #####
 
-##### 3.1 auto eager load in where() and sort() with auto-joined relations ####
+##### 3.2.1. The same as 3.1
+query = Comment.query  # could be any query you want
+res = smart_query(query,
+    filters={
+        'post___public': True,
+        'user__isnull': False
+    },
+    sort_attrs=['user___name', '-created_at'],
+    schema=schema).all()
+log(res)  # cm12, cm21, cm22
+
+##### 3.2.2. Real-life example with lazy='dynamic' relationship
+# let's imagine we want to display some user relations
+#  and flexibly filter, sort and eagerload them
+# like this http://www.qopy.me/LwfSCu_ETM6At6el8wlbYA
+#  (no sort on screenshot, but you've git the idea)
+
+# so we have a user
+user = session.query(User).first()
+# and we have initial query for his/her comments
+#  (see User.comments_ relationship)
+query = user.comments_
+# now we just smartly apply all filters, sorts and eagerload. Perfect!
+res = smart_query(query,
+    filters={
+        'post___public': True,
+        'user__isnull': False
+    },
+    sort_attrs=['user___name', '-created_at'],
+    schema=schema).all()
+log(res)  # cm21
+
+##### 3.3 auto eager load in where() and sort() with auto-joined relations ####
 """
 Smart_query does auto-joins for filtering/sorting,
 so there's a sense to tell sqlalchemy that we alreeady joined that relation
@@ -371,7 +413,7 @@ So we test that relations are set to be joinedload
  if they were used in smart_query()
 """
 
-##### 3.1.1 where()
+##### 3.3.1 where()
 
 # comments on public posts where posted user name like ...
 res = Comment.where(post___public=True, post___user___name__like='Bi%').all()
@@ -383,7 +425,7 @@ log(res[0].post.user)
 # we didn't use post___comments in filters, so additional query is needed
 log(res[0].post.comments)
 
-##### 3.1.2 sort()
+##### 3.3.2 sort()
 res = Comment.sort('-post___public', 'post___user___name').all()
 log(res)
 # no additional query needed: we used 'post' and 'post__user'
