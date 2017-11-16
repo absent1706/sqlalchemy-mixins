@@ -322,6 +322,18 @@ Comment.smart_query(
     }).all()
 ```
 
+> In real world, you may need to "smartly" apply filters/sort/eagerload to any arbitrary query.
+> And you can do this with standalone `smart_query` function:
+> ```python
+> smart_query(any_query, filters=...)
+> ```
+> It's especially useful for filtering/sorting/eagerloading [relations with lazy='dynamic'](http://docs.sqlalchemy.org/en/latest/orm/collections.html#dynamic-relationship)
+>  for pages like [this](http://www.qopy.me/LwfSCu_ETM6At6el8wlbYA):
+> ```python
+> smart_query(user.comments_, filters=...)
+> ```
+> See [this example](examples/smartquery.py#L386)
+
 ![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
