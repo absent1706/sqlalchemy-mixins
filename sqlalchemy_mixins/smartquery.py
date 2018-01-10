@@ -140,6 +140,7 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
     _operators = {
         'isnull': lambda c, v: (c == None) if v else (c != None),
         'exact': operators.eq,
+        'ne': operators.ne,  # not equal or is not (for None)
 
         'gt': operators.gt,  # greater than , >
         'ge': operators.ge,  # greater than or equal, >=
