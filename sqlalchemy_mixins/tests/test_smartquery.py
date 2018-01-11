@@ -317,6 +317,9 @@ class TestFilterExpr(BaseTest):
         # rating == 2
         test(dict(rating=2), {cm12})  # when no operator, 'exact' is assumed
         test(dict(rating__exact=2), {cm12})
+        
+        # rating != 2
+        test(dict(rating__ne=2), {cm11, cm21, cm22})
 
         # rating > 2
         test(dict(rating__gt=2), {cm22})
