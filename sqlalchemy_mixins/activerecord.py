@@ -27,7 +27,7 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
         """Saves the updated model to the current entity db.
         """
         self.session.add(self)
-        self.session.flush()
+        self.session.commit()
         return self
 
     @classmethod
@@ -47,7 +47,7 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
         """Removes the model from the current entity session and mark for deletion.
         """
         self.session.delete(self)
-        self.session.flush()
+        self.session.commit()
 
     @classmethod
     def destroy(cls, *ids):
@@ -57,7 +57,7 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
         """
         for pk in ids:
             cls.find(pk).delete()
-        cls.session.flush()
+        cls.session.commit()
 
     @classmethod
     def all(cls):
