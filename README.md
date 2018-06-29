@@ -346,7 +346,7 @@ See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/t
 ## Beauty \_\_repr\_\_
 provided by [`ReprMixin`](sqalchemy_mixins/repr.py)
 
-As developers, we need to debug things with convenient.
+As developers, we need to debug things with convenience.
 When we play in REPL, we can see this
 
 ```
@@ -383,7 +383,7 @@ Now we have
 
 ```
 
-Long attributes will be cutted:
+Long attributes will be cut:
 
 ```
 long_post = Post(body='Post 2 long-long body', user=bob)
@@ -392,7 +392,7 @@ long_post = Post(body='Post 2 long-long body', user=bob)
 <Post #2 body:'Post 2 long-lon...' user:<User #1 'Bob'>>
 ```
 
-And you can customize max \_\_repr\_\_ length:
+And you can customize max `__repr__` length:
 ```
 class Post(BaseModel):
     # ...
