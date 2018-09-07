@@ -344,7 +344,7 @@ Comment.smart_query(
 See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ## Beauty \_\_repr\_\_
-provided by [`ReprMixin`](sqalchemy_mixins/repr.py)
+provided by [`ReprMixin`](sqlalchemy_mixins/repr.py)
 
 As developers, we need to debug things with convenience.
 When we play in REPL, we can see this
