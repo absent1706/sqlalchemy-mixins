@@ -61,7 +61,7 @@ python -m unittest discover sqlalchemy_mixins/
 
 ## Quick Start
 
-Here's a quick demo of what out mixins can do.
+Here's a quick demo of what our mixins can do.
 
 ```python
 bob = User.create(name='Bob')
