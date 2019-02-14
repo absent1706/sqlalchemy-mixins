@@ -19,5 +19,6 @@ script:
   - python examples/eagerload.py
   - python examples/repr.py
   - python examples/smartquery.py
+  - python examples/serialize.py
 after_success:
   - codeclimate-test-reporter
