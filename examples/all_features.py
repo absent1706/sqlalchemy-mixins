@@ -73,3 +73,10 @@ print(Comment.with_joined('user', 'post', 'post.comments').first())
 print(User.with_subquery('posts', 'posts.comments').first())
 # sort by rating DESC, user name ASC
 print(Post.sort('-rating', 'user___name').all())
+# {'id': 1, 'body': 'Post 1', 'user_id': 1}
+print(post1.to_dict())
+# {'id': 1,
+# 'name': 'Bob',
+# 'posts': [{'body': 'Post 1', 'id': 1, 'user_id': 1},
+#           {'body': 'Post 2', 'id': 2, 'user_id': 1}]}
+print(bob.to_dict(nested=True))

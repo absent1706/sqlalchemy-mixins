@@ -540,7 +540,7 @@ so now you can use it with any query like
 > ```
 See [description](#all-in-one-smart_query) (at the end of paragraph) and [example](examples/smartquery.py#L386)
 
-### v1.0
+### v1.0.1
 
 1. Added [SerializationMixin](#serialize-to-dict) (thanks, [jonatasleon](https://github.com/jonatasleon))
 
