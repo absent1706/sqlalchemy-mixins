@@ -544,7 +544,7 @@ See [description](#all-in-one-smart_query) (at the end of paragraph) and [exampl
 
 1. Added [SerializationMixin](#serialize-to-dict) (thanks, [jonatasleon](https://github.com/jonatasleon))
 
-1. Added `ne` operator, so now you can write something like
+1. Added `ne` operator (thanks, [https://github.com/sophalch](sophalch)), so now you can write something like
 
 ```python
 Post.where(rating__ne=2).all()
