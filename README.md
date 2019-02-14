@@ -43,6 +43,7 @@ Why it's cool:
         1. [Automatic eager load relations](#automatic-eager-load-relations)
     1. [All-in-one: smart_query](#all-in-one-smart_query)
     1. [Beauty \_\_repr\_\_](#beauty-__repr__)
+    1. [Serialize to dict](#serialize-to-dict)
 1. [Internal architecture notes](#internal-architecture-notes)
 1. [Comparison with existing solutions](#comparison-with-existing-solutions)
 1. [Changelog](#changelog)
@@ -84,6 +85,7 @@ print(Post.sort('-rating', 'user___name').all())
 ![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/all_features.py)
 
+> To interactively play with this example from CLI, [install iPython](https://ipython.org/install.html) and type `ipython -i examples\all_features.py`
 
 # Features
 
@@ -406,6 +408,28 @@ class Post(BaseModel):
 ![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/repr.py) and [tests](sqlalchemy_mixins/tests/test_repr.py)
 
+## Serialize to dict
+provided by [`SerializeMixin`](sqlalchemy_mixins/serialize.py)
+
+You can convert your model to dict.
+
+```python
+# 1. Without relationships
+#
+# {'id': 1, 'name': 'Bob'}
+print(user.to_dict())
+
+# 2. With relationships
+#
+# {'id': 1,
+# 'name': 'Bob',
+# 'posts': [{'body': 'Post 1', 'id': 1, 'user_id': 1},
+#           {'body': 'Post 2', 'id': 2, 'user_id': 1}]}
+print(user.to_dict(nested=True))
+```
+![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
+See [full example](examples/serialize.py)
+
 # Internal architecture notes
 Some mixins re-use the same functionality. It lives in [`SessionMixin`](sqlalchemy_mixins/session.py) (session access) and [`InspectionMixin`](sqlalchemy_mixins/inspection.py) (inspecting columns, relations etc.) and other mixins inherit them.
 
@@ -515,3 +539,13 @@ so now you can use it with any query like
 > smart_query(any_query, filters=...)
 > ```
 See [description](#all-in-one-smart_query) (at the end of paragraph) and [example](examples/smartquery.py#L386)
+
+### v1.0
+
+1. Added [SerializationMixin](#serialize-to-dict) (thanks, [jonatasleon](https://github.com/jonatasleon))
+
+1. Added `ne` operator, so now you can write something like
+
+```python
+Post.where(rating__ne=2).all()
+```
