@@ -1,8 +1,12 @@
 from collections import Iterable
 
+from .inspection import InspectionMixin
 
-class SerializeMixin:
+
+class SerializeMixin(InspectionMixin):
     """Mixin to make model serializable."""
+
+    __abstract__ = True
 
     def to_dict(self, nested=False):
         """Return dict object with model's data.
@@ -12,11 +16,11 @@ class SerializeMixin:
         :return: dict
         """
         result = dict()
-        for key in self.__mapper__.c.keys():
+        for key in self.columns:
             result[key] = getattr(self, key)
 
         if nested:
-            for key in self.__mapper__.relationships.keys():
+            for key in self.relations:
                 obj = getattr(self, key)
 
                 if isinstance(obj, SerializeMixin):
