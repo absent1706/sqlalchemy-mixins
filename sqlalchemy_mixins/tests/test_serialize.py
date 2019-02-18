@@ -65,8 +65,6 @@ class TestSerialize(unittest.TestCase):
         self.session.add(user_2)
         self.session.commit()
 
-        self.session.commit()
-
         post_11 = Post(
             id=11,
             body='Post 11 body.',
