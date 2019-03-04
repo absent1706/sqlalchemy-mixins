@@ -3,7 +3,7 @@ from datetime import datetime
 import sqlalchemy as sa
 
 
-class TimestampMixin:
+class TimestampsMixin:
     """Mixin that define timestamp columns."""
 
     __abstract__ = True
@@ -23,7 +23,7 @@ class TimestampMixin:
                            nullable=False)
 
 
-@sa.event.listens_for(TimestampMixin, 'before_update', propagate=True)
+@sa.event.listens_for(TimestampsMixin, 'before_update', propagate=True)
 def _receive_before_update(mapper, connection, target):
     """Listen for updates and update `updated_at` column."""
     target.updated_at = target.__datetime_callback__()

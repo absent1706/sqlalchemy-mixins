@@ -6,12 +6,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 
-from sqlalchemy_mixins import TimestampMixin
+from sqlalchemy_mixins import TimestampsMixin
 
 Base = declarative_base()
 
 
-class BaseModel(Base, TimestampMixin):
+class BaseModel(Base, TimestampsMixin):
     """Model to use as base."""
 
     __abstract__ = True
@@ -26,7 +26,7 @@ class User(BaseModel):
     __tablename__ = 'user'
 
 
-class TestTimestamp(unittest.TestCase):
+class TestTimestamps(unittest.TestCase):
     """Test case for Timestamp mixin."""
 
     @classmethod
@@ -45,14 +45,14 @@ class TestTimestamp(unittest.TestCase):
         Base.metadata.drop_all(self.engine)
 
     def test_timestamp_must_be_abstract(self):
-        """Test whether TimestampMixin is abstract."""
-        self.assertTrue(hasattr(TimestampMixin, '__abstract__'),
-                        'TimestampMixin must have attribute __abstract__')
-        self.assertTrue(TimestampMixin.__abstract__,
+        """Test whether TimestampsMixin is abstract."""
+        self.assertTrue(hasattr(TimestampsMixin, '__abstract__'),
+                        'TimestampsMixin must have attribute __abstract__')
+        self.assertTrue(TimestampsMixin.__abstract__,
                         '__abstract__ must be True')
 
     def test_timestamp_has_datetime_columns(self):
-        """Test whether TimestampMixin has attrs created_at and updated_at."""
+        """Test whether TimestampsMixin has attrs created_at and updated_at."""
         user = self.session.query(User).first()
 
         self.assertTrue(hasattr(User, 'created_at'),
