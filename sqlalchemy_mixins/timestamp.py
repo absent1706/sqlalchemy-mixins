@@ -14,12 +14,12 @@ class TimestampMixin:
 
     created_at = sa.Column(__created_at_name__,
                            sa.DateTime,
-                           default=__datetime_callback__(),
+                           default=__datetime_callback__,
                            nullable=False)
 
     updated_at = sa.Column(__updated_at_name__,
                            sa.DateTime,
-                           default=__datetime_callback__(),
+                           default=__datetime_callback__,
                            nullable=False)
 
 

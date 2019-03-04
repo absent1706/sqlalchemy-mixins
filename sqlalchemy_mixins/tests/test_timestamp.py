@@ -26,13 +26,6 @@ class User(BaseModel):
     __tablename__ = 'user'
 
 
-class UserCustomDatimeCallback(BaseModel):
-    """User model with custom `__datetime_callback__`."""
-
-    __tablename__ = 'user_custom_datetime_callback'
-    __datetime_callback__ = datetime.now
-
-
 class TestTimestamp(unittest.TestCase):
     """Test case for Timestamp mixin."""
 
@@ -46,10 +39,6 @@ class TestTimestamp(unittest.TestCase):
 
         user_1 = User(name='User')
         self.session.add(user_1)
-        self.session.commit()
-
-        user_2 = UserCustomDatimeCallback(name='Custom Datetime callback')
-        self.session.add(user_2)
         self.session.commit()
 
     def tearDown(self):
@@ -87,16 +76,6 @@ class TestTimestamp(unittest.TestCase):
         dt_2 = user.updated_at
 
         self.assertLess(dt_1, dt_2, 'dt_1 should be older than dt_2')
-
-    def test_datetime_callback_could_be_customized(self):
-        """Test whether __datetime_callback__ is customized."""
-        expected = 'now'
-        result = UserCustomDatimeCallback.__datetime_callback__.__name__
-
-        self.assertNotEqual(TimestampMixin.__datetime_callback__.__name__,
-                            result)
-        self.assertEqual(expected, result,
-                         '__datetime_callback__ was\'t custom')
 
 
 if __name__ == '__main__':
