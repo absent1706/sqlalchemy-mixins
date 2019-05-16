@@ -29,7 +29,7 @@ setup(name='sqlalchemy_mixins',
       install_requires=[
           "SQLAlchemy >= 1.0",
           "six",
-          "typing"
+          "typing; python_version < '3.5'"
       ],
       keywords=['sqlalchemy', 'active record', 'activerecord', 'orm',
                 'django-like', 'django', 'eager load', 'eagerload',  'repr',
