@@ -335,6 +335,11 @@ class TestFilterExpr(BaseTest):
         test(dict(rating__in=(1, 3)), {cm11, cm21, cm22})  # tuple
         test(dict(rating__in={1, 3}), {cm11, cm21, cm22})  # set
 
+        # rating not in [1,3]
+        test(dict(rating__notin=[1, 3]), {cm12})  # list
+        test(dict(rating__notin=(1, 3)), {cm12})  # tuple
+        test(dict(rating__notin={1, 3}), {cm12})  # set
+
         # rating between 2 and 3
         test(dict(rating__between=[2, 3]), {cm12, cm22})  # list
         test(dict(rating__between=(2, 3)), {cm12, cm22})  # set
