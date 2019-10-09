@@ -148,6 +148,7 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
         'le': operators.le,  # lower than or equal, <=
 
         'in': operators.in_op,
+        'notin': operators.notin_op,
         'between': lambda c, v: c.between(v[0], v[1]),
 
         'like': operators.like_op,
