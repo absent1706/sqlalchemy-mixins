@@ -157,6 +157,7 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
         'istartswith': lambda c, v: c.ilike(v + '%'),
         'endswith': operators.endswith_op,
         'iendswith': lambda c, v: c.ilike('%' + v),
+        'contains': lambda c, v: c.ilike(f'%{v}%'),
 
         'year': lambda c, v: extract('year', c) == v,
         'month': lambda c, v: extract('month', c) == v,
