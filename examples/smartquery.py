@@ -294,6 +294,8 @@ log(Comment.where(created_at__day=20).all())  # cm12, cm22
 # whole date
 log(Comment.where(created_at__year=2014, created_at__month=1,
                   created_at__day=1).all())  # cm11
+# date comparisons
+log(Comment.where(created_at__year_gt=2014).all())  # cm12, cm21, cm22
 
 ##### 1.4 where() with auto-joined relations #####
 

@@ -368,6 +368,13 @@ class TestFilterExpr(BaseTest):
                   created_at__day=1), {cm11})
         test(dict(created_at=datetime.datetime(2014, 1, 1)), {cm11})
 
+        # date comparisons
+        test(dict(created_at__year_ge=2014), {cm11, cm12, cm21, cm22})
+        test(dict(created_at__year_gt=2014), {cm12, cm21, cm22})
+        test(dict(created_at__year_le=2015), {cm11, cm12, cm21})
+        test(dict(created_at__month_lt=10), {cm11})
+
+
 
 # noinspection PyUnusedLocal
 class TestOrderExpr(BaseTest):

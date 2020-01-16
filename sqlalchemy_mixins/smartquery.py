@@ -160,8 +160,25 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
         'contains': lambda c, v: c.ilike(f'%{v}%'),
 
         'year': lambda c, v: extract('year', c) == v,
+        'year_ne': lambda c, v: extract('year', c) != v,
+        'year_gt': lambda c, v: extract('year', c) > v,
+        'year_ge': lambda c, v: extract('year', c) >= v,
+        'year_lt': lambda c, v: extract('year', c) < v,
+        'year_le': lambda c, v: extract('year', c) <= v,
+
         'month': lambda c, v: extract('month', c) == v,
-        'day': lambda c, v: extract('day', c) == v
+        'month_ne': lambda c, v: extract('month', c) != v,
+        'month_gt': lambda c, v: extract('month', c) > v,
+        'month_ge': lambda c, v: extract('month', c) >= v,
+        'month_lt': lambda c, v: extract('month', c) < v,
+        'month_le': lambda c, v: extract('month', c) <= v,
+
+        'day': lambda c, v: extract('day', c) == v,
+        'day_ne': lambda c, v: extract('day', c) != v,
+        'day_gt': lambda c, v: extract('day', c) > v,
+        'day_ge': lambda c, v: extract('day', c) >= v,
+        'day_lt': lambda c, v: extract('day', c) < v,
+        'day_le': lambda c, v: extract('day', c) <= v,
     }
 
     @classproperty
