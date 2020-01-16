@@ -8,6 +8,7 @@ from .smartquery import SmartQueryMixin, smart_query
 from .eagerload import EagerLoadMixin, JOINED, SUBQUERY
 from .repr import ReprMixin
 from .serialize import SerializeMixin
+from .timestamp import TimestampsMixin
 
 
 # all features combined to one mixin
