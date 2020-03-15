@@ -18,6 +18,7 @@ matrix:
       dist: xenial
       sudo: true
   allow_failures:
+    - python: 2.7
     - python: 3.2
 
 # command to install dependencies
