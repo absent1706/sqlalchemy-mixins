@@ -6,3 +6,4 @@
 /*.egg-info
 /*.egg
 .pypirc
+env
