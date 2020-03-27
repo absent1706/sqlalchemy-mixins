@@ -82,6 +82,10 @@ print(Comment.with_joined('user', 'post', 'post.comments').first())
 print(User.with_subquery('posts', 'posts.comments').first())
 # sort by rating DESC, user name ASC
 print(Post.sort('-rating', 'user___name').all())
+# created_at, updated_at timestamps added automatically
+print("Created Bob at ", bob.created_at)   
+# serialize to dict, without relationships
+print(bob.to_dict(nested=False).all())
 ```
 
 ![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
