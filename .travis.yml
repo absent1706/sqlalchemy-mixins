@@ -1,13 +1,22 @@
 language: python
 python:
-  - "3.2"
-  - "3.3"
   - "3.4"
   - "3.5"
   - "3.6"
   - "3.7"
   - "3.8"
 
+
+# Also run these python versions with a specific distribution:
+matrix:
+  include:
+    - python: 3.2
+      dist: trusty
+    - python: 3.3
+      dist: trusty
+#    - python: 3.7
+#      dist: xenial
+#      sudo: true
 
 # command to install dependencies
 install: "pip install -r requirements-dev.txt"
