@@ -29,14 +29,14 @@ def _parse_path_and_make_aliases(entity, entity_path, attrs, aliases):
     :type entity: InspectionMixin
     :type entity_path: str
     :type attrs: list
-    :type aliases: OrderedDict 
-    
+    :type aliases: OrderedDict
+
     Sample values:
-    
+
     attrs: ['product__subject_ids', 'user_id', '-group_id',
             'user__name', 'product__name', 'product__grade_from__order']
     relations: {'product': ['subject_ids', 'name'], 'user': ['name']}
-    
+
     """
     relations = {}
     # take only attributes that have magic RELATION_SPLITTER
@@ -157,7 +157,7 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
         'istartswith': lambda c, v: c.ilike(v + '%'),
         'endswith': operators.endswith_op,
         'iendswith': lambda c, v: c.ilike('%' + v),
-        'contains': lambda c, v: c.ilike(f'%{v}%'),
+        'contains': lambda c, v: c.ilike('%{v}%'.format(v=v)),
 
         'year': lambda c, v: extract('year', c) == v,
         'year_ne': lambda c, v: extract('year', c) != v,
@@ -319,8 +319,8 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
         Does filtering, sorting and eager loading at the same time.
         And if, say, filters and sorting need the same joinm it will be done
          only one. That's why all stuff is combined in single method
-        
-        :param filters: dict 
+
+        :param filters: dict
         :param sort_attrs: List[basestring]
         :param schema: dict
         """
@@ -336,7 +336,7 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
         Example 2:
           filters = {'subject_ids__in': [1,2], 'grade_from_id': 2}
           Product.where(**filters).all()
-          
+
         Example 3 (with joins):
           Post.where(public=True, user___name__startswith='Bi').all()
         """
@@ -357,7 +357,7 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
         This is equal to
             columns = ['first_name','-user_id']
             db.query(User).order_by(*User.order_expr(*columns))
-            
+
         Exanple 3 (with joins):
             Post.sort('comments___rating', 'user___name').all()
         """
