@@ -617,7 +617,9 @@ Post.where(rating__ne=2).all()
 
 ### v1.2
 
-1. Added Python 3.7, 3.8 compatibility. Removed Python 2.7, 3.2 compatibility.
+1. **Removed Python 2, Python 3.2 compatibility**.
+
+1. Added Python 3.7, 3.8 compatibility. 
  
 1. Added [TimestampsMixin](#timestamps) (thanks, [jonatasleon](https://github.com/jonatasleon))
 
