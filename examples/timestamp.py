@@ -44,10 +44,10 @@ print("Created Bob:    ", bob.created_at)
 print("Pre-update Bob: ", bob.updated_at)
 # Pre-update Bob:  2019-03-04 03:53:53.606769
 
-time.sleep(5)
+time.sleep(2)
 
 bob.name = "Robert"
 session.commit()
 
 print("Updated Bob:    ", bob.updated_at)
-# Updated Bob:     2019-03-04 03:53:58.613044
+# Updated Bob:     2019-03-04 03:53:55.613044

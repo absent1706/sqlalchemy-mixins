@@ -44,6 +44,7 @@ Why it's cool:
     1. [All-in-one: smart_query](#all-in-one-smart_query)
     1. [Beauty \_\_repr\_\_](#beauty-__repr__)
     1. [Serialize to dict](#serialize-to-dict)
+    1. [Timestamps](#timestamps)
 1. [Internal architecture notes](#internal-architecture-notes)
 1. [Comparison with existing solutions](#comparison-with-existing-solutions)
 1. [Changelog](#changelog)
@@ -121,8 +122,13 @@ print(user)
 
 # Features
 
-Main features are [Active Record](#active-record), [Eager Load](#eager-load), [Django-like queries](#django-like-queries)
-and [Beauty \_\_repr\_\_](#beauty-__repr__).
+Main features are
+ * [Active Record](#active-record)
+ * [Eager Load](#eager-load)
+ * [Django-like queries](#django-like-queries)
+ * [Beauty \_\_repr\_\_](#beauty-__repr__)
+ * [Timestamps](#timestamps)
+ * [Serialize to dict](#serialize-to-dict)
 
 ## Active Record
 provided by [`ActiveRecordMixin`](sqlalchemy_mixins/activerecord.py)
@@ -462,6 +468,33 @@ print(user.to_dict(nested=True))
 ![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/serialize.py)
 
+## Timestamps
+provided by [`TimestampsMixin`](sqlalchemy_mixins/timestamp.py)
+
+You can convert your model to dict.
+
+```python
+bob = User(name="Bob")
+session.add(bob)
+session.flush()
+
+print("Created Bob:    ", bob.created_at)
+# Created Bob:     2019-03-04 03:53:53.606765
+
+print("Pre-update Bob: ", bob.updated_at)
+# Pre-update Bob:  2019-03-04 03:53:53.606769
+
+time.sleep(2)
+
+bob.name = "Robert"
+session.commit()
+
+print("Updated Bob:    ", bob.updated_at)
+# Updated Bob:     2019-03-04 03:53:58.613044
+```
+![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
+See [full example](examples/timestamp.py)
+
 # Internal architecture notes
 Some mixins re-use the same functionality. It lives in [`SessionMixin`](sqlalchemy_mixins/session.py) (session access) and [`InspectionMixin`](sqlalchemy_mixins/inspection.py) (inspecting columns, relations etc.) and other mixins inherit them.
 
@@ -580,4 +613,20 @@ See [description](#all-in-one-smart_query) (at the end of paragraph) and [exampl
 
 ```python
 Post.where(rating__ne=2).all()
+```
+
+### v1.2
+
+1. Added Python 3.7, 3.8 compatibility. Removed Python 2.7, 3.2 compatibility.
+ 
+1. Added [TimestampsMixin](#timestamps) (thanks, [jonatasleon](https://github.com/jonatasleon))
+
+1. Added [`contains` operator](https://github.com/absent1706/sqlalchemy-mixins/pull/29/files) (thanks, [alexbredo](https://github.com/alexbredo).
+
+1. Added [date comparison operators](https://github.com/absent1706/sqlalchemy-mixins/pull/27/files) (thanks, [proteusvacuum](https://github.com/proteusvacuum), so now you can write something like
+
+```python
+Post.where(created_at__year_ge=2014).all()
+Post.where(created_at__month_gt=10).all()
+Post.where(created_at__day_le=30).all()
 ```
