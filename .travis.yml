@@ -31,4 +31,4 @@ script:
   - python examples/repr.py
   - python examples/smartquery.py
   - python examples/serialize.py
-  - python examples/timestamps.py
+  - python examples/timestamp.py
