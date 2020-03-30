@@ -621,18 +621,34 @@ Post.where(rating__ne=2).all()
 
 ### v1.2
 
+> This version contains breaking change, removed in v1.2.1, so we hardly recommend to not use this release and switch to 1.2.1.
+
 1. **Removed Python 2, Python 3.2 compatibility**.
 
 1. Added Python 3.7, 3.8 compatibility. 
  
-1. Added [TimestampsMixin](#timestamps) (thanks, [jonatasleon](https://github.com/jonatasleon))
+1. Added [TimestampsMixin](#timestamps) (thanks, [jonatasleon](https://github.com/jonatasleon)). 
 
-1. Added [`contains` operator](https://github.com/absent1706/sqlalchemy-mixins/pull/29/files) (thanks, [alexbredo](https://github.com/alexbredo).
+1. (**Breaking change**, fixed in [v1.2.1](#v121)) [TimestampsMixin](#timestamps) was **included it to [AllFeaturesMixin](sqlalchemy_mixins/__init__.py)** which means `created_at` and `updated_at` fields were added to all models using `AllFeaturesMixin` which means you need to write migrations adding these fields.  
 
-1. Added [date comparison operators](https://github.com/absent1706/sqlalchemy-mixins/pull/27/files) (thanks, [proteusvacuum](https://github.com/proteusvacuum), so now you can write something like
+1. Added [`contains` operator](https://github.com/absent1706/sqlalchemy-mixins/pull/29/files) (thanks, [alexbredo](https://github.com/alexbredo)).
+
+1. Added [date comparison operators](https://github.com/absent1706/sqlalchemy-mixins/pull/27/files) (thanks, [proteusvacuum](https://github.com/proteusvacuum)), so now you can write something like
 
 ```python
 Post.where(created_at__year_ge=2014).all()
 Post.where(created_at__month_gt=10).all()
 Post.where(created_at__day_le=30).all()
 ```
+
+### v1.2.1
+
+Reverted breaking change introduced in [1.2](#v12):
+
+removed [TimestampsMixin](#timestamps) from [AllFeaturesMixin](sqlalchemy_mixins/__init__.py). This addition in [v1.2](#v12) forced package users to write and run migration to add `created_at` and `updated_at` fields to all tables whose ORM models used `AllFeaturesMixin`.
+   Now you should add `TimestampsMixin` separately:
+   
+   ```python
+   class BaseModel(Base, AllFeaturesMixin, TimestampsMixin):
+       # ...
+   ```

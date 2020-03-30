@@ -12,6 +12,6 @@ from .timestamp import TimestampsMixin
 
 
 # all features combined to one mixin
-class AllFeaturesMixin(ActiveRecordMixin, SmartQueryMixin, ReprMixin, SerializeMixin, TimestampsMixin):
+class AllFeaturesMixin(ActiveRecordMixin, SmartQueryMixin, ReprMixin, SerializeMixin):
     __abstract__ = True
     __repr__ = ReprMixin.__repr__
