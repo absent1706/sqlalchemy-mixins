@@ -621,7 +621,12 @@ Post.where(rating__ne=2).all()
 
 ### v1.2
 
-> This version contains breaking change, removed in v1.2.1, so we hardly recommend to not use this release and switch to 1.2.1.
+> This version contains breaking change, reverted in v1.2.1.
+> So:
+>   * v1.2 was removed from PyPi to avoid confusions
+>   * for those who already downloaded v1.2, we hardly recommend to switch to 1.2.1.
+>
+> Just use [v1.2.1](#v121) instead
 
 1. **Removed Python 2, Python 3.2 compatibility**.
 
