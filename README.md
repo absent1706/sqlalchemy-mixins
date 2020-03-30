@@ -628,6 +628,11 @@ Post.where(rating__ne=2).all()
 >
 > Just use [v1.2.1](#v121) instead
 
+
+> By mistake, v1.2 code was released on PyPi as v1.1. 
+> It has been deleted from PyPi to avoid confusion. 
+> Sorry for any inconvenience guys.  
+
 1. **Removed Python 2, Python 3.2 compatibility**.
 
 1. Added Python 3.7, 3.8 compatibility. 
