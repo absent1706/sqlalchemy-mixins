@@ -139,7 +139,7 @@ class TestSerialize(unittest.TestCase):
         self.assertDictEqual(result, expected)
 
     def test_serialize_single__with_hybrid(self):
-        result = self.session.query(User).first().to_dict(include_hybrid=True)
+        result = self.session.query(User).first().to_dict(hybrid_attributes=True)
         expected = {
             'id': 1,
             'name': 'Bill u1',
@@ -148,7 +148,7 @@ class TestSerialize(unittest.TestCase):
         self.assertDictEqual(result, expected)
 
     def test_serialize_nested__with_hybrid(self):
-        result = self.session.query(Post).first().to_dict(nested=True, include_hybrid=True)
+        result = self.session.query(Post).first().to_dict(nested=True, hybrid_attributes=True)
         expected = {
             'id': 11,
             'body': 'Post 11 body.',
