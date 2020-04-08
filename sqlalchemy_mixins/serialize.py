@@ -20,9 +20,9 @@ class SerializeMixin(InspectionMixin):
         for key in self.columns:
             result[key] = getattr(self, key)
 
-            if hybrid_attributes:
-                for key in self.hybrid_properties:
-                    result[key] = getattr(self, key)
+        if hybrid_attributes:
+            for key in self.hybrid_properties:
+                result[key] = getattr(self, key)
 
         if nested:
             for key in self.relations:
