@@ -58,7 +58,7 @@ def _parse_path_and_make_aliases(entity, entity_path, attrs, aliases):
                            "{} doesnt have `{}` relationship "
                            .format(path, entity, relation_name))
         relationship = getattr(entity, relation_name)
-        alias = aliased(relationship.property.argument())
+        alias = aliased(relationship.property.mapper.class_)
         aliases[path] = alias, relationship
         _parse_path_and_make_aliases(alias, path, nested_attrs, aliases)
 
