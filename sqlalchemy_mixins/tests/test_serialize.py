@@ -3,6 +3,7 @@ import unittest
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Session
 
 from sqlalchemy_mixins import SerializeMixin
@@ -21,6 +22,10 @@ class User(BaseModel):
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String)
     posts = sa.orm.relationship('Post')
+
+    @hybrid_property
+    def posts_count(self):
+        return len(self.posts)
 
 
 class Post(BaseModel):
@@ -133,6 +138,38 @@ class TestSerialize(unittest.TestCase):
         }
         self.assertDictEqual(result, expected)
 
+    def test_serialize_single__with_hybrid(self):
+        result = self.session.query(User).first().to_dict(hybrid_attributes=True)
+        expected = {
+            'id': 1,
+            'name': 'Bill u1',
+            'posts_count': 1
+        }
+        self.assertDictEqual(result, expected)
+
+    def test_serialize_nested__with_hybrid(self):
+        result = self.session.query(Post).first().to_dict(nested=True, hybrid_attributes=True)
+        expected = {
+            'id': 11,
+            'body': 'Post 11 body.',
+            'archived': True,
+            'user_id': 1,
+            'user': {
+                'id': 1,
+                'name': 'Bill u1',
+                'posts_count': 1
+            },
+            'comments': [
+                {
+                    'id': 11,
+                    'body': 'Comment 11 body',
+                    'user_id': 1,
+                    'post_id': 11,
+                    'rating': 1,
+                }
+            ]
+        }
+        self.assertDictEqual(result, expected)
 
 if __name__ == '__main__':
     unittest.main()
