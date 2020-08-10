@@ -475,7 +475,7 @@ See [full example](examples/serialize.py)
 ## Timestamps
 provided by [`TimestampsMixin`](sqlalchemy_mixins/timestamp.py)
 
-You can convert your model to dict.
+You can view the created and updated timestamps.
 
 ```python
 bob = User(name="Bob")
