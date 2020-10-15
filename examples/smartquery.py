@@ -406,6 +406,22 @@ res = smart_query(query,
     schema=schema).all()
 log(res)  # cm21
 
+##### 3.2.3 Logical operators and arbitrary expressions in filters
+# If we want to use OR, NOT or other logical operators in our queries
+# we can nest the filters dictionary:
+
+res = Post.smart_query(filters={
+    sa.or_: {'archived': True, 'is_commented_by_user': u3}
+})
+log(res)   # p11, p22
+
+# !! NOTE !! This cannot be used with the where method, e.g. 
+# Post.where(**{sa.or: {...}})
+# TypeError!! (only strings are allowed as keyword arguments)
+
+# sa.or_, sa.and_ and sa._not work, as should all functions that
+# return a sqla expression.
+
 ##### 3.3 auto eager load in where() and sort() with auto-joined relations ####
 """
 Smart_query does auto-joins for filtering/sorting,
