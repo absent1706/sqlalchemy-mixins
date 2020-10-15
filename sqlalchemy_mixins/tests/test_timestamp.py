@@ -1,3 +1,4 @@
+import time
 import unittest
 from datetime import datetime
 
@@ -69,6 +70,8 @@ class TestTimestamps(unittest.TestCase):
         """Test whether updated_at value is most recently after update."""
         user = self.session.query(User).first()
         dt_1 = user.updated_at
+
+        time.sleep(1)
 
         user.name = 'New name'
         self.session.commit()

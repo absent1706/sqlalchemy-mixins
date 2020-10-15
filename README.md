@@ -384,6 +384,18 @@ Comment.smart_query(
 > ```
 > See [this example](examples/smartquery.py#L386)
 
+
+> ** Experimental ** 
+> Additional logic (OR, AND, NOT etc) can be expressed using a nested dictionary for filters, with sqlalchemy operators (or any callable) as keys:
+> ```
+> from sqlalchemy import or_
+> Comment.smart_query(filters={ or_: {
+>     'post___public': True, 
+>     'user__isnull': False
+> }})
+> ```
+> See [this example](examples/smartquery.py#L409)
+
 ![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 

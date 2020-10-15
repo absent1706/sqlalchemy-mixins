@@ -24,6 +24,30 @@ OPERATOR_SPLITTER = '__'
 DESC_PREFIX = '-'
 
 
+def _flatten_filter_keys(filters):
+    """
+    :type filters: dict
+    Flatten the nested filter dictionaries, discarding callables. Sample input:
+    {
+        or_: {
+            'id__gt': 1000, and_ : {
+                'id__lt': 500, 'related___property__in': (1,2,3) 
+            }
+        }
+    }
+    
+    Yields:
+
+    'id__gt', 'id__lt', 'related___property__in'
+
+    """
+    for key, value in filters.items():
+        if callable(key):
+            yield from _flatten_filter_keys(value)
+        else:
+            yield key
+
+
 def _parse_path_and_make_aliases(entity, entity_path, attrs, aliases):
     """
     :type entity: InspectionMixin
@@ -85,7 +109,7 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
 
     # noinspection PyProtectedMember
     root_cls = query._entity_zero().class_  # for example, User or Post
-    attrs = list(filters.keys()) + \
+    attrs = list(_flatten_filter_keys(filters)) + \
         list(map(lambda s: s.lstrip(DESC_PREFIX), sort_attrs))
     aliases = OrderedDict({})
     _parse_path_and_make_aliases(root_cls, '', attrs, aliases)
@@ -97,17 +121,24 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
             .options(contains_eager(relationship_path, alias=al[0]))
         loaded_paths.append(relationship_path)
 
-    for attr, value in filters.items():
-        if RELATION_SPLITTER in attr:
-            parts = attr.rsplit(RELATION_SPLITTER, 1)
-            entity, attr_name = aliases[parts[0]][0], parts[1]
-        else:
-            entity, attr_name = root_cls, attr
-        try:
-            query = query.filter(*entity.filter_expr(**{attr_name: value}))
-        except KeyError as e:
-            raise KeyError("Incorrect filter path `{}`: {}"
-                           .format(attr, e))
+    def recurse_filters(_filters):
+        for attr, value in _filters.items():
+            if callable(attr):
+                # E.g. or_, and_, or other sqlalchemy function
+                # that returns an expression
+                yield attr(*recurse_filters(value))
+                continue
+            if RELATION_SPLITTER in attr:
+                parts = attr.rsplit(RELATION_SPLITTER, 1)
+                entity, attr_name = aliases[parts[0]][0], parts[1]
+            else:
+                entity, attr_name = root_cls, attr
+            try:
+                yield from entity.filter_expr(**{attr_name: value})
+            except KeyError as e:
+                raise KeyError("Incorrect filter path `{}`: {}".format(attr, e))
+
+    query = query.filter(*recurse_filters(filters))
 
     for attr in sort_attrs:
         if RELATION_SPLITTER in attr:
