@@ -542,6 +542,40 @@ class TestSmartQueryFilters(BaseTest):
         })
         self.assertEqual(set(res), {p11, p22})
 
+    def test_lists_in_filters_using_explicit_and(self):
+        # Check for users with (post OR comment) AND (name like 'B%' OR id>10)
+        # This cannot be expressed without a list in the filter structure
+        # (would require duplicated or_ keys)
+        u1, u2, u3, p11, p12, p21, p22, cm11, cm12, cm21, cm22, cm_empty = \
+            self._seed()
+
+        res = User.smart_query(filters={
+            sa.and_: [
+                { sa.or_: {
+                    'comments__isnull': False,
+                    'posts__isnull': False
+                }},
+                {sa.or_: {'name__like': 'B%', 'id__gt':10}}
+            ]
+        })
+
+        self.assertEqual(set(res), {u1, u3})
+
+    def test_top_level_list_in_expression(self):
+        # Check for users with (post OR comment) AND (name like 'B%'),
+        # As above, but implicit AND
+        u1, u2, u3, p11, p12, p21, p22, cm11, cm12, cm21, cm22, cm_empty = \
+            self._seed()        
+        res = User.smart_query(filters=[
+            { sa.or_: {
+                'comments__isnull': False,
+                'posts__isnull': False
+            }},
+            {sa.or_: {'name__like': 'B%', 'id__gt':10}}
+        ])
+
+        self.assertEqual(set(res), {u1, u3})
+
 
 # noinspection PyUnusedLocal
 class TestSmartQuerySort(BaseTest):
