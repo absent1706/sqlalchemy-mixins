@@ -1,6 +1,7 @@
 import unittest
 import datetime
 
+import nose
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 from sqlalchemy import event
@@ -785,7 +786,7 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
         self.assertEqual(self.query_count, 2)
 
     # TODO: implement below logic
-    @unittest.expectedFailure
+    @nose.SkipTest
     def test_override_eagerload_method_in_schema(self):
         """
         here we use 'post' relation in filters,
