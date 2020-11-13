@@ -84,7 +84,7 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
         schema = {}
 
     # noinspection PyProtectedMember
-    root_cls = query._entity_zero().class_  # for example, User or Post
+    root_cls = query._compile_state()._entity_zero().class_  # for example, User or Post
     attrs = list(filters.keys()) + \
         list(map(lambda s: s.lstrip(DESC_PREFIX), sort_attrs))
     aliases = OrderedDict({})
