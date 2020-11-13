@@ -1,6 +1,6 @@
 import unittest
+import time
 from datetime import datetime
-
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -69,7 +69,7 @@ class TestTimestamps(unittest.TestCase):
         """Test whether updated_at value is most recently after update."""
         user = self.session.query(User).first()
         dt_1 = user.updated_at
-
+        time.sleep(1)
         user.name = 'New name'
         self.session.commit()
 
