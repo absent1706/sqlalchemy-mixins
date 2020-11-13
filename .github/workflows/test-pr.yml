@@ -23,7 +23,7 @@ jobs:
     - name: Run tests
       run: |
         nosetests --with-coverage --cover-inclusive --cover-package=sqlalchemy_mixins
-        #export PYTHONPATH=.:$PYTHONPATH
+        export PYTHONPATH=.:$PYTHONPATH
         python examples/activerecord.py
         python examples/all_features.py
         python examples/eagerload.py
