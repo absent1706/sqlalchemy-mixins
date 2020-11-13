@@ -33,6 +33,13 @@ class User(BaseModel):
     # not to be a backref
     posts = sa.orm.relationship('Post')
     comments = sa.orm.relationship('Comment')
+    # below relationship will just return query (without executing)
+    # this query can be customized
+    # see http://docs.sqlalchemy.org/en/latest/orm/collections.html#dynamic-relationship
+    #
+    # we will use this relationship for demonstrating real-life example
+    #  of how smart_query() function works (see 3.2.2)
+    comments_ = sa.orm.relationship('Comment', lazy="dynamic")  # this will return query
 
 
 class Post(BaseModel):
@@ -217,7 +224,7 @@ class TestFilterExpr(BaseTest):
 
         self.assertEqual(set(User.filterable_attributes),
                          {'id', 'name',  # normal columns
-                          'posts', 'comments'  # relations
+                          'posts', 'comments', 'comments_'  # relations
                           })
         self.assertNotIn('posts_viewonly', set(User.filterable_attributes))
 
@@ -784,6 +791,31 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
         # so additional query is NOT needed
         _ = res[0].post.comments
         self.assertEqual(self.query_count, 2)
+
+    def test_lazy_dynamic(self):
+        u1, u2, u3, p11, p12, p21, p22, cm11, cm12, cm21, cm22, cm_empty = \
+            self._seed()
+
+        schema = {
+            'post': {
+                'user': JOINED
+            }
+        }
+
+        user = sess.query(User).first()
+        # and we have initial query for his/her comments
+        #  (see User.comments_ relationship)
+        query = user.comments_
+        # now we just smartly apply all filters, sorts and eagerload. Perfect!
+        res = smart_query(query,
+                          filters={
+                              'post___public': True,
+                              'user__isnull': False
+                          },
+                          sort_attrs=['user___name', '-created_at'],
+                          schema=schema).all()
+
+        assert res[0] == cm21
 
     # TODO: implement below logic
     @nose.SkipTest

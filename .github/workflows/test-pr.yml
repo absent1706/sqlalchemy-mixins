@@ -20,8 +20,20 @@ jobs:
       run: |
         python -m pip install --upgrade pip setuptools wheel
         pip install -r requirements-dev.txt
-    - name: Run tests
+    - name: Run tests with sqlalchemy current
       run: |
+        nosetests --with-coverage --cover-inclusive --cover-package=sqlalchemy_mixins
+        export PYTHONPATH=.:$PYTHONPATH
+        python examples/activerecord.py
+        python examples/all_features.py
+        python examples/eagerload.py
+        python examples/repr.py
+        python examples/smartquery.py
+        python examples/serialize.py
+        python examples/timestamp.py
+    - name: Run tests with sqlalchemy next
+      run: |
+        pip install sqlalchemy --pre
         nosetests --with-coverage --cover-inclusive --cover-package=sqlalchemy_mixins
         export PYTHONPATH=.:$PYTHONPATH
         python examples/activerecord.py
