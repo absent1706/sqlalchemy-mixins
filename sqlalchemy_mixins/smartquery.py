@@ -103,7 +103,6 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
         query = query._statement
         query.session = sess
 
-    # noinspection PyProtectedMember
     root_cls = _get_root_cls(query)  # for example, User or Post
     attrs = list(filters.keys()) + \
         list(map(lambda s: s.lstrip(DESC_PREFIX), sort_attrs))
