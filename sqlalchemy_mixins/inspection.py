@@ -1,9 +1,14 @@
 from sqlalchemy import inspect
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy.orm import RelationshipProperty
 
 from .utils import classproperty
+
+from sqlalchemy import __version__ as _sa_version
+if tuple(int(__) for __ in _sa_version.split('.')[0:2]) >= (1, 4):
+    from sqlalchemy.orm import declarative_base
+else:
+    from sqlalchemy.ext.declarative import declarative_base
 
 
 Base = declarative_base()
