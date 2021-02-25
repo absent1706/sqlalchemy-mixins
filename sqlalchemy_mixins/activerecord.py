@@ -6,6 +6,9 @@ from .dbexception import DBException
 class ModelNotFoundError(ValueError):
     pass
 
+from sqlalchemy.exc import IntegrityError
+   
+
 class ActiveRecordMixin(InspectionMixin, SessionMixin):
     __abstract__ = True
 
@@ -26,7 +29,6 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
         """
         Saves the updated model to the current entity db.
         """
-
         try:
             self.session.add(self)
             self.session.flush()
@@ -37,22 +39,26 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
             raise DBException(name="Insertion Error", cause=str(e))
         return self
 
-
     @classmethod
     def create(cls, **kwargs):
-        """Create and persist a new record for the model
-        :param kwargs: attributes for the record
-        :return: the new model instance
+
+        """
+        Create and persist a new record for the model
+
+        :param kwargs: 
+            attributes for the record
+        :return: 
+            the new model instance
         """
         
-        return cls().fill(**kwargs).save()
+        return cls().fill(**kwargs)
   
 
     def update(self, **kwargs):
         """Same as :meth:`fill` method but persists changes to database.
         """
     
-        return self.fill(**kwargs).save()
+        return self.fill(**kwargs)
         
 
 
