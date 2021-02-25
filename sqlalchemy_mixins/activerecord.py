@@ -1,11 +1,10 @@
 from .utils import classproperty
 from .session import SessionMixin
 from .inspection import InspectionMixin
-
+from .dbexception import DBException
 
 class ModelNotFoundError(ValueError):
     pass
-
 
 class ActiveRecordMixin(InspectionMixin, SessionMixin):
     __abstract__ = True
@@ -24,11 +23,20 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
         return self
 
     def save(self):
-        """Saves the updated model to the current entity db.
         """
-        self.session.add(self)
-        self.session.flush()
+        Saves the updated model to the current entity db.
+        """
+
+        try:
+            self.session.add(self)
+            self.session.flush()
+            if not self.session.autocommit:
+                self.session.commit()
+        except IntegrityError as e:
+            self.session.rollback()
+            raise DBException(name="Insertion Error", cause=str(e))
         return self
+
 
     @classmethod
     def create(cls, **kwargs):
@@ -36,18 +44,30 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
         :param kwargs: attributes for the record
         :return: the new model instance
         """
+        
         return cls().fill(**kwargs).save()
+  
 
     def update(self, **kwargs):
         """Same as :meth:`fill` method but persists changes to database.
         """
+    
         return self.fill(**kwargs).save()
+        
+
 
     def delete(self):
         """Removes the model from the current entity session and mark for deletion.
         """
-        self.session.delete(self)
-        self.session.flush()
+        try:
+            self.session.delete(self)
+            self.session.flush()
+            if not self.session.autocommit:
+                self.session.commit()
+        except IntegrityError as e:
+            self.session.rollback()
+            raise DBException(name="Deletion Error", cause=str(e))
+        
 
     @classmethod
     def destroy(cls, *ids):
@@ -55,9 +75,15 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
         :type ids: list
         :param ids: primary key ids of records
         """
-        for pk in ids:
-            cls.find(pk).delete()
-        cls.session.flush()
+        try:
+            for pk in ids:
+                cls.find(pk).delete()
+            cls.session.flush()
+            if not cls.session.autocommit:
+                cls.session.commit()
+        except IntegrityError as e:
+            cls.session.rollback()
+            raise DBException(name="Deletion Error", cause=str(e))
 
     @classmethod
     def all(cls):
@@ -72,11 +98,12 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
         """Find record by the id
         :param id_: the primary key
         """
-        return cls.query.get(id_)
+        # return cls.query.get(id_) 
+        return cls.query.filter_by(id=id_).first() ### get() is deprecated in sqlalchemy
 
     @classmethod
     def find_or_fail(cls, id_):
-        # assume that query has custom get_or_fail method
+        # assume that query has custom get_or_fail methodk
         result = cls.find(id_)
         if result:
             return result

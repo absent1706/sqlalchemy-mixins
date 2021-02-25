@@ -10,6 +10,8 @@ from .repr import ReprMixin
 from .serialize import SerializeMixin
 from .timestamp import TimestampsMixin
 
+# exception
+from .dbexception import DBException
 
 # all features combined to one mixin
 class AllFeaturesMixin(ActiveRecordMixin, SmartQueryMixin, ReprMixin, SerializeMixin):
