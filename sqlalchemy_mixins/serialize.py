@@ -1,4 +1,4 @@
-from collections import Iterable
+from collections.abc import Iterable
 
 from .inspection import InspectionMixin
 
