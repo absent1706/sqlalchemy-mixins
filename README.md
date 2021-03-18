@@ -4,6 +4,7 @@
 
 # Maintenance disclaimer
 I (project author) currently don't have enough time to support the project. 
+
 Feel free to open up a Github issue if you want to become a collaborator
 
 # SQLAlchemy mixins
