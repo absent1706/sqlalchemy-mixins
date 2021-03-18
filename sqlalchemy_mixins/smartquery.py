@@ -62,6 +62,17 @@ def _parse_path_and_make_aliases(entity, entity_path, attrs, aliases):
         aliases[path] = alias, relationship
         _parse_path_and_make_aliases(alias, path, nested_attrs, aliases)
 
+def _get_root_cls(query):
+    # sqlalchemy < 1.4.0
+    if hasattr(query, '_entity_zero'):
+        return query._entity_zero().class_
+
+    # sqlalchemy >= 1.4.0
+    else:
+        if hasattr(query, '_entity_from_pre_ent_zero'):
+            return query._entity_from_pre_ent_zero().class_
+    raise ValueError('Cannot get a root class from`{}`'
+                     .format(query))
 
 def smart_query(query, filters=None, sort_attrs=None, schema=None):
     """
@@ -83,8 +94,16 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
     if not schema:
         schema = {}
 
+    # sqlalchemy >= 1.4.0, should probably a. check something else to determine if we need to convert
+    # AppenderQuery to a query, b. probably not hack it like this
     # noinspection PyProtectedMember
-    root_cls = query._entity_zero().class_  # for example, User or Post
+    if type(query).__name__ == 'AppenderQuery' and query._statement:
+        sess = query.session
+        # noinspection PyProtectedMember
+        query = query._statement
+        query.session = sess
+
+    root_cls = _get_root_cls(query)  # for example, User or Post
     attrs = list(filters.keys()) + \
         list(map(lambda s: s.lstrip(DESC_PREFIX), sort_attrs))
     aliases = OrderedDict({})
