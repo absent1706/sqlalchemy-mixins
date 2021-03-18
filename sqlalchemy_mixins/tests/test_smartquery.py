@@ -818,7 +818,7 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
         assert res[0] == cm21
 
     # TODO: implement below logic
-    @nose.SkipTest
+    @nose.tools.raises(Exception)
     def test_override_eagerload_method_in_schema(self):
         """
         here we use 'post' relation in filters,
