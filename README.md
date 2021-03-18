@@ -2,6 +2,10 @@
 [![PyPI version](https://img.shields.io/pypi/v/sqlalchemy_mixins.svg)](https://pypi.python.org/pypi/sqlalchemy_mixins)
 [![Python versions](https://img.shields.io/pypi/pyversions/sqlalchemy_mixins.svg)](https://travis-ci.org/absent1706/sqlalchemy-mixins)
 
+# Maintenance disclaimer
+I (project author) currently don't have enough time to support the project. 
+Feel free to open up a Github issue if you want to become a collaborator
+
 # SQLAlchemy mixins
 A pack of framework-agnostic, easy-to-integrate and well tested mixins for SQLAlchemy ORM.
 
