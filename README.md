@@ -667,3 +667,8 @@ removed [TimestampsMixin](#timestamps) from [AllFeaturesMixin](sqlalchemy_mixins
    class BaseModel(Base, AllFeaturesMixin, TimestampsMixin):
        # ...
    ```
+
+
+### v1.3
+
+Add support for SQLAlchemy 1.4
