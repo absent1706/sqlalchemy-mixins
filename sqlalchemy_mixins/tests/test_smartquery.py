@@ -817,8 +817,6 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
 
         assert res[0] == cm21
 
-    # TODO: implement below logic
-    @nose.tools.raises(Exception)
     def test_override_eagerload_method_in_schema(self):
         """
         here we use 'post' relation in filters,
@@ -840,6 +838,22 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
         _ = res[0].post
         # no additional query needed: we used 'post' relation in smart_query()
         self.assertEqual(self.query_count, 2)
+
+        # Test nested schemas
+        self.query_count = 0
+        res = Comment.smart_query(
+            filters=dict(post___public=True, post___user___name__like='Bi%'),
+            schema={
+                'post': (SUBQUERY, { # This should load in a separate query
+                    'user': SUBQUERY # This should also load in a separate query
+                })
+            }
+        ).all()
+        self.assertEqual(self.query_count, 3)
+
+        _ = res[0].post
+        # no additional query needed: we used 'post' relation in smart_query()
+        self.assertEqual(self.query_count, 3)
 
 if __name__ == '__main__': # pragma: no cover
     unittest.main()
