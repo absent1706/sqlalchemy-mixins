@@ -6,9 +6,9 @@ except ImportError:  # pragma: no cover
 
 from collections import OrderedDict
 
-import sqlalchemy
+
 from sqlalchemy import asc, desc, inspect
-from sqlalchemy.orm import aliased, contains_eager, subqueryload
+from sqlalchemy.orm import aliased, contains_eager
 from sqlalchemy.orm.util import AliasedClass
 from sqlalchemy.sql import operators, extract
 
