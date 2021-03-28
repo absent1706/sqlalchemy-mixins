@@ -2,3 +2,4 @@
 nose
 coverage
 codeclimate-test-reporter
+tox
