@@ -3,7 +3,7 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/sqlalchemy_mixins.svg)](https://travis-ci.org/absent1706/sqlalchemy-mixins)
 
 # Maintenance disclaimer
-Project author currently doesn' currently have enough time to support the project. 
+Project author doesn't currently have enough time to support the project. 
 
 Feel free to open up a Github issue if you want to become a collaborator
 
