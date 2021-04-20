@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/absent1706/sqlalchemy-mixins.svg?branch=master)](https://travis-ci.org/absent1706/sqlalchemy-mixins)
+![example workflow](https://github.com/absent1706/sqlalchemy-mixins/actions/workflows/test-pr.yml/badge.svg)
 [![PyPI version](https://img.shields.io/pypi/v/sqlalchemy_mixins.svg)](https://pypi.python.org/pypi/sqlalchemy_mixins)
-[![Python versions](https://img.shields.io/pypi/pyversions/sqlalchemy_mixins.svg)](https://travis-ci.org/absent1706/sqlalchemy-mixins)
+
 
 # Maintenance disclaimer
 Project author doesn't currently have enough time to support the project. 
@@ -8,6 +8,9 @@ Project author doesn't currently have enough time to support the project.
 Feel free to open up a Github issue if you want to become a collaborator
 
 # SQLAlchemy mixins
+
+**Note**: As of **v1.3**, only python **3.5** is supported.
+
 A pack of framework-agnostic, easy-to-integrate and well tested mixins for SQLAlchemy ORM.
 
 Heavily inspired by [Django ORM](https://docs.djangoproject.com/en/1.10/topics/db/queries/)
