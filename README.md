@@ -9,7 +9,7 @@ Feel free to open up a Github issue if you want to become a collaborator
 
 # SQLAlchemy mixins
 
-**Note**: As of **v1.3**, only python **3.5** is supported.
+**Note**: As of **v1.3**, only python **3.5+** is supported.
 
 A pack of framework-agnostic, easy-to-integrate and well tested mixins for SQLAlchemy ORM.
 
