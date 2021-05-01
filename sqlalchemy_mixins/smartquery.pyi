@@ -1,4 +1,11 @@
-from typing import Union, Type, OrderedDict, List, Optional, Iterable, Any, Dict
+import sys
+from typing import Union, Type, List, Optional, Iterable, Dict, Any, TypeVar
+
+if sys.version_info >= (3, 6):
+    from typing import OrderedDict
+else:
+    OrderedDict = TypeVar('OrderedDict', bound=Any)
+
 
 from sqlalchemy.orm import Query
 from sqlalchemy.orm.util import AliasedClass
