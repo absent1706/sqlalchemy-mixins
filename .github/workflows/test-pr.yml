@@ -24,6 +24,8 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         pip install -r requirements-dev.txt
         pip install "sqlalchemy<1.4"
+    - name: Run type checks
+      run: mypy sqlalchemy_mixins
     - name: Run tests < sqlalchemy1.4
       run: |
         nosetests --with-coverage --cover-inclusive --cover-package=sqlalchemy_mixins

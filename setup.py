@@ -24,6 +24,7 @@ setup(name='sqlalchemy_mixins',
       author_email='litvinenko1706@gmail.com',
       license='MIT',
       packages=['sqlalchemy_mixins'],
+      package_data={'sqlalchemy_mixins': ['py.typed', '*.pyi', '**/*.pyi']},
       zip_safe=False,
       include_package_data=True,
       install_requires=[
