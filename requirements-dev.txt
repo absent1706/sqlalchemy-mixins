@@ -3,3 +3,5 @@ nose
 coverage
 codeclimate-test-reporter
 tox
+mypy==0.812
+sqlalchemy-stubs==0.4

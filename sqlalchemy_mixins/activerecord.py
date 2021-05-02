@@ -56,7 +56,9 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
         :param ids: primary key ids of records
         """
         for pk in ids:
-            cls.find(pk).delete()
+            obj = cls.find(pk)
+            if obj:
+                obj.delete()
         cls.session.flush()
 
     @classmethod
