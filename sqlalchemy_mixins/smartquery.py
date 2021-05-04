@@ -4,7 +4,7 @@ try:
 except ImportError:  # pragma: no cover
     pass
 
-from collections import OrderedDict
+from collections import abc, OrderedDict
 
 
 from sqlalchemy import asc, desc, inspect
@@ -22,6 +22,48 @@ RELATION_SPLITTER = '___'
 OPERATOR_SPLITTER = '__'
 
 DESC_PREFIX = '-'
+
+
+def _flatten_filter_keys(filters):
+    """
+    :type filters: dict|list
+    Flatten the nested filters, extracting keys where they correspond 
+    to smart_query paths, e.g. 
+    {or_: {'id__gt': 1000, and_ : {
+        'id__lt': 500,
+        'related___property__in': (1,2,3) 
+    }}}
+    
+    Yields:
+
+    'id__gt', 'id__lt', 'related___property__in'
+
+    Also allow lists (any abc.Sequence subclass) to enable support
+    of expressions like.
+
+    (X OR Y) AND (W OR Z)
+
+    { and_: [
+        {or_: {'id__gt': 5, 'related_id__lt': 10}},
+        {or_: {'related_id2__gt': 1, 'name__like': 'Bob' }}
+    ]}
+    """
+
+    if isinstance(filters, abc.Mapping):
+        for key, value in filters.items():
+            if callable(key):
+                yield from _flatten_filter_keys(value)
+            else:
+                yield key
+
+    elif isinstance(filters, abc.Sequence):
+        for f in filters:
+            yield from _flatten_filter_keys(f)
+
+    else:
+        raise TypeError(
+            "Unsupported type (%s) in filters: %r", (type(filters), filters)
+        )
 
 
 def _parse_path_and_make_aliases(entity, entity_path, attrs, aliases):
@@ -51,12 +93,16 @@ def _parse_path_and_make_aliases(entity, entity_path, attrs, aliases):
                 relations[relation_name] = [nested_attr]
 
     for relation_name, nested_attrs in relations.items():
-        path = entity_path + RELATION_SPLITTER + relation_name \
-               if entity_path else relation_name
+        path = (
+            entity_path + RELATION_SPLITTER + relation_name
+            if entity_path
+            else relation_name
+        )
         if relation_name not in entity.relations:
-            raise KeyError("Incorrect path `{}`: "
-                           "{} doesnt have `{}` relationship "
-                           .format(path, entity, relation_name))
+            raise KeyError(
+                "Incorrect path `{}`: "
+                "{} doesnt have `{}` relationship ".format(path, entity, relation_name)
+            )
         relationship = getattr(entity, relation_name)
         alias = aliased(relationship.property.mapper.class_)
         aliases[path] = alias, relationship
@@ -109,7 +155,7 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
         query.session = sess
 
     root_cls = _get_root_cls(query)  # for example, User or Post
-    attrs = list(filters.keys()) + \
+    attrs = list(_flatten_filter_keys(filters)) + \
         list(map(lambda s: s.lstrip(DESC_PREFIX), sort_attrs))
     aliases = OrderedDict({})
     _parse_path_and_make_aliases(root_cls, '', attrs, aliases)
@@ -122,17 +168,28 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
                 .options(contains_eager(relationship_path, alias=al[0]))
             loaded_paths.append(relationship_path)
 
-    for attr, value in filters.items():
-        if RELATION_SPLITTER in attr:
-            parts = attr.rsplit(RELATION_SPLITTER, 1)
-            entity, attr_name = aliases[parts[0]][0], parts[1]
-        else:
-            entity, attr_name = root_cls, attr
-        try:
-            query = query.filter(*entity.filter_expr(**{attr_name: value}))
-        except KeyError as e:
-            raise KeyError("Incorrect filter path `{}`: {}"
-                           .format(attr, e))
+    def recurse_filters(_filters):
+        if isinstance(_filters, abc.Mapping):
+            for attr, value in _filters.items():
+                if callable(attr):
+                    # E.g. or_, and_, or other sqlalchemy expression
+                    yield attr(*recurse_filters(value))
+                    continue
+                if RELATION_SPLITTER in attr:
+                    parts = attr.rsplit(RELATION_SPLITTER, 1)
+                    entity, attr_name = aliases[parts[0]][0], parts[1]
+                else:
+                    entity, attr_name = root_cls, attr
+                try:
+                    yield from entity.filter_expr(**{attr_name: value})
+                except KeyError as e:
+                    raise KeyError("Incorrect filter path `{}`: {}".format(attr, e))
+
+        elif isinstance(_filters, abc.Sequence):
+            for f in _filters:
+                yield from recurse_filters(f)
+
+    query = query.filter(*recurse_filters(filters))
 
     for attr in sort_attrs:
         if RELATION_SPLITTER in attr:
