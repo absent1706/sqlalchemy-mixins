@@ -18,8 +18,11 @@ class BaseModel(Base, SerializeMixin):
 
 class User(BaseModel):
     __tablename__ = 'user'
-
+    __exclude__ = [
+        'password'
+    ]
     id = sa.Column(sa.Integer, primary_key=True)
+    password = sa.Column(sa.String)
     name = sa.Column(sa.String)
     posts = sa.orm.relationship('Post', backref='user')
 
@@ -34,7 +37,7 @@ class Post(BaseModel):
 
 Base.metadata.create_all(engine)
 
-bob = User(name='Bob')
+bob = User(name='Bob' , password = "pass123")
 session.add(bob)
 session.flush()
 

@@ -17,7 +17,13 @@ class SerializeMixin(InspectionMixin):
         :return: dict
         """
         result = dict()
-        for key in self.columns:
+        if hasattr(self , '__exclude__'):
+             view_cols = filter(lambda elem : elem not in self.__exclude__ ,
+                                self.columns)
+        else :
+             view_cols = self.columns
+
+        for key in view_cols :
             result[key] = getattr(self, key)
 
         if hybrid_attributes:
