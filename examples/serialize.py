@@ -18,9 +18,6 @@ class BaseModel(Base, SerializeMixin):
 
 class User(BaseModel):
     __tablename__ = 'user'
-    __exclude__ = [
-        'password'
-    ]
     id = sa.Column(sa.Integer, primary_key=True)
     password = sa.Column(sa.String)
     name = sa.Column(sa.String)
@@ -49,17 +46,17 @@ post2 = Post(body='Post 2', user=bob)
 session.add(post2)
 session.flush()
 
-# {'id': 1, 'name': 'Bob'}
+# {'id': 1, 'name': 'Bob' , 'password' : 'pass123'}
 print(bob.to_dict())
 
 # {'id': 1,
 # 'name': 'Bob',
 # 'posts': [{'body': 'Post 1', 'id': 1, 'user_id': 1},
 #           {'body': 'Post 2', 'id': 2, 'user_id': 1}]}
-print(bob.to_dict(nested=True))
+print(bob.to_dict(nested=True , exclude = ['password']))
 
 # {'id': 1, 'body': 'Post 1', 'user_id': 1}
 print(post1.to_dict())
 
-# {'id': 2, 'body': 'Post 2', 'user_id': 1, 'user': {'id': 1, 'name': 'Bob'}}
+# {'id': 2, 'body': 'Post 2', 'user_id': 1, 'user': {'id': 1, 'name': 'Bob' , 'password' : 'pass123'}}
 print(post2.to_dict(nested=True))
