@@ -22,6 +22,7 @@ class User(BaseModel):
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String)
     posts = sa.orm.relationship('Post')
+    password = sa.Column(sa.String)
 
     @hybrid_property
     def posts_count(self):
@@ -62,11 +63,11 @@ class TestSerialize(unittest.TestCase):
         self.session = Session(self.engine)
         Base.metadata.create_all(self.engine)
 
-        user_1 = User(name='Bill u1', id=1)
+        user_1 = User(name='Bill u1', id=1 , password = 'pass1')
         self.session.add(user_1)
         self.session.commit()
 
-        user_2 = User(name='Alex u2', id=2)
+        user_2 = User(name='Alex u2', id=2 , password = 'pass2')
         self.session.add(user_2)
         self.session.commit()
 
@@ -93,7 +94,9 @@ class TestSerialize(unittest.TestCase):
         Base.metadata.drop_all(self.engine)
 
     def test_serialize_single(self):
-        result = self.session.query(User).first().to_dict()
+        result = self.session.query(User)\
+                    .first()\
+                    .to_dict(exclude= ['password'])
         expected = {
             'id': 1,
             'name': 'Bill u1'
@@ -101,7 +104,7 @@ class TestSerialize(unittest.TestCase):
         self.assertDictEqual(result, expected)
 
     def test_serialize_list(self):
-        result = [user.to_dict() for user in self.session.query(User).all()]
+        result = [user.to_dict(exclude = ['password']) for user in self.session.query(User).all()]
         expected = [
             {
                 'id': 1,
@@ -124,7 +127,8 @@ class TestSerialize(unittest.TestCase):
             'user_id': 1,
             'user': {
                 'id': 1,
-                'name': 'Bill u1'
+                'name': 'Bill u1' ,
+                'password' : 'pass1'
             },
             'comments': [
                 {
@@ -139,7 +143,9 @@ class TestSerialize(unittest.TestCase):
         self.assertDictEqual(result, expected)
 
     def test_serialize_single__with_hybrid(self):
-        result = self.session.query(User).first().to_dict(hybrid_attributes=True)
+        result = self.session.query(User)\
+                    .first()\
+                    .to_dict(hybrid_attributes=True , exclude = ['password'])
         expected = {
             'id': 1,
             'name': 'Bill u1',
@@ -157,7 +163,8 @@ class TestSerialize(unittest.TestCase):
             'user': {
                 'id': 1,
                 'name': 'Bill u1',
-                'posts_count': 1
+                'posts_count': 1 ,
+                'password' : 'pass1'
             },
             'comments': [
                 {
