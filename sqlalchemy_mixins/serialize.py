@@ -8,7 +8,7 @@ class SerializeMixin(InspectionMixin):
 
     __abstract__ = True
 
-    def to_dict(self,nested =False, hybrid_attributes=False, exclude = []):
+    def to_dict(self,nested = False, hybrid_attributes = False, exclude = None):
         """Return dict object with model's data.
 
         :param nested: flag to return nested relationships' data if true
@@ -18,10 +18,10 @@ class SerializeMixin(InspectionMixin):
         """
         result = dict()
 
-        if len(exclude) != 0 :
-             view_cols = filter(lambda e: e not in exclude, self.columns)
-        else :
+        if exclude is None:
              view_cols = self.columns
+        else :
+             view_cols = filter(lambda e: e not in exclude, self.columns)
 
         for key in view_cols :
             result[key] = getattr(self, key)
