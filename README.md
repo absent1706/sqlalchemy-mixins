@@ -1,12 +1,6 @@
 ![example workflow](https://github.com/absent1706/sqlalchemy-mixins/actions/workflows/test-pr.yml/badge.svg)
 [![PyPI version](https://img.shields.io/pypi/v/sqlalchemy_mixins.svg)](https://pypi.python.org/pypi/sqlalchemy_mixins)
 
-
-# Maintenance disclaimer
-Project author doesn't currently have enough time to support the project. 
-
-Feel free to open up a Github issue if you want to become a collaborator
-
 # SQLAlchemy mixins
 
 **Note**: As of **v1.3**, only python **3.5+** is supported.
