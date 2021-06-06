@@ -37,6 +37,9 @@ class SerializeMixin(InspectionMixin):
                 if isinstance(obj, SerializeMixin):
                     result[key] = obj.to_dict(hybrid_attributes=hybrid_attributes)
                 elif isinstance(obj, Iterable):
-                    result[key] = [o.to_dict(hybrid_attributes=hybrid_attributes) for o in obj]
+                    result[key] = [
+                        o.to_dict(hybrid_attributes=hybrid_attributes) for o in obj
+                        if isinstance(o, SerializeMixin)
+                    ]
 
         return result
