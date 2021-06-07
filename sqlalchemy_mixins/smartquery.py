@@ -393,6 +393,8 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
     def paginate(cls, limit, page):
         """
         Shorthand for calling query.offset and/or query.limit on a queryset before evaluation.
+        :param limit: int
+        :param page: int
         """
         cls.query = cls.query.offset(page * limit)
         cls.query = cls.query.limit(limit)
