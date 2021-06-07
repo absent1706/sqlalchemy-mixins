@@ -364,7 +364,8 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
         Example 3 (with joins):
           Post.where(public=True, user___name__startswith='Bi').all()
         """
-        return cls.smart_query(filters)
+        cls.query = cls.smart_query(filters)
+        return cls
 
     @classmethod
     def sort(cls, *columns):
@@ -385,4 +386,14 @@ class SmartQueryMixin(InspectionMixin, EagerLoadMixin):
         Exanple 3 (with joins):
             Post.sort('comments___rating', 'user___name').all()
         """
-        return cls.smart_query({}, columns)
+        cls.query = cls.smart_query({}, columns)
+        return cls
+
+    @classmethod
+    def paginate(cls, limit, page):
+        """
+        Shorthand for calling query.offset and/or query.limit on a queryset before evaluation.
+        """
+        cls.query = cls.query.offset(page * limit)
+        cls.query = cls.query.limit(limit)
+        return cls.query
