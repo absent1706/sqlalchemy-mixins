@@ -13,7 +13,8 @@ class SerializeMixin(InspectionMixin):
 
         :param nested: flag to return nested relationships' data if true
         :type: bool
-        :param include_hybrid: flag to include hybrid attributes if true
+        :param hybrid_attributes: flag to include hybrid attributes if true
+        :type: bool
         :return: dict
         """
         result = dict()
