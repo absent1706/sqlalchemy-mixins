@@ -49,7 +49,7 @@ class InspectionMixin(Base):
     def hybrid_properties(cls):
         items = inspect(cls).all_orm_descriptors
         return [item.__name__ for item in items
-                if type(item) == hybrid_property]
+                if isinstance(item, hybrid_property)]
 
     @classproperty
     def hybrid_methods_full(cls):
