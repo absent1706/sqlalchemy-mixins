@@ -83,21 +83,19 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
      only one. That's why all stuff is combined in single method
 
     :param query: sqlalchemy.orm.query.Query
-    :param filters: dict
+    :param filters: Union[List[Dict], Dict]
     :param sort_attrs: List[basestring]
     :param schema: dict
     """
     if not filters:
-        filters = {}
+        filters = [{}]
+    if isinstance(filters, dict):
+        filters = [filters]
     if not sort_attrs:
         sort_attrs = []
 
     #  Load schema early since we need it to check whether we should eager load a relationship
-    if schema:
-        flat_schema = _flatten_schema(schema)
-        print(flat_schema)
-    else:
-        flat_schema = {}
+    flat_schema = _flatten_schema(schema) if schema else {}
 
     # sqlalchemy >= 1.4.0, should probably a. check something else to determine if we need to convert
     # AppenderQuery to a query, b. probably not hack it like this
@@ -109,8 +107,8 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
         query.session = sess
 
     root_cls = _get_root_cls(query)  # for example, User or Post
-    attrs = list(filters.keys()) + \
-        list(map(lambda s: s.lstrip(DESC_PREFIX), sort_attrs))
+    attrs = list(*[f.keys() for f in filters]) + \
+            list(map(lambda s: s.lstrip(DESC_PREFIX), sort_attrs))
     aliases = OrderedDict({})
     _parse_path_and_make_aliases(root_cls, '', attrs, aliases)
 
@@ -122,17 +120,22 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
                 .options(contains_eager(relationship_path, alias=al[0]))
             loaded_paths.append(relationship_path)
 
-    for attr, value in filters.items():
-        if RELATION_SPLITTER in attr:
-            parts = attr.rsplit(RELATION_SPLITTER, 1)
-            entity, attr_name = aliases[parts[0]][0], parts[1]
-        else:
-            entity, attr_name = root_cls, attr
+    _filter = []
+    for filter_dict in filters:
+        _temp_filter = []
+        for attr, value in filter_dict.items():
+            if RELATION_SPLITTER in attr:
+                parts = attr.rsplit(RELATION_SPLITTER, 1)
+                entity, attr_name = aliases[parts[0]][0], parts[1]
+            else:
+                entity, attr_name = root_cls, attr
+            _temp_filter.append(*entity.filter_expr(**{attr_name: value}))
+        _filter.append(_temp_filter)
+    if _filter:
         try:
-            query = query.filter(*entity.filter_expr(**{attr_name: value}))
+            query = query.filter(or_(*(and_(*filter) for filter in _filter)))
         except KeyError as e:
-            raise KeyError("Incorrect filter path `{}`: {}"
-                           .format(attr, e))
+            raise KeyError("Incorrect filter path `{}`: {}".format(attr, e))
 
     for attr in sort_attrs:
         if RELATION_SPLITTER in attr:
