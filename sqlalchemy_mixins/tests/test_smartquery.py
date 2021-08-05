@@ -528,6 +528,62 @@ class TestSmartQueryFilters(BaseTest):
         res = Post.where(public=False, is_commented_by_user=u1).all()
         self.assertEqual(set(res), {p11})
 
+    def test_simple_expressions(self):
+        u1, u2, u3, p11, p12, p21, p22, cm11, cm12, cm21, cm22, cm_empty = \
+            self._seed()
+
+        res = Post.smart_query(filters={sa.or_: {'archived': True, 'is_commented_by_user': u3}}).all()
+        self.assertEqual(set(res), {p11, p22})
+
+    def test_nested_expressions(self):
+        u1, u2, u3, p11, p12, p21, p22, cm11, cm12, cm21, cm22, cm_empty = \
+            self._seed()
+
+        # Archived posts, or (has 2016 comment rating != 1)
+        res = Post.smart_query(filters={sa.or_: {
+            'public': False,
+            sa.and_: {
+                sa.not_: {'comments___rating': 1},
+                'comments___created_at__year': 2016
+                }
+            }
+        })
+        self.assertEqual(set(res), {p11, p22})
+
+    def test_lists_in_filters_using_explicit_and(self):
+        # Check for users with (post OR comment) AND (name like 'B%' OR id>10)
+        # This cannot be expressed without a list in the filter structure
+        # (would require duplicated or_ keys)
+        u1, u2, u3, p11, p12, p21, p22, cm11, cm12, cm21, cm22, cm_empty = \
+            self._seed()
+
+        res = User.smart_query(filters={
+            sa.and_: [
+                { sa.or_: {
+                    'comments__isnull': False,
+                    'posts__isnull': False
+                }},
+                {sa.or_: {'name__like': 'B%', 'id__gt':10}}
+            ]
+        })
+
+        self.assertEqual(set(res), {u1, u3})
+
+    def test_top_level_list_in_expression(self):
+        # Check for users with (post OR comment) AND (name like 'B%'),
+        # As above, but implicit AND
+        u1, u2, u3, p11, p12, p21, p22, cm11, cm12, cm21, cm22, cm_empty = \
+            self._seed()        
+        res = User.smart_query(filters=[
+            { sa.or_: {
+                'comments__isnull': False,
+                'posts__isnull': False
+            }},
+            {sa.or_: {'name__like': 'B%', 'id__gt':10}}
+        ])
+
+        self.assertEqual(set(res), {u1, u3})
+
 
 # noinspection PyUnusedLocal
 class TestSmartQuerySort(BaseTest):
