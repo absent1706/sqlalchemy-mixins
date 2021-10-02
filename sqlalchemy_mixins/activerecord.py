@@ -26,9 +26,14 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
     def save(self):
         """Saves the updated model to the current entity db.
         """
-        self.session.add(self)
-        self.session.flush()
-        return self
+        try:
+            self.session.add(self)
+            self.session.flush()
+            self.session.commit()
+            return self
+        except:
+            self.session.rollback()
+            raise
 
     @classmethod
     def create(cls, **kwargs):
@@ -46,8 +51,13 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
     def delete(self):
         """Removes the model from the current entity session and mark for deletion.
         """
-        self.session.delete(self)
-        self.session.flush()
+        try:
+            self.session.delete(self)
+            self.session.flush()
+            self.session.commit()
+        except:
+            self.session.rollback()
+            raise
 
     @classmethod
     def destroy(cls, *ids):
