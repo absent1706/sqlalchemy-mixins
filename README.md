@@ -126,6 +126,17 @@ user = User.create(name='bob')
 print(user)
 ```
 
+# *** Autocommit ***
+This library relies on SQLAlchemy's `autocommit` flag. It needs to be set to True when initializing the session i.e:
+```python
+session = scoped_session(sessionmaker(bind=engine, autocommit=True))
+BaseModel.set_session(session)
+```
+or with `Flask-SQLAlchemy`
+```python
+db = SQLAlchemy(app, session_options={'autocommit': True})
+```
+
 # Features
 
 Main features are
