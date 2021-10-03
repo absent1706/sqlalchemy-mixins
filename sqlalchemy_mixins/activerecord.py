@@ -29,7 +29,8 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
         try:
             self.session.add(self)
             self.session.flush()
-            self.session.commit()
+            if not self.session.autocommit:
+                self.session.commit()
             return self
         except:
             self.session.rollback()
@@ -54,7 +55,8 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
         try:
             self.session.delete(self)
             self.session.flush()
-            self.session.commit()
+            if not self.session.autocommit:
+                self.session.commit()
         except:
             self.session.rollback()
             raise
