@@ -141,7 +141,6 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
     #  Load schema early since we need it to check whether we should eager load a relationship
     if schema:
         flat_schema = _flatten_schema(schema)
-        print(flat_schema)
     else:
         flat_schema = {}
 

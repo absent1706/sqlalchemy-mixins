@@ -5,7 +5,6 @@ except ImportError: # pragma: no cover
 
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import subqueryload
-from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from .session import SessionMixin
 
@@ -32,8 +31,9 @@ def _flatten_schema(schema):
         for path, value in schema.items():
             # for supporting schemas like Product.user: {...},
             # we transform, say, Product.user to 'user' string
-            if isinstance(path, InstrumentedAttribute):
-                path = path.key
+            attr = path
+            path = path.key
+
 
             if isinstance(value, tuple):
                 join_method, inner_schema = value[0], value[1]
@@ -43,7 +43,7 @@ def _flatten_schema(schema):
                 join_method, inner_schema = value, None
 
             full_path = parent_path + '.' + path if parent_path else path
-            result[full_path] = join_method
+            result[attr] = join_method
 
             if inner_schema:
                 _flatten(inner_schema, full_path, result)
@@ -80,16 +80,9 @@ class EagerLoadMixin(SessionMixin):
 
         Example:
             schema = {
-                'user': JOINED, # joinedload user
-                'comments': (SUBQUERY, {  # load comments in separate query
-                    'user': JOINED  # but, in this separate query, join user
-                })
-            }
-            # the same schema using class properties:
-            schema = {
-                Post.user: JOINED,
-                Post.comments: (SUBQUERY, {
-                    Comment.user: JOINED
+                Post.user: JOINED,  # joinedload user
+                Post.comments: (SUBQUERY, { # load comments in separate query
+                    Comment.user: JOINED  # but, in this separate query, join user
                 })
             }
             User.with_(schema).first()
@@ -104,12 +97,9 @@ class EagerLoadMixin(SessionMixin):
         In strings syntax, you can split relations with dot 
          due to this SQLAlchemy feature: https://goo.gl/yM2DLX
          
-        :type paths: *List[str] | *List[InstrumentedAttribute]
+        :type paths: *List[QueryableAttribute]
 
         Example 1:
-            Comment.with_joined('user', 'post', 'post.comments').first()
-
-        Example 2:
             Comment.with_joined(Comment.user, Comment.post).first()
         """
         options = [joinedload(path) for path in paths]
@@ -123,12 +113,9 @@ class EagerLoadMixin(SessionMixin):
         In strings syntax, you can split relations with dot 
          (it's SQLAlchemy feature)
 
-        :type paths: *List[str] | *List[InstrumentedAttribute]
+        :type paths: *List[QueryableAttribute]
 
         Example 1:
-            User.with_subquery('posts', 'posts.comments').all()
-
-        Example 2:
             User.with_subquery(User.posts, User.comments).all()
         """
         options = [subqueryload(path) for path in paths]

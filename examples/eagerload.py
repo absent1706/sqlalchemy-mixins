@@ -130,9 +130,7 @@ session.commit()
 
 #### 0.1 joinedload ####
 reset_session()
-comment = Comment.with_joined('user', 'post', 'post.comments').first()
-# same using class properties (except 'post.comments'):
-# comment = Comment.with_joined(Comment.user, Comment.post).first()
+comment = Comment.with_joined(Comment.user, Comment.post).first()
 
 # SQL will be like
 """
@@ -152,9 +150,7 @@ log('NO ADDITIONAL SQL. END')
 
 #### 0.2 subqueryload ####
 reset_session()
-users = User.with_subquery('posts', 'posts.comments').all()
-# same using class properties (except 'posts.comments'):
-# users = User.with_subquery(User.posts).all()
+users = User.with_subquery(User.posts).all()
 
 # there will be 3 queries:
 ## first. on users:
@@ -180,25 +176,14 @@ log('NO ADDITIONAL SQL. END')
 
 #### 1. nested joinedload ####
 # for nested eagerload, you should use dict instead of lists|
+# also make sure you use class properties
 schema = {
-    'posts': {  # joined-load posts
-                # here,
-                #  'posts': { ... }
-                # is equal to
-                #  'posts': (JOINED, { ... })
-        'comments': {  # to each post join its comments
-            'user': JOINED  # and join user to each comment
+    User.posts: {
+        Post.comments: {
+            Comment.user: JOINED
         }
     }
 }
-# same schema using class properties
-# schema = {
-#     User.posts: {
-#         Post.comments: {
-#             Comment.user: JOINED
-#         }
-#     }
-# }
 session = reset_session()
 ###### 1.1 query-level: more flexible
 user = session.query(User).options(*eager_expr(schema)).get(1)
@@ -231,12 +216,6 @@ log('NO ADDITIONAL SQL. END')
 # sometimes we want to load relations in separate query.
 #  i.g. when we load posts, to each post we want to have user and all comments.
 #  when we load many posts, join comments and comments to each user
-schema = {
-    'comments': (SUBQUERY, {  # load comments in separate query
-        'user': JOINED  # but, in this separate query, join user
-    })
-}
-# the same schema using class properties:
 schema = {
     Post.comments: (SUBQUERY, {  # load comments in separate query
         Comment.user: JOINED  # but, in this separate query, join comments

@@ -187,7 +187,7 @@ class TestEagerExpr(TestEagerLoad):
         _ = post.comments[0]
         self.assertEqual(self.query_count, 2)
 
-    def test_ok_strings(self):
+    def test_ok_class_properties(self):
         schema = {
             User.posts: (SUBQUERY, {
                 Post.comments: JOINED
@@ -195,27 +195,10 @@ class TestEagerExpr(TestEagerLoad):
         }
         self._test_ok(schema)
 
-    def test_ok_class_properties(self):
-        schema = {
-            'posts': (SUBQUERY, {
-                'comments': JOINED
-            })
-        }
-        self._test_ok(schema)
-
     def test_bad_join_method(self):
         # None
         schema = {
-            'posts': None
-        }
-        with self.assertRaises(ValueError):
-            sess.query(User).options(*eager_expr(schema)).get(1)
-
-        # strings
-        schema = {
-            'posts': ('WRONG JOIN METHOD', {
-                Post.comments: 'OTHER WRONG JOIN METHOD'
-            })
+            User.posts: None
         }
         with self.assertRaises(ValueError):
             sess.query(User).options(*eager_expr(schema)).get(1)
@@ -228,22 +211,6 @@ class TestEagerExpr(TestEagerLoad):
         }
         with self.assertRaises(ValueError):
             sess.query(User).options(*eager_expr(schema)).get(1)
-
-
-class TestOrmWithJoinedStrings(TestEagerLoad):
-    def test(self):
-        self.assertEqual(self.query_count, 0)
-        # take post with user and comments (including comment author)
-        # NOTE: you can separate relations with dot.
-        # Its due to SQLAlchemy: https://goo.gl/yM2DLX
-        post = Post.with_joined('user', 'comments', 'comments.user').get(11)
-        self.assertEqual(self.query_count, 1)
-
-        # now, to get relationship, NO additional query is needed
-        _ = post.user
-        _ = post.comments[1]
-        _ = post.comments[1].user
-        self.assertEqual(self.query_count, 1)
 
 
 class TestOrmWithJoinedClassProperties(TestEagerLoad):
@@ -264,7 +231,7 @@ class TestOrmWithSubquery(TestEagerLoad):
         # take post with user and comments (including comment author)
         # NOTE: you can separate relations with dot.
         # Its due to SQLAlchemy: https://goo.gl/yM2DLX
-        post = Post.with_subquery('user', 'comments', 'comments.user').get(11)
+        post = Post.with_subquery(Post.user, Post.comments, Comment.user).get(11)
 
         # 3 queries were executed:
         #   1 - on posts
@@ -324,7 +291,7 @@ class TestOrmWithDict(TestEagerLoad):
         self.assertEqual(self.query_count, 2)
 
     def test_subqueryload_strings(self):
-        schema = {'comments': SUBQUERY}
+        schema = {Post.comments: SUBQUERY}
         self._test_subqueryload(schema)
 
     def test_subqueryload_class_properties(self):
@@ -351,8 +318,8 @@ class TestOrmWithDict(TestEagerLoad):
 
     def test_combined_load_class_properties(self):
         schema = {
-            'posts': (SUBQUERY, {
-                'comments': JOINED
+            User.posts: (SUBQUERY, {
+                Post.comments: JOINED
             })
         }
         self._test_combined_load(schema)

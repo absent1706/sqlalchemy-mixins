@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Type
 
-from sqlalchemy.orm import Query
+from sqlalchemy.orm import Query, DeclarativeBase, InstrumentedAttribute, QueryableAttribute
 from sqlalchemy.orm.strategy_options import Load
 
 from sqlalchemy_mixins.session import SessionMixin
@@ -23,7 +23,7 @@ class EagerLoadMixin(SessionMixin):
     def with_(cls, schema: dict) -> Query: ...
 
     @classmethod
-    def with_joined(cls, *paths: List[str]) -> Query: ...
+    def with_joined(cls, *paths: List[QueryableAttribute]) -> Query: ...
 
     @classmethod
-    def with_subquery(cls, *paths: List[str]) -> Query: ...
+    def with_subquery(cls, *paths: List[QueryableAttribute]) -> Query: ...
