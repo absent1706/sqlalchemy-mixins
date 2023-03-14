@@ -351,16 +351,10 @@ log(Comment.sort('-post___public', 'post___user___name').all())
 #### 3. smart_query() : combination of where(), sort() and eager load ####
 
 schema = {
-    'post': {
-        'user': JOINED
+    Comment.post: {
+        Post.user: JOINED
     }
 }
-# schema can use class properties too (see EagerLoadMixin):
-# schema = {
-#     Comment.post: {
-#         Post.user: JOINED
-#     }
-# }
 
 ##### 3.1 high-level smart_query() class method #####
 res = Comment.smart_query(
