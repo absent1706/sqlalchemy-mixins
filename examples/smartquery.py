@@ -4,10 +4,9 @@ import os
 import datetime
 import sqlalchemy as sa
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import Query, scoped_session, sessionmaker
+from sqlalchemy.orm import Query, scoped_session, sessionmaker, DeclarativeBase
 
 from sqlalchemy_mixins import SmartQueryMixin, ReprMixin, JOINED, smart_query
 
@@ -17,7 +16,8 @@ def log(msg):
 
 
 #################### setup ######################
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
 
 
 # we also use ReprMixin which is optional

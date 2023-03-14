@@ -1,12 +1,12 @@
 from sqlalchemy import inspect
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from sqlalchemy.orm import RelationshipProperty
+from sqlalchemy.orm import RelationshipProperty, DeclarativeBase
 
 from .utils import classproperty
 
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
 
 
 class InspectionMixin(Base):

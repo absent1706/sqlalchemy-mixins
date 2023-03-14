@@ -2,12 +2,12 @@ import unittest
 
 import sqlalchemy as sa
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, DeclarativeBase
 
 from sqlalchemy_mixins.session import SessionMixin, NoSessionError
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
 engine = create_engine('sqlite:///:memory:', echo=False)
 session = Session(engine)
 

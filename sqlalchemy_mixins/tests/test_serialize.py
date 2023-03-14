@@ -2,13 +2,13 @@ import unittest
 
 import sqlalchemy as sa
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, DeclarativeBase
 
 from sqlalchemy_mixins import SerializeMixin
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
 
 
 class BaseModel(Base, SerializeMixin):

@@ -4,11 +4,11 @@ It just combines other mixins, so look to their examples for details
 """
 from __future__ import print_function
 import sqlalchemy as sa
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session, sessionmaker, DeclarativeBase
 from sqlalchemy_mixins import AllFeaturesMixin, TimestampsMixin
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
 
 
 class BaseModel(Base, AllFeaturesMixin, TimestampsMixin):

@@ -2,13 +2,13 @@ import unittest
 
 import sqlalchemy as sa
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from sqlalchemy.orm import sessionmaker, configure_mappers
+from sqlalchemy.orm import sessionmaker, configure_mappers, DeclarativeBase
 
 from sqlalchemy_mixins import InspectionMixin
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
 engine = create_engine('sqlite:///:memory:', echo=False)
 
 

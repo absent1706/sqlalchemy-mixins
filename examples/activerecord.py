@@ -3,9 +3,8 @@ import os
 
 import sqlalchemy as sa
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker, DeclarativeBase
 
 from sqlalchemy_mixins import ActiveRecordMixin, ReprMixin, ModelNotFoundError
 
@@ -14,7 +13,8 @@ def log(msg):
     print('\n{}\n'.format(msg))
 
 #################### setup ######################
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
 
 
 # we also use ReprMixin which is optional

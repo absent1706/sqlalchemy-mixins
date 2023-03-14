@@ -1,13 +1,13 @@
 from typing import List, Protocol, Dict
 
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_method
-from sqlalchemy.orm import Mapper
+from sqlalchemy.orm import Mapper, DeclarativeBase
 from sqlalchemy.orm.interfaces import MapperProperty
 
 from sqlalchemy_mixins.utils import classproperty
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
 
 class MappingProtocol(Protocol):
     __mapper__: Mapper

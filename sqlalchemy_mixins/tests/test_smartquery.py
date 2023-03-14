@@ -4,13 +4,15 @@ import datetime
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 from sqlalchemy import event
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, DeclarativeBase
 from sqlalchemy_mixins import SmartQueryMixin, smart_query
 from sqlalchemy_mixins.eagerload import JOINED, SUBQUERY
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
+
+
 engine = create_engine('sqlite:///:memory:', echo=False)
 
 sess = Session(engine)

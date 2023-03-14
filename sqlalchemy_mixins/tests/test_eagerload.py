@@ -3,14 +3,14 @@ import unittest
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 from sqlalchemy import event
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Query
+from sqlalchemy.orm import Query, DeclarativeBase
 from sqlalchemy.orm import Session
 
 from sqlalchemy_mixins import EagerLoadMixin
 from sqlalchemy_mixins.eagerload import JOINED, SUBQUERY, eager_expr
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
 engine = create_engine('sqlite:///:memory:', echo=False)
 sess = Session(engine)
 # sess = scoped_session(sessionmaker(bind=engine))
