@@ -1,5 +1,5 @@
 -r requirements.txt
-nose
+nose2
 coverage
 codeclimate-test-reporter
 tox
