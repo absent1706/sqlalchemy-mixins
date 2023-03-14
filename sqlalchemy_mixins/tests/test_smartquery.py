@@ -1,7 +1,6 @@
 import unittest
 import datetime
 
-import nose
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 from sqlalchemy import event
