@@ -13,8 +13,7 @@ from sqlalchemy.orm.util import AliasedClass
 from sqlalchemy.sql import operators, extract
 
 # noinspection PyProtectedMember
-from .eagerload import _flatten_schema, _eager_expr_from_flat_schema, \
-    EagerLoadMixin, SUBQUERY
+from .eagerload import EagerLoadMixin, _eager_expr_from_schema
 from .inspection import InspectionMixin
 from .utils import classproperty
 
@@ -138,12 +137,6 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
     if not sort_attrs:
         sort_attrs = []
 
-    #  Load schema early since we need it to check whether we should eager load a relationship
-    if schema:
-        flat_schema = _flatten_schema(schema)
-    else:
-        flat_schema = {}
-
     # sqlalchemy >= 1.4.0, should probably a. check something else to determine if we need to convert
     # AppenderQuery to a query, b. probably not hack it like this
     # noinspection PyProtectedMember
@@ -162,10 +155,8 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
     loaded_paths = []
     for path, al in aliases.items():
         relationship_path = path.replace(RELATION_SPLITTER, '.')
-        if not (relationship_path in flat_schema and flat_schema[relationship_path] == SUBQUERY):
-            query = query.outerjoin(al[0], al[1]) \
-                .options(contains_eager(relationship_path, alias=al[0]))
-            loaded_paths.append(relationship_path)
+        query = query.outerjoin(al[0], al[1])
+        loaded_paths.append(relationship_path)
 
     def recurse_filters(_filters):
         if isinstance(_filters, abc.Mapping):
@@ -205,11 +196,8 @@ def smart_query(query, filters=None, sort_attrs=None, schema=None):
         except KeyError as e:
             raise KeyError("Incorrect order path `{}`: {}".format(attr, e))
 
-    if flat_schema:
-        not_loaded_part = {path: v for path, v in flat_schema.items()
-                           if path not in loaded_paths}
-        query = query.options(*_eager_expr_from_flat_schema(
-            not_loaded_part))
+    if schema:
+        query = query.options(*_eager_expr_from_schema(schema))
 
     return query
 

@@ -1,6 +1,6 @@
 from typing import Callable, Any, List, Type
 
-from sqlalchemy.orm import RelationshipProperty, DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, RelationshipProperty
 
 
 class classproperty(object):

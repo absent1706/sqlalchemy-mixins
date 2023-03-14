@@ -69,10 +69,10 @@ post2 = Post.create(body='long-long-long-long-long body', rating=2,
 print(Post.where(rating__in=[2, 3, 4], user___name__like='%Bi%').all())
 
 # joinedload post and user
-print(Comment.with_joined('user', 'post', 'post.comments').first())
+print(Comment.with_joined(Comment.user, Comment.post).first())
 
-# subqueryload posts and their comments
-print(User.with_subquery('posts', 'posts.comments').first())
+# subqueryload posts
+print(User.with_subquery(User.posts).first())
 
 # sort by rating DESC, user name ASC
 print(Post.sort('-rating', 'user___name').all())

@@ -54,7 +54,7 @@ class Post(BaseModel):
 db_file = os.path.join(os.path.dirname(__file__), 'test.sqlite')
 engine = create_engine('sqlite:///{}'.format(db_file), echo=True)
 # autocommit=True - it's to make you see data in 3rd party DB view tool
-session = scoped_session(sessionmaker(bind=engine, autocommit=True))
+session = scoped_session(sessionmaker(bind=engine))
 
 Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)
