@@ -4,3 +4,4 @@ coverage
 codeclimate-test-reporter
 tox
 mypy==1.1.1
+sqlalchemy[mypy] >= 2.0
