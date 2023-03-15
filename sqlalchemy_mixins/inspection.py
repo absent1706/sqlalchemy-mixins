@@ -35,7 +35,7 @@ class InspectionMixin(Base):
     def relations(cls):
         """Return a `list` of relationship names or the given model
         """
-        return [c.key for c in cls.__mapper__.iterate_properties
+        return [c.key for c in cls.__mapper__.attrs
                 if isinstance(c, RelationshipProperty)]
 
     @classproperty

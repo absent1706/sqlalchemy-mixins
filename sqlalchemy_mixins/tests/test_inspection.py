@@ -3,7 +3,7 @@ import unittest
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from sqlalchemy.orm import sessionmaker, configure_mappers, DeclarativeBase
+from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 from sqlalchemy_mixins import InspectionMixin
 
@@ -59,11 +59,6 @@ class ModelWithTwoPks(BaseModel):
     __tablename__ = 'two_pks'
     pk1 = sa.Column(sa.Integer, primary_key=True)
     pk2 = sa.Column(sa.Integer, primary_key=True)
-
-
-# For sqlalchemy >= 2.0. This call is required in order to configure
-# relationships created from backrefs
-configure_mappers()
 
 
 class TestSessionMixin(unittest.TestCase):

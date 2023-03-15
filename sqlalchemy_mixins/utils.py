@@ -20,7 +20,7 @@ def get_relations(cls):
         mapper = cls
     else:
         mapper = cls.__mapper__
-    return [c for c in mapper.iterate_properties
+    return [c for c in mapper.attrs
             if isinstance(c, RelationshipProperty)]
 
 
