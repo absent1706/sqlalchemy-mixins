@@ -670,7 +670,7 @@ removed [TimestampsMixin](#timestamps) from [AllFeaturesMixin](sqlalchemy_mixins
 Add support for SQLAlchemy 1.4
 
 
-### v2.0
+### v2.0.0
 
 > This version contains breaking changes in multiple methods i.e methods that simplify
 > eager loading. The use of strings while eager loading has been removed completely in SQLAlchemy 2.0.
