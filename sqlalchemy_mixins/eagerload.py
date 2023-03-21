@@ -124,8 +124,7 @@ class EagerLoadMixin(SessionMixin):
         """
         Eagerload for simple cases where we need to just
          joined load some relations
-        In strings syntax, you can split relations with dot 
-         due to this SQLAlchemy feature: https://goo.gl/yM2DLX
+        You can only load direct relationships.
          
         :type paths: *List[QueryableAttribute]
 
@@ -140,8 +139,7 @@ class EagerLoadMixin(SessionMixin):
         """
         Eagerload for simple cases where we need to just
          joined load some relations
-        In strings syntax, you can split relations with dot 
-         (it's SQLAlchemy feature)
+        You can only load direct relationships.
 
         :type paths: *List[QueryableAttribute]
 
