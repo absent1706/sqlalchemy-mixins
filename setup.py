@@ -15,7 +15,7 @@ def requirements():
     return [line.rstrip('\n') for line in open(filename).readlines()]
 
 setup(name='sqlalchemy_mixins',
-      version='1.5.3',
+      version='2.0.0',
       description='Active Record, Django-like queries, nested eager load '
                   'and beauty __repr__ for SQLAlchemy',
       url='https://github.com/absent1706/sqlalchemy-mixins',
@@ -28,7 +28,7 @@ setup(name='sqlalchemy_mixins',
       zip_safe=False,
       include_package_data=True,
       install_requires=[
-          "SQLAlchemy >= 1.0",
+          "SQLAlchemy >= 2.0",
           "six",
           "typing; python_version < '3.5'"
       ],
