@@ -79,9 +79,9 @@ post2 = Post.create(body='long-long-long-long-long body', rating=2,
 # will output this beauty: <Post #1 body:'Post1' user:'Bill'>
 print(Post.where(rating__in=[2, 3, 4], user___name__like='%Bi%').all())
 # joinedload post and user
-print(Comment.with_joined('user', 'post', 'post.comments').first())
-# subqueryload posts and their comments
-print(User.with_subquery('posts', 'posts.comments').first())
+print(Comment.with_joined(Comment.user, Comment.post).first())
+# subqueryload posts
+print(User.with_subquery(User.posts).first())
 # sort by rating DESC, user name ASC
 print(Post.sort('-rating', 'user___name').all())
 # created_at, updated_at timestamps added automatically
@@ -231,17 +231,6 @@ load user, all his posts and comments to every his post in the same query.
 Well, now you can easily set what ORM relations you want to eager load
 ```python
 User.with_({
-    'posts': {
-        'comments': {
-            'user': JOINED
-        }
-    }
-}).all()
-```
-
-or we can write class properties instead of strings:
-```python
-User.with_({
     User.posts: {
         Post.comments: {
             Comment.user: JOINED
@@ -259,9 +248,9 @@ To speed up query, we load comments in separate query, but, in this separate que
 ```python
 from sqlalchemy_mixins import JOINED, SUBQUERY
 Post.with_({
-    'user': JOINED, # joinedload user
-    'comments': (SUBQUERY, {  # load comments in separate query
-        'user': JOINED  # but, in this separate query, join user
+    Post.user: JOINED, # joinedload user
+    Post.comments: (SUBQUERY, {  # load comments in separate query
+        Comment.user: JOINED  # but, in this separate query, join user
     })
 }).all()
 ```
@@ -277,15 +266,10 @@ or [subqueryload](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships
 a few relations, we have easier syntax for you:
 
 ```python
-Comment.with_joined('user', 'post', 'post.comments').first()
-User.with_subquery('posts', 'posts.comments').all()
+Comment.with_joined(Comment.user, Comment.post).first()
+User.with_subquery(User.posts).all()
 ```
 
-> Note that you can split relations with dot like `post.comments`
-> due to [this SQLAlchemy feature](http://docs.sqlalchemy.org/en/latest/orm/loading_relationships.html#sqlalchemy.orm.subqueryload_all)
-
-
-![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/eagerload.py) and [tests](sqlalchemy_mixins/tests/test_eagerload.py)
 
 ## Filter and sort by relations
@@ -336,7 +320,6 @@ SQLAlchemy's [hybrid attributes](http://docs.sqlalchemy.org/en/latest/orm/extens
 and [hybrid_methods](http://docs.sqlalchemy.org/en/latest/orm/extensions/hybrid.html?highlight=hybrid_method#sqlalchemy.ext.hybrid.hybrid_method).
 Using them in our filtering/sorting is straightforward (see examples and tests).
 
-![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ### Automatic eager load relations
@@ -358,7 +341,6 @@ comments[0].post.user
 
 Cool, isn't it? =)
 
-![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ### All-in-one: smart_query
@@ -378,8 +360,8 @@ Comment.smart_query(
     },
     sort_attrs=['user___name', '-created_at'],
     schema={
-        'post': {
-            'user': JOINED
+        Comment.post: {
+            Post.user: JOINED
         }
     }).all()
 ```
@@ -410,7 +392,6 @@ Comment.smart_query(
 > See [this example](examples/smartquery.py#L409) for more details
 
 
-![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/smartquery.py) and [tests](sqlalchemy_mixins/tests/test_smartquery.py)
 
 ## Beauty \_\_repr\_\_
@@ -473,7 +454,6 @@ class Post(BaseModel):
 <Post #2 body:'Post 2 long-long body' user:<User #1 'Bob'>>   
 ```
 
-![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/repr.py) and [tests](sqlalchemy_mixins/tests/test_repr.py)
 
 ## Serialize to dict
@@ -495,7 +475,6 @@ print(user.to_dict())
 #           {'body': 'Post 2', 'id': 2, 'user_id': 1}]}
 print(user.to_dict(nested=True))
 ```
-![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/serialize.py)
 
 ## Timestamps
@@ -522,16 +501,12 @@ session.commit()
 print("Updated Bob:    ", bob.updated_at)
 # Updated Bob:     2019-03-04 03:53:58.613044
 ```
-![icon](http://i.piccy.info/i9/c7168c8821f9e7023e32fd784d0e2f54/1489489664/1113/1127895/rsz_18_256.png)
 See [full example](examples/timestamp.py)
 
 # Internal architecture notes
 Some mixins re-use the same functionality. It lives in [`SessionMixin`](sqlalchemy_mixins/session.py) (session access) and [`InspectionMixin`](sqlalchemy_mixins/inspection.py) (inspecting columns, relations etc.) and other mixins inherit them.
 
 You can use these mixins standalone if you want.
-
-Here's a UML diagram of mixin hierarchy:
-![Mixin hierarchy](http://i.piccy.info/i9/4030c604ef387101a6ec30b7c357134c/1490694900/42743/1127895/diagram.png)
 
 # Comparison with existing solutions
 There're a lot of extensions for SQLAlchemy, but most of them are not so universal.
@@ -693,3 +668,18 @@ removed [TimestampsMixin](#timestamps) from [AllFeaturesMixin](sqlalchemy_mixins
 ### v1.3
 
 Add support for SQLAlchemy 1.4
+
+
+### v2.0.0
+
+> This version contains breaking changes in multiple methods i.e methods that simplify
+> eager loading. The use of strings while eager loading has been removed completely in SQLAlchemy 2.0.
+> To much this behaviour, we have also removed the use of strings when eager loading
+
+1. Migrate to SQLAlchemy 2.0
+2. All methods in the `EagerLoadMixin` no longer accept strings. **Note** This means that you can only pass direct relationships.
+3. The `schema` parameter of the `smart_query` method/function no longer accepts string keys.
+4. **Dropped Python 3.6**
+5. Add Python 3.10 compatibility
+
+

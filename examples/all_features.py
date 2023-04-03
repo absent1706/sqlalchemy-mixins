@@ -4,11 +4,11 @@ It just combines other mixins, so look to their examples for details
 """
 from __future__ import print_function
 import sqlalchemy as sa
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session, sessionmaker, DeclarativeBase
 from sqlalchemy_mixins import AllFeaturesMixin, TimestampsMixin
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
 
 
 class BaseModel(Base, AllFeaturesMixin, TimestampsMixin):
@@ -69,10 +69,10 @@ post2 = Post.create(body='long-long-long-long-long body', rating=2,
 print(Post.where(rating__in=[2, 3, 4], user___name__like='%Bi%').all())
 
 # joinedload post and user
-print(Comment.with_joined('user', 'post', 'post.comments').first())
+print(Comment.with_joined(Comment.user, Comment.post).first())
 
-# subqueryload posts and their comments
-print(User.with_subquery('posts', 'posts.comments').first())
+# subqueryload posts
+print(User.with_subquery(User.posts).first())
 
 # sort by rating DESC, user name ASC
 print(Post.sort('-rating', 'user___name').all())

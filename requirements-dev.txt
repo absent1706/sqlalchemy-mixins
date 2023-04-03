@@ -1,7 +1,7 @@
 -r requirements.txt
-nose
+nose2
 coverage
 codeclimate-test-reporter
 tox
-mypy==0.812
-sqlalchemy-stubs==0.4
+mypy==1.1.1
+sqlalchemy[mypy] >= 2.0

@@ -2,14 +2,14 @@ import unittest
 
 import sqlalchemy as sa
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import Query, Session
+from sqlalchemy.orm import Query, Session, DeclarativeBase
 
 from sqlalchemy_mixins import ActiveRecordMixin
 from sqlalchemy_mixins.activerecord import ModelNotFoundError
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
 engine = create_engine('sqlite:///:memory:', echo=False)
 sess = Session(engine)
 # sess = scoped_session(sessionmaker(bind=engine))

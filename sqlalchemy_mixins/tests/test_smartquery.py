@@ -1,17 +1,18 @@
 import unittest
 import datetime
 
-import nose
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 from sqlalchemy import event
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, DeclarativeBase
 from sqlalchemy_mixins import SmartQueryMixin, smart_query
 from sqlalchemy_mixins.eagerload import JOINED, SUBQUERY
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
+
+
 engine = create_engine('sqlite:///:memory:', echo=False)
 
 sess = Session(engine)
@@ -663,8 +664,8 @@ class TestFullSmartQuery(BaseTest):
             },
             sort_attrs=['user___name', '-created_at'],
             schema={
-                'post': {
-                    'user': JOINED
+                Comment.post: {
+                    Post.user: JOINED
                 }
             }).all()
         self.assertEqual(res, [cm12, cm21, cm22])
@@ -677,8 +678,8 @@ class TestFullSmartQuery(BaseTest):
             },
             sort_attrs=['user___name', '-created_at'],
             schema={
-                'post': {
-                    'user': JOINED
+                Comment.post: {
+                    Post.user: JOINED
                 }
             }).all()
         self.assertEqual(res, [cm12, cm21, cm22])
@@ -792,8 +793,8 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
         res = Comment.smart_query(
             filters=dict(post___public=True, post___user___name__like='Bi%'),
             schema={
-                'post': {
-                    'comments': JOINED
+                Comment.post: {
+                    Post.comments: JOINED
                 }
             }
         )
@@ -827,8 +828,8 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
         res = Comment.smart_query(
             filters=dict(post___public=True, post___user___name__like='Bi%'),
             schema={
-                'post': {
-                    'comments': SUBQUERY
+                Comment.post: {
+                    Post.comments: SUBQUERY
                 }
             }
         ).all()
@@ -853,8 +854,8 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
             self._seed()
 
         schema = {
-            'post': {
-                'user': JOINED
+            Comment.post: {
+                Post.user: JOINED
             }
         }
 
@@ -886,7 +887,7 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
         res = Comment.smart_query(
             filters=dict(post___public=True, post___user___name__like='Bi%'),
             schema={
-                'post': SUBQUERY
+                Comment.post: SUBQUERY
             }
         ).all()
         self.assertEqual(self.query_count, 2)
@@ -900,8 +901,8 @@ class TestSmartQueryAutoEagerLoad(BaseTest):
         res = Comment.smart_query(
             filters=dict(post___public=True, post___user___name__like='Bi%'),
             schema={
-                'post': (SUBQUERY, { # This should load in a separate query
-                    'user': SUBQUERY # This should also load in a separate query
+                Comment.post: (SUBQUERY, { # This should load in a separate query
+                    Post.user: SUBQUERY # This should also load in a separate query
                 })
             }
         ).all()

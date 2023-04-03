@@ -3,9 +3,8 @@ import os
 
 import sqlalchemy as sa
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker, DeclarativeBase
 
 from sqlalchemy_mixins import ActiveRecordMixin, ReprMixin, ModelNotFoundError
 
@@ -14,7 +13,8 @@ def log(msg):
     print('\n{}\n'.format(msg))
 
 #################### setup ######################
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
 
 
 # we also use ReprMixin which is optional
@@ -54,7 +54,7 @@ class Post(BaseModel):
 db_file = os.path.join(os.path.dirname(__file__), 'test.sqlite')
 engine = create_engine('sqlite:///{}'.format(db_file), echo=True)
 # autocommit=True - it's to make you see data in 3rd party DB view tool
-session = scoped_session(sessionmaker(bind=engine, autocommit=True))
+session = scoped_session(sessionmaker(bind=engine))
 
 Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)

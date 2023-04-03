@@ -4,12 +4,12 @@ import time
 from datetime import datetime
 
 import sqlalchemy as sa
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker, DeclarativeBase
 
 from sqlalchemy_mixins import TimestampsMixin
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    __abstract__ = True
 engine = sa.create_engine("sqlite:///:memory:")
 session = scoped_session(sessionmaker(bind=engine))
 
