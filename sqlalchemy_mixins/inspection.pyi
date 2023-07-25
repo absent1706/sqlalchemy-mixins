@@ -1,18 +1,16 @@
 from typing import List, Protocol, Dict
 
 from sqlalchemy.ext.hybrid import hybrid_method
-from sqlalchemy.orm import Mapper, DeclarativeBase
+from sqlalchemy.orm import Mapper
 from sqlalchemy.orm.interfaces import MapperProperty
 
 from sqlalchemy_mixins.utils import classproperty
 
-class Base(DeclarativeBase):
-    __abstract__ = True
 
 class MappingProtocol(Protocol):
     __mapper__: Mapper
 
-class InspectionMixin(Base):
+class InspectionMixin:
 
     @classproperty
     def columns(cls) -> List[str]: ...
