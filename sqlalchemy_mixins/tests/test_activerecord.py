@@ -3,13 +3,16 @@ import unittest
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import Query, Session, DeclarativeBase
+from sqlalchemy.orm import Query, Session, DeclarativeBase, declarative_base
 
 from sqlalchemy_mixins import ActiveRecordMixin
 from sqlalchemy_mixins.activerecord import ModelNotFoundError
 
 class Base(DeclarativeBase):
     __abstract__ = True
+
+AlternativeBase = declarative_base()
+
 engine = create_engine('sqlite:///:memory:', echo=False)
 sess = Session(engine)
 # sess = scoped_session(sessionmaker(bind=engine))
@@ -20,6 +23,9 @@ class BaseModel(Base, ActiveRecordMixin):
     pass
 
 
+class BaseModelAlternative(AlternativeBase, ActiveRecordMixin):
+    __abstract__ = True
+
 class User(BaseModel):
     __tablename__ = 'user'
     __repr_attrs__ = ['name']
@@ -27,6 +33,13 @@ class User(BaseModel):
     name = sa.Column(sa.String)
     posts = sa.orm.relationship('Post', backref='user')
     posts_viewonly = sa.orm.relationship('Post', viewonly=True)
+
+
+class UserAlternative(BaseModelAlternative):
+    __tablename__ = 'user_alt'
+    __repr_attrs__ = ['name']
+    id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.String)
 
 
 class Post(BaseModel):
@@ -202,6 +215,22 @@ class TestActiveRecord(unittest.TestCase):
 
         with self.assertRaises(ModelNotFoundError):
             _ = User.find_or_fail(123456789)
+
+
+class TestActiveRecordAlternative(unittest.TestCase):
+    def setUp(self):
+        sess.rollback()
+
+        BaseModelAlternative.set_session(None)
+        AlternativeBase.metadata.drop_all(engine)
+        AlternativeBase.metadata.create_all(engine)
+
+        BaseModelAlternative.set_session(sess)
+
+    def test_create(self):
+        u1 = UserAlternative.create(name='Bill u1')
+        self.assertEqual(u1, sess.query(UserAlternative).first())
+
 
 
 if __name__ == '__main__': # pragma: no cover

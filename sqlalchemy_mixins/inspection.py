@@ -5,12 +5,7 @@ from sqlalchemy.orm import RelationshipProperty, DeclarativeBase
 from .utils import classproperty
 
 
-class Base(DeclarativeBase):
-    __abstract__ = True
-
-
-class InspectionMixin(Base):
-    __abstract__ = True
+class InspectionMixin:
 
     @classproperty
     def columns(cls):
