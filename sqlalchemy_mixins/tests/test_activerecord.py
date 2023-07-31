@@ -1,5 +1,6 @@
 import unittest
 
+import sqlalchemy
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -115,6 +116,30 @@ class TestActiveRecord(unittest.TestCase):
         self.assertEqual(p11, sess.query(Post).first())
         self.assertEqual(p11.archived, True)
 
+    def test_save_commits(self):
+        with self.assertRaises(sqlalchemy.exc.InvalidRequestError):
+            with sess.begin():
+                u1 = User()
+                u1.fill(name='Bill u1')
+                u1.save()
+                u2 = User()
+                u2.fill(name='Bill u2')
+                u2.save()
+                self.assertEqual([u1, u2], sess.query(User).order_by(User.id.asc()).all())
+        # The first user is saved even when the block raises a Exception
+        self.assertEqual([u1], sess.query(User).order_by(User.id.asc()).all())
+
+    def test_save_do_not_commit(self):
+        with sess.begin():
+            u1 = User()
+            u1.fill(name='Bill u1')
+            u1.save(commit=False)
+            u2 = User()
+            u2.fill(name='Bill u2')
+            u2.save(commit=False)
+
+        self.assertEqual([u1,u2], sess.query(User).order_by(User.id.asc()).all())
+
     def test_create(self):
         u1 = User.create(name='Bill u1')
         self.assertEqual(u1, sess.query(User).first())
@@ -158,6 +183,16 @@ class TestActiveRecord(unittest.TestCase):
         self.assertEqual(sess.query(Post).get(11).public, True)
         self.assertEqual(sess.query(Post).get(11).user, u2)
 
+    def test_update_no_commit(self):
+        u1 = User(name='Bill', id=1)
+        u1.save()
+        u1.update(name='Joe', commit=False)
+        self.assertEqual('Joe', sess.query(User).where(User.id==1).first().name)
+        sess.rollback()
+        self.assertEqual('Bill', sess.query(User).where(User.id==1).first().name)
+
+
+
     def test_fill_wrong_attribute(self):
         u1 = User(name='Bill u1')
         sess.add(u1)
@@ -179,12 +214,31 @@ class TestActiveRecord(unittest.TestCase):
         u1.delete()
         self.assertEqual(sess.query(User).get(1), None)
 
+    def test_delete_without_commit(self):
+        u1 = User()
+        u1.save()
+        u1.delete(commit=False)
+        self.assertIsNone(sess.query(User).one_or_none())
+        sess.rollback()
+        self.assertIsNotNone(sess.query(User).one_or_none())
+
+
     def test_destroy(self):
         u1, u2, p11, p12, p13 = self._seed()
 
         self.assertEqual(set(sess.query(Post).all()), {p11, p12, p13})
         Post.destroy(11, 12)
         self.assertEqual(set(sess.query(Post).all()), {p13})
+
+
+    def test_destroy_no_commit(self):
+        u1, u2, p11, p12, p13 = self._seed()
+        sess.commit()
+        self.assertEqual(set(sess.query(Post).order_by(Post.id).all()), {p11, p12, p13})
+        Post.destroy(11, 12, commit=False)
+        self.assertEqual(set(sess.query(Post).order_by(Post.id).all()), {p13})
+        sess.rollback()
+        self.assertEqual(set(sess.query(Post).order_by(Post.id).all()), {p11, p12, p13})
 
     def test_all(self):
         u1, u2, p11, p12, p13 = self._seed()
@@ -230,6 +284,12 @@ class TestActiveRecordAlternative(unittest.TestCase):
     def test_create(self):
         u1 = UserAlternative.create(name='Bill u1')
         self.assertEqual(u1, sess.query(UserAlternative).first())
+
+    def test_create_no_commit(self):
+        u1 = UserAlternative.create(name='Bill u1', commit=False)
+        self.assertEqual(u1, sess.query(UserAlternative).first())
+        sess.rollback()
+        self.assertIsNone(sess.query(UserAlternative).one_or_none())
 
 
 

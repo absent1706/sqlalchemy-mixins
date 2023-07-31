@@ -23,50 +23,56 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
 
         return self
 
-    def save(self):
+    def save(self, commit=True):
         """Saves the updated model to the current entity db.
+        :param commit: where to commit the transaction
         """
-        try:
-            self.session.add(self)
-            self.session.commit()
-            return self
-        except:
-            self.session.rollback()
-            raise
+        self.session.add(self)
+        if commit:
+            self._commit_or_fail()
+        return self
 
     @classmethod
-    def create(cls, **kwargs):
+    def create(cls, commit=True, **kwargs):
         """Create and persist a new record for the model
+        :param commit: where to commit the transaction
         :param kwargs: attributes for the record
         :return: the new model instance
         """
-        return cls().fill(**kwargs).save()
+        return cls().fill(**kwargs).save(commit=commit)
 
-    def update(self, **kwargs):
+    def update(self, commit=True, **kwargs):
         """Same as :meth:`fill` method but persists changes to database.
+        :param commit: where to commit the transaction
         """
-        return self.fill(**kwargs).save()
+        return self.fill(**kwargs).save(commit=commit)
 
-    def delete(self):
+    def delete(self, commit=True):
         """Removes the model from the current entity session and mark for deletion.
+        :param commit: where to commit the transaction
         """
+        self.session.delete(self)
+        if commit:
+            self._commit_or_fail()
+
+    def _commit_or_fail(self):
         try:
-            self.session.delete(self)
             self.session.commit()
         except:
             self.session.rollback()
             raise
 
     @classmethod
-    def destroy(cls, *ids):
+    def destroy(cls, *ids, commit=True):
         """Delete the records with the given ids
         :type ids: list
         :param ids: primary key ids of records
+        :param commit: where to commit the transaction
         """
         for pk in ids:
             obj = cls.find(pk)
             if obj:
-                obj.delete()
+                obj.delete(commit=commit)
         cls.session.flush()
 
     @classmethod
