@@ -1,0 +1,39 @@
+from typing import List, Any, Optional
+
+from sqlalchemy_mixins.inspection import InspectionMixin
+from sqlalchemy_mixins.session import SessionMixin
+from sqlalchemy_mixins.utils import classproperty
+
+
+class ModelNotFoundError(ValueError): ...
+
+class ActiveRecordMixinAsync(InspectionMixin, SessionMixin):
+
+    @classproperty
+    def settable_attributes(cls) -> List[str]: ...
+
+    async def fill(self, **kwargs: Any) -> "ActiveRecordMixinAsync": ...
+
+    async def save(self) -> "ActiveRecordMixinAsync": ...
+
+    @classmethod
+    async def create(cls, **kwargs: Any) -> "ActiveRecordMixinAsync": ...
+
+    async def update(self, **kwargs: dict) -> "ActiveRecordMixinAsync": ...
+
+    async def delete(self) -> None: ...
+
+    @classmethod
+    async def destroy(cls, *ids: list) -> None: ...
+
+    @classmethod
+    async def all(cls) -> List["ActiveRecordMixinAsync"]: ...
+
+    @classmethod
+    async def first(cls) -> Optional["ActiveRecordMixinAsync"]: ...
+
+    @classmethod
+    async def find(cls, id_: Any) -> Optional["ActiveRecordMixinAsync"]: ...
+
+    @classmethod
+    async def find_or_fail(cls, id_: Any) -> "ActiveRecordMixinAsync": ...
