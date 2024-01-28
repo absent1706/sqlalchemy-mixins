@@ -1,3 +1,4 @@
+from sqlalchemy.orm import Session, scoped_session, Query
 from .utils import classproperty
 
 

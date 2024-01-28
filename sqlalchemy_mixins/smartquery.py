@@ -116,7 +116,6 @@ def _get_root_cls(query):
     else:
         if hasattr(query, '_entity_from_pre_ent_zero'):
             return query._entity_from_pre_ent_zero().class_
-            
     raise ValueError('Cannot get a root class from`{}`'
                      .format(query))
 
