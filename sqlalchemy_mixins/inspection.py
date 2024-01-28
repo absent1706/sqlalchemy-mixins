@@ -1,6 +1,6 @@
 from sqlalchemy import inspect
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from sqlalchemy.orm import RelationshipProperty, DeclarativeBase
+from sqlalchemy.orm import RelationshipProperty
 
 from .utils import classproperty
 

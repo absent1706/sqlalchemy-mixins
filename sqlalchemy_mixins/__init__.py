@@ -17,7 +17,19 @@ class AllFeaturesMixin(ActiveRecordMixin, SmartQueryMixin, ReprMixin, SerializeM
     __abstract__ = True
     __repr__ = ReprMixin.__repr__
 
-
-class AllFeaturesMixinAsync(ActiveRecordMixinAsync, SmartQueryMixin, ReprMixin, SerializeMixin):
-    __abstract__ = True
-    __repr__ = ReprMixin.__repr__
+__all__ = [
+    'SessionMixin',
+    'InspectionMixin',
+    'ActiveRecordMixin',
+    'ModelNotFoundError',
+    'ActiveRecordMixinAsync',
+    'SmartQueryMixin',
+    'smart_query',
+    'EagerLoadMixin',
+    'JOINED',
+    'SUBQUERY',
+    'ReprMixin',
+    'SerializeMixin',
+    'TimestampsMixin',
+    'AllFeaturesMixin',
+]

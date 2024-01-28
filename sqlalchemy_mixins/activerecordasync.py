@@ -1,105 +1,200 @@
+from sqlalchemy import select
 from .utils import classproperty
 from .session import SessionMixin
 from .inspection import InspectionMixin
 from .activerecord import ModelNotFoundError
+from . import smartquery as SmaryQuery
+
+
+def async_root_cls(query):
+    """Monkey patch SmaryQuery to handle async queries."""
+    try:
+        return SmaryQuery._get_root_cls(query)
+    except ValueError:
+        # Handle async queries
+        if query.__dict__["_propagate_attrs"]["plugin_subject"].class_:
+            return query.__dict__["_propagate_attrs"]["plugin_subject"].class_
+        raise
+    
+SmaryQuery._get_root_cls = lambda query: async_root_cls(query)
 
 
 class ActiveRecordMixinAsync(InspectionMixin, SessionMixin):
     __abstract__ = True
-
+    
     @classproperty
-    def settable_attributes(cls):
-        return cls.columns + cls.hybrid_properties + cls.settable_relations
-
-    async def fill(self, **kwargs):
-        for name in kwargs.keys():
-            if name in self.settable_attributes:
-                setattr(self, name, kwargs[name])
-            else:
-                raise KeyError("Attribute '{}' doesn't exist".format(name))
-
-        return self
-
-    async def save(self):
-        """Saves the updated model to the current entity db.
+    def query(cls):
         """
-        try:
-            async with self.session() as session:
+        Override the default query property to handle async session.
+        """
+        if not hasattr(cls.session, "query"):
+            return select(cls)
+
+        return cls.session.query(cls)
+    
+    async def save_async(self):
+        """
+        Async version of :meth:`save` method.
+
+        :see: :meth:`save` method for more information.
+        """
+        async with self.session() as session:
+            try:
                 session.add(self)
                 await session.commit()
                 return self
-        except:
-            async with self.session() as session:
+            except:
                 await session.rollback()
                 raise
 
     @classmethod
-    async def create(cls, **kwargs):
-        """Create and persist a new record for the model
-        :param kwargs: attributes for the record
-        :return: the new model instance
+    async def create_async(cls, **kwargs):
         """
-        return await cls().fill(**kwargs).save()
+        Async version of :meth:`create` method.
 
-    async def update(self, **kwargs):
-        """Same as :meth:`fill` method but persists changes to database.
+        :see: :meth:`create`
         """
-        return await self.fill(**kwargs).save()
+        return await cls().fill(**kwargs).save_async()
+    
+    async def update_async(self, **kwargs):
+        """
+        Async version of :meth:`update` method.
 
-    async def delete(self):
-        """Removes the model from the current entity session and mark for deletion.
+        :see: :meth:`update`
         """
-        try:
-            async with self.session() as session:
-                session.delete(self)
+        return await self.fill(**kwargs).save_async()
+
+    async def delete_async(self):
+        """
+        Async version of :meth:`delete` method.
+
+        :see: :meth:`delete`
+        """
+        async with self.session() as session:
+            try:
+                session.sync_session.delete(self)
                 await session.commit()
-        except:
-            async with self.session() as session:
+                return self
+            except:
                 await session.rollback()
                 raise
+            finally:
+                await session.flush()
 
     @classmethod
-    async def destroy(cls, *ids):
-        """Delete the records with the given ids
-        :type ids: list
-        :param ids: primary key ids of records
+    async def destroy_async(cls, *ids):
         """
-        for pk in ids:
-            obj = await cls.find(pk)
-            if obj:
-                await obj.delete()
-        async with cls.session() as session:
-            await session.flush()
+        Async version of :meth:`destroy` method.
 
-    @classmethod
-    async def all(cls):
-        async with cls.session() as session:
-            result = await session.execute(cls.query)
-            return result.scalars().all()
-
-    @classmethod
-    async def first(cls):
-        async with cls.session() as session:
-            result = await session.execute(cls.query)
-            return result.scalars().first()
-
-    @classmethod
-    async def find(cls, id_):
-        """Find record by the id
-        :param id_: the primary key
+        :see: :meth:`destroy`
         """
-        async with cls.session() as session:
-            return await session.get(cls, id_)
-        
+        primary_key = cls._get_primary_key_name()
+        if primary_key:
+            async with cls.session() as session:
+                try:
+                    for row in await cls.where_async(**{f"{primary_key}__in": ids}):
+                        session.sync_session.delete(row)
+                    await session.commit()
+                except:
+                    await session.rollback()
+                    raise
+                await session.flush()
 
     @classmethod
-    async def find_or_fail(cls, id_):
-        # assume that query has custom get_or_fail method
-        result = await cls.find(id_)
-        if result:
-            return result
+    async def select_async(cls, stmt=None, filters=None, sort_attrs=None, schema=None):
+        async with cls.session() as session:
+            if stmt is None:
+                stmt = cls.smart_query(
+                    filters=filters, sort_attrs=sort_attrs, schema=schema)
+            return (await session.execute(stmt)).scalars()
+
+    @classmethod
+    async def where_async(cls, **filters):
+        """
+        Aync version of where method.
+
+        :see: :meth:`where` method for more details.
+        """
+        return await cls.select_async(filters=filters)
+
+    @classmethod
+    async def sort_async(cls, *columns):
+        """
+        Async version of sort method.
+
+        :see: :meth:`sort` method for more details.
+        """
+        return await cls.select_async(sort_attrs=columns)
+
+    @classmethod
+    async def all_async(cls):
+        """
+        Async version of all method.
+        This is same as calling ``(await select_async()).all()``.
+
+        :see: :meth:`all` method for more details.
+        """
+        return (await cls.select_async()).all()
+
+    @classmethod
+    async def first_async(cls):
+        """
+        Async version of first method.
+        This is same as calling ``(await select_async()).first()``.
+
+        :see: :meth:`first` method for more details.
+        """
+        return (await cls.select_async()).first()
+
+    @classmethod
+    async def find_async(cls, id_):
+        """
+        Async version of find method.
+
+        :see: :meth:`find` method for more details.
+        """
+        primary_key = cls._get_primary_key_name()
+        if primary_key:
+            return (await cls.where_async(**{primary_key: id_})).first()
+        return None
+
+    @classmethod
+    async def find_or_fail_async(cls, id_):
+        """
+        Async version of find_or_fail method.
+
+        :see: :meth:`find_or_fail` method for more details.
+        """
+        cursor = await cls.find_async(id_)
+        if cursor:
+            return cursor
         else:
             raise ModelNotFoundError("{} with id '{}' was not found"
                                      .format(cls.__name__, id_))
 
+    @classmethod
+    async def with_async(cls, schema):
+        """
+        Async version of with method.
 
+        :see: :meth:`with` method for more details.
+        """
+        return await cls.select_async(cls.with_(schema))
+
+    @classmethod
+    async def with_joined_async(cls, *paths):
+        """
+        Async version of with_joined method.
+
+        :see: :meth:`with_joined` method for more details.
+        """
+        return await cls.select_async(cls.with_joined(*paths))
+
+    @classmethod
+    async def with_subquery_async(cls, *paths):
+        """
+        Async version of with_subquery method.
+
+        :see: :meth:`with_subquery` method for more details.
+        """
+        return await cls.select_async(cls.with_subquery(*paths))
