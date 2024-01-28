@@ -5,17 +5,17 @@ from .inspection import InspectionMixin
 from .activerecord import ModelNotFoundError
 from . import smartquery as SmaryQuery
 
-
+get_root_cls = SmaryQuery._get_root_cls
 def async_root_cls(query):
     """Monkey patch SmaryQuery to handle async queries."""
     try:
-        return SmaryQuery._get_root_cls(query)
+        return get_root_cls(query)
     except ValueError:
         # Handle async queries
         if query.__dict__["_propagate_attrs"]["plugin_subject"].class_:
             return query.__dict__["_propagate_attrs"]["plugin_subject"].class_
         raise
-    
+
 SmaryQuery._get_root_cls = lambda query: async_root_cls(query)
 
 
