@@ -11,7 +11,7 @@ class SessionMixin:
     @classmethod
     def set_session(cls, session):
         """
-        :type session: scoped_session | async_scoped_session | Session
+        :type session: scoped_session | Session
         """
         cls._session = session
 

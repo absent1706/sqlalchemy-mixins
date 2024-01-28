@@ -1,17 +1,16 @@
 from typing import Optional
 
 from sqlalchemy.orm import Session, Query
-from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from sqlalchemy_mixins.utils import classproperty
 
 
 
 class SessionMixin:
-    _session: Optional[Session | AsyncSession]
+    _session: Optional[Session]
 
     @classmethod
-    def set_session(cls, session: Session | AsyncSession, isAsync: bool) -> None: ...
+    def set_session(cls, session: Session) -> None: ...
 
     @classproperty
     def session(cls) -> Session: ...
