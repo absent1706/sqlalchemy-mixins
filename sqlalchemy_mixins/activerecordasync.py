@@ -1,4 +1,5 @@
 from sqlalchemy import select
+from sqlalchemy.orm import Query
 from .utils import classproperty
 from .session import SessionMixin
 from .inspection import InspectionMixin
@@ -6,7 +7,7 @@ from .activerecord import ModelNotFoundError
 from . import smartquery as SmaryQuery
 
 get_root_cls = SmaryQuery._get_root_cls
-def async_root_cls(query):
+def async_root_cls(query: Query):
     """Monkey patch SmaryQuery to handle async queries."""
     try:
         return get_root_cls(query)
