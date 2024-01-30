@@ -37,7 +37,7 @@ class ActiveRecordMixinAsync(InspectionMixin, SessionMixin):
     
     @classmethod
     async def select_async(cls, 
-        stmt:str=None, 
+        stmt:Optional[str] = None, 
         filters: Optional[Dict[str, Any]] = None,
         sort_attrs: Optional[Iterable[str]] = None,
         schema: Optional[dict] = None
