@@ -1,5 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Query
+from sqlalchemy.exc import InvalidRequestError
 from .utils import classproperty
 from .session import SessionMixin
 from .inspection import InspectionMixin
@@ -22,6 +23,39 @@ SmaryQuery._get_root_cls = lambda query: async_root_cls(query)
 
 class ActiveRecordMixinAsync(InspectionMixin, SessionMixin):
     __abstract__ = True
+
+    @classmethod
+    def _get_primary_key_name(cls) -> str:
+        """
+        Gets the primary key of the model.
+
+        Note: This method can only be used if the model has a single primary key.
+        :return: The name of the primary key.
+        :raises InvalidRequestError: If the model does not have a primary key or 
+        has a composite primary key.
+        """
+        primary_keys = cls.__table__.primary_key.columns
+        if primary_keys is None:
+            raise InvalidRequestError(
+                f"Model {cls.__name__} does not have a primary key.")
+        if len(primary_keys) > 1:
+            raise InvalidRequestError(
+                f"Model {cls.__name__} has a composite primary key.")
+
+        return primary_keys[0].name
+
+    @classproperty
+    def settable_attributes(cls):
+        return cls.columns + cls.hybrid_properties + cls.settable_relations
+
+    def fill(self, **kwargs):
+        for name in kwargs.keys():
+            if name in self.settable_attributes:
+                setattr(self, name, kwargs[name])
+            else:
+                raise KeyError("Attribute '{}' doesn't exist".format(name))
+
+        return self
     
     @classproperty
     def query(cls):
@@ -105,7 +139,7 @@ class ActiveRecordMixinAsync(InspectionMixin, SessionMixin):
     async def select_async(cls, stmt=None, filters=None, sort_attrs=None, schema=None):
         async with cls.session() as session:
             if stmt is None:
-                stmt = cls.smart_query(
+                stmt = SmaryQuery.smart_query(query=cls.query,
                     filters=filters, sort_attrs=sort_attrs, schema=schema)
             return (await session.execute(stmt)).scalars()
 
