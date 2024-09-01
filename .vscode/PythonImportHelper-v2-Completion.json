@@ -274,6 +274,14 @@
         "documentation": {}
     },
     {
+        "label": "hybrid_property",
+        "importPath": "sqlalchemy.ext.hybrid",
+        "description": "sqlalchemy.ext.hybrid",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.ext.hybrid",
+        "documentation": {}
+    },
+    {
         "label": "hybrid_method",
         "importPath": "sqlalchemy.ext.hybrid",
         "description": "sqlalchemy.ext.hybrid",
@@ -531,6 +539,30 @@
     },
     {
         "label": "declarative_base",
+        "importPath": "sqlalchemy.orm",
+        "description": "sqlalchemy.orm",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.orm",
+        "documentation": {}
+    },
+    {
+        "label": "sessionmaker",
+        "importPath": "sqlalchemy.orm",
+        "description": "sqlalchemy.orm",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.orm",
+        "documentation": {}
+    },
+    {
+        "label": "selectinload",
+        "importPath": "sqlalchemy.orm",
+        "description": "sqlalchemy.orm",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.orm",
+        "documentation": {}
+    },
+    {
+        "label": "relationship",
         "importPath": "sqlalchemy.orm",
         "description": "sqlalchemy.orm",
         "isExtraImport": true,
@@ -890,6 +922,22 @@
         "documentation": {}
     },
     {
+        "label": "ActiveRecordMixinAsync",
+        "importPath": "sqlalchemy_mixins",
+        "description": "sqlalchemy_mixins",
+        "isExtraImport": true,
+        "detail": "sqlalchemy_mixins",
+        "documentation": {}
+    },
+    {
+        "label": "SmartQueryMixin",
+        "importPath": "sqlalchemy_mixins",
+        "description": "sqlalchemy_mixins",
+        "isExtraImport": true,
+        "detail": "sqlalchemy_mixins",
+        "documentation": {}
+    },
+    {
         "label": "EagerLoadMixin",
         "importPath": "sqlalchemy_mixins",
         "description": "sqlalchemy_mixins",
@@ -1061,6 +1109,47 @@
         "documentation": {}
     },
     {
+        "label": "ModelNotFoundError",
+        "importPath": "sqlalchemy_mixins.activerecord",
+        "description": "sqlalchemy_mixins.activerecord",
+        "isExtraImport": true,
+        "detail": "sqlalchemy_mixins.activerecord",
+        "documentation": {}
+    },
+    {
+        "label": "asyncio",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "asyncio",
+        "description": "asyncio",
+        "detail": "asyncio",
+        "documentation": {}
+    },
+    {
+        "label": "create_async_engine",
+        "importPath": "sqlalchemy.ext.asyncio",
+        "description": "sqlalchemy.ext.asyncio",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.ext.asyncio",
+        "documentation": {}
+    },
+    {
+        "label": "AsyncSession",
+        "importPath": "sqlalchemy.ext.asyncio",
+        "description": "sqlalchemy.ext.asyncio",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.ext.asyncio",
+        "documentation": {}
+    },
+    {
+        "label": "declarative_base",
+        "importPath": "sqlalchemy.ext.declarative",
+        "description": "sqlalchemy.ext.declarative",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.ext.declarative",
+        "documentation": {}
+    },
+    {
         "label": "SessionMixin",
         "importPath": "sqlalchemy_mixins.session",
         "description": "sqlalchemy_mixins.session",
@@ -1074,6 +1163,14 @@
         "description": "sqlalchemy_mixins.session",
         "isExtraImport": true,
         "detail": "sqlalchemy_mixins.session",
+        "documentation": {}
+    },
+    {
+        "label": "InvalidRequestError",
+        "importPath": "sqlalchemy.exc",
+        "description": "sqlalchemy.exc",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.exc",
         "documentation": {}
     },
     {
@@ -2364,6 +2461,60 @@
         "documentation": {}
     },
     {
+        "label": "AsyncBaseModel",
+        "kind": 6,
+        "importPath": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "description": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "peekOfCode": "class AsyncBaseModel(Base, ActiveRecordMixinAsync, SmartQueryMixin):\n    __abstract__ = True\nclass User(AsyncBaseModel):\n    __tablename__ = 'user'\n    __repr_attrs__ = ['name']\n    id = sa.Column(sa.Integer, primary_key=True)\n    name = sa.Column(sa.String)\n    posts = relationship('Post', backref='user', lazy=\"selectin\")\n    posts_viewonly = relationship('Post', viewonly=True)\nclass Post(AsyncBaseModel):",
+        "detail": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "kind": 6,
+        "importPath": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "description": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "peekOfCode": "class User(AsyncBaseModel):\n    __tablename__ = 'user'\n    __repr_attrs__ = ['name']\n    id = sa.Column(sa.Integer, primary_key=True)\n    name = sa.Column(sa.String)\n    posts = relationship('Post', backref='user', lazy=\"selectin\")\n    posts_viewonly = relationship('Post', viewonly=True)\nclass Post(AsyncBaseModel):\n    __tablename__ = 'post'\n    id = sa.Column(sa.Integer, primary_key=True)",
+        "detail": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "documentation": {}
+    },
+    {
+        "label": "Post",
+        "kind": 6,
+        "importPath": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "description": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "peekOfCode": "class Post(AsyncBaseModel):\n    __tablename__ = 'post'\n    id = sa.Column(sa.Integer, primary_key=True)\n    body = sa.Column(sa.String)\n    user_id = sa.Column(sa.Integer, sa.ForeignKey('user.id'))\n    archived = sa.Column(sa.Boolean, default=False)\n    comments = relationship('Comment', backref='post', lazy=\"selectin\")\n    @hybrid_property\n    def public(self):\n        return not self.archived",
+        "detail": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "documentation": {}
+    },
+    {
+        "label": "Comment",
+        "kind": 6,
+        "importPath": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "description": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "peekOfCode": "class Comment(AsyncBaseModel):\n    __tablename__ = 'comment'\n    __repr_attrs__ = ['body']\n    id = sa.Column(sa.Integer, primary_key=True)\n    body = sa.Column(sa.String)\n    user_id = sa.Column(sa.Integer, sa.ForeignKey('user.id'))\n    post_id = sa.Column(sa.Integer, sa.ForeignKey('post.id'))\n    user = relationship('User', backref='comments', lazy=\"selectin\")\nclass TestAsyncActiveRecord(unittest.IsolatedAsyncioTestCase):\n    async def asyncSetUp(self):",
+        "detail": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "documentation": {}
+    },
+    {
+        "label": "TestAsyncActiveRecord",
+        "kind": 6,
+        "importPath": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "description": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "peekOfCode": "class TestAsyncActiveRecord(unittest.IsolatedAsyncioTestCase):\n    async def asyncSetUp(self):\n        self.engine = create_async_engine('sqlite+aiosqlite:///:memory:', echo=False)\n        self.async_session = sessionmaker(self.engine, class_=AsyncSession, expire_on_commit=False)\n        async with self.engine.begin() as conn:\n            await conn.run_sync(Base.metadata.drop_all)\n            await conn.run_sync(Base.metadata.create_all)\n        AsyncBaseModel.set_session(self.async_session)\n    async def asyncTearDown(self):\n        await self.engine.dispose()",
+        "detail": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "documentation": {}
+    },
+    {
+        "label": "Base",
+        "kind": 5,
+        "importPath": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "description": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "peekOfCode": "Base = declarative_base()\nclass AsyncBaseModel(Base, ActiveRecordMixinAsync, SmartQueryMixin):\n    __abstract__ = True\nclass User(AsyncBaseModel):\n    __tablename__ = 'user'\n    __repr_attrs__ = ['name']\n    id = sa.Column(sa.Integer, primary_key=True)\n    name = sa.Column(sa.String)\n    posts = relationship('Post', backref='user', lazy=\"selectin\")\n    posts_viewonly = relationship('Post', viewonly=True)",
+        "detail": "sqlalchemy_mixins.tests.test_activerecordasync",
+        "documentation": {}
+    },
+    {
         "label": "Base",
         "kind": 6,
         "importPath": "sqlalchemy_mixins.tests.test_eagerload",
@@ -2944,7 +3095,7 @@
         "kind": 6,
         "importPath": "sqlalchemy_mixins.activerecordasync",
         "description": "sqlalchemy_mixins.activerecordasync",
-        "peekOfCode": "class ActiveRecordMixinAsync(InspectionMixin, SessionMixin):\n    __abstract__ = True\n    @classproperty\n    def query(cls):\n        \"\"\"\n        Override the default query property to handle async session.\n        \"\"\"\n        if not hasattr(cls.session, \"query\"):\n            return select(cls)\n        return cls.session.query(cls)",
+        "peekOfCode": "class ActiveRecordMixinAsync(InspectionMixin, SessionMixin):\n    __abstract__ = True\n    @classmethod\n    def _get_primary_key_name(cls) -> str:\n        \"\"\"\n        Gets the primary key of the model.\n        Note: This method can only be used if the model has a single primary key.\n        :return: The name of the primary key.\n        :raises InvalidRequestError: If the model does not have a primary key or \n        has a composite primary key.",
         "detail": "sqlalchemy_mixins.activerecordasync",
         "documentation": {}
     },
@@ -2971,7 +3122,7 @@
         "kind": 5,
         "importPath": "sqlalchemy_mixins.activerecordasync",
         "description": "sqlalchemy_mixins.activerecordasync",
-        "peekOfCode": "SmaryQuery._get_root_cls = lambda query: async_root_cls(query)\nclass ActiveRecordMixinAsync(InspectionMixin, SessionMixin):\n    __abstract__ = True\n    @classproperty\n    def query(cls):\n        \"\"\"\n        Override the default query property to handle async session.\n        \"\"\"\n        if not hasattr(cls.session, \"query\"):\n            return select(cls)",
+        "peekOfCode": "SmaryQuery._get_root_cls = lambda query: async_root_cls(query)\nclass ActiveRecordMixinAsync(InspectionMixin, SessionMixin):\n    __abstract__ = True\n    @classmethod\n    def _get_primary_key_name(cls) -> str:\n        \"\"\"\n        Gets the primary key of the model.\n        Note: This method can only be used if the model has a single primary key.\n        :return: The name of the primary key.\n        :raises InvalidRequestError: If the model does not have a primary key or ",
         "detail": "sqlalchemy_mixins.activerecordasync",
         "documentation": {}
     },
