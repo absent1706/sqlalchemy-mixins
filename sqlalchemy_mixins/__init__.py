@@ -4,6 +4,7 @@ from .inspection import InspectionMixin
 
 # high-level mixins
 from .activerecord import ActiveRecordMixin, ModelNotFoundError
+from .activerecordasync import ActiveRecordMixinAsync
 from .smartquery import SmartQueryMixin, smart_query
 from .eagerload import EagerLoadMixin, JOINED, SUBQUERY
 from .repr import ReprMixin
@@ -19,6 +20,7 @@ class AllFeaturesMixin(ActiveRecordMixin, SmartQueryMixin, ReprMixin, SerializeM
 
 __all__ = [
     "ActiveRecordMixin",
+    "ActiveRecordMixinAsync",
     "AllFeaturesMixin",
     "EagerLoadMixin",
     "InspectionMixin",
