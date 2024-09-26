@@ -77,18 +77,18 @@ class ActiveRecordMixin(InspectionMixin, SessionMixin):
 
     @classmethod
     def all(cls):
-        return cls.query.all()
+        return cls.session.query(cls).all()
 
     @classmethod
     def first(cls):
-        return cls.query.first()
+        return cls.session.query(cls).first()
 
     @classmethod
     def find(cls, id_):
         """Find record by the id
         :param id_: the primary key
         """
-        return cls.query.get(id_)
+        return cls.session.query(cls).get(id_)
 
     @classmethod
     def find_or_fail(cls, id_):

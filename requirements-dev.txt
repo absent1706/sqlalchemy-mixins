@@ -2,6 +2,7 @@
 nose2
 coverage
 codeclimate-test-reporter
+greenlet>=3.1
 tox
 mypy==1.1.1
 sqlalchemy[mypy] >= 2.0
