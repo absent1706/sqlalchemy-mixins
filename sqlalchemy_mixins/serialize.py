@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from datetime import datetime, date, time
 
 from .inspection import InspectionMixin
 
@@ -17,23 +18,19 @@ class SerializeMixin(InspectionMixin):
         :type: bool
         :return: dict
         """
-        result = dict()
-
         if exclude is None:
              view_cols = self.columns
         else :
              view_cols = filter(lambda e: e not in exclude, self.columns)
 
-        for key in view_cols :
-            result[key] = getattr(self, key)
-
+        result = {key: self.__validate_datetime(key) for key in view_cols}
         if hybrid_attributes:
             for key in self.hybrid_properties:
-                result[key] = getattr(self, key)
+                result[key] = self.__validate_datetime(key)
 
         if nested:
             for key in self.relations:
-                obj = getattr(self, key)
+                obj = self.__validate_datetime(key)
 
                 if isinstance(obj, SerializeMixin):
                     result[key] = obj.to_dict(hybrid_attributes=hybrid_attributes)
@@ -44,3 +41,11 @@ class SerializeMixin(InspectionMixin):
                     ]
 
         return result
+    
+    def __validate_datetime(self, key):
+        attr = getattr(self, key)
+
+        if isinstance(attr, (datetime, date, time)):
+            return attr.__str__()
+        return attr
+
